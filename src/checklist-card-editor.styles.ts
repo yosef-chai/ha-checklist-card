@@ -1,38 +1,33 @@
-/**
- * @file checklist-card-editor.styles.ts
- * @description Lit CSS styles for the ChecklistCardEditor component.
- *
- * Includes layout for the config form sections, individual check blocks,
- * and drag-and-drop visual feedback classes (`.dragging`, `.drop-target`).
- */
-
 import { css } from 'lit';
 
 export const editorStyles = css`
   .config-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 24px;
+    padding: 16px;
     color: var(--primary-text-color);
   }
 
   .divider {
     height: 1px;
-    background: var(--divider-color, rgba(0,0,0,0.12));
+    background: var(--divider-color, rgba(0, 0, 0, 0.12));
     margin: 8px 0;
   }
 
   .section-title {
     margin: 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 500;
     color: var(--primary-text-color);
   }
 
+  /* Basic grid for sections with multiple controls */
   .layout-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 16px;
+    gap: 24px;
+    align-items: center;
   }
 
   .check-item {
@@ -41,8 +36,9 @@ export const editorStyles = css`
     gap: 16px;
     padding: 16px;
     border: 1px solid var(--divider-color);
-    border-radius: 12px;
+    border-radius: var(--ha-card-border-radius, 12px);
     background: var(--card-background-color);
+    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
   }
 
   .check-item.dragging {
@@ -60,13 +56,14 @@ export const editorStyles = css`
   .check-item.drop-target::before {
     content: attr(data-drop-text);
     position: absolute;
-    top: -12px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
     background: var(--primary-color);
     color: var(--text-primary-color, white);
     font-size: 12px;
-    padding: 4px 12px;
+    font-weight: 500;
+    padding: 6px 16px;
     border-radius: 12px;
     white-space: nowrap;
     z-index: 10;
@@ -79,124 +76,54 @@ export const editorStyles = css`
     align-items: center;
   }
 
+  .check-header-left {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
   .drag-handle {
     cursor: grab;
-    font-size: 20px;
-    color: var(--secondary-text-color);
-    padding: 0 8px;
-    display: flex;
-    align-items: center;
-  }
-
-  .move-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
     color: var(--secondary-text-color);
     display: flex;
     align-items: center;
+    justify-content: center;
     padding: 4px;
   }
-  .move-btn[disabled] {
-    opacity: 0.3;
-    cursor: not-allowed;
-  }
-  .move-btn ha-icon {
-    --mdc-icon-size: 20px;
+
+  .drag-handle:active {
+    cursor: grabbing;
   }
 
-  .collapse-icon {
-    cursor: pointer;
-    margin-left: 12px;
-    color: var(--secondary-text-color);
+  .drag-handle ha-icon {
+    --mdc-icon-size: 24px;
   }
 
   .check-header strong {
     font-size: 16px;
     font-weight: 500;
-  }
-
-  .remove-btn {
-    background: transparent;
-    color: var(--error-color, #f44336);
-    border: 1px solid var(--error-color, #f44336);
-    border-radius: 6px;
-    padding: 6px 12px;
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-  .remove-btn:hover {
-    background: rgba(var(--rgb-error-color, 244, 67, 54), 0.1);
+    margin-left: 8px;
   }
 
   .add-btn {
-    background: transparent;
-    color: var(--primary-color);
-    border: 2px dashed var(--primary-color);
-    border-radius: 12px;
-    padding: 16px;
-    cursor: pointer;
-    font-weight: 500;
-    font-size: 15px;
-    margin-top: 8px;
-    transition: all 0.2s;
-  }
-  .add-btn:hover {
-    background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05);
-  }
-
-  .json-hint {
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    font-family: monospace;
-  }
-
-  .select-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .select-wrapper label {
-    font-size: 13px;
-    color: var(--secondary-text-color);
-  }
-
-  .select-wrapper select {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--card-background-color);
-    color: var(--primary-text-color);
-    border: 1px solid var(--divider-color);
-    border-radius: 6px;
-    font-size: 14px;
-    cursor: pointer;
-    box-sizing: border-box;
-    appearance: auto;
-    transition: border-color 0.2s;
-  }
-  .select-wrapper select:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 1px var(--primary-color);
+    margin-top: 16px;
   }
 
   .conditions-section {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 24px;
+    padding-top: 8px;
   }
 
   .condition-item {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 16px;
     padding: 16px;
     border: 1px solid var(--divider-color);
     border-radius: 8px;
-    background: var(--secondary-background-color, rgba(0,0,0,0.02));
+    background: var(--secondary-background-color, rgba(0, 0, 0, 0.02));
   }
 
   .condition-header {
@@ -204,77 +131,68 @@ export const editorStyles = css`
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid var(--divider-color);
-    padding-bottom: 8px;
+    padding-bottom: 12px;
   }
 
   .condition-title {
     font-size: 14px;
     font-weight: 500;
-    color: var(--primary-text-color);
   }
 
   .condition-actions {
     display: flex;
     align-items: center;
-    gap: 12px;
-    flex-wrap: wrap;
+    gap: 16px;
   }
-
-  .remove-condition-btn {
-    background: none;
-    border: none;
-    color: var(--error-color, #f44336);
-    cursor: pointer;
-    font-size: 13px;
-    font-weight: 500;
-    padding: 4px;
-  }
-  .remove-condition-btn:hover { text-decoration: underline; }
 
   .default-label {
     display: flex;
     align-items: center;
-    gap: 6px;
-    font-size: 13px;
-    color: var(--secondary-text-color);
-    cursor: pointer;
-  }
-  .default-label.is-default {
-    color: var(--primary-color);
-    font-weight: 500;
+    gap: 8px;
   }
 
-  .add-condition-btn {
-    background: none;
-    border: 1px dashed var(--primary-color);
-    color: var(--primary-color);
-    border-radius: 8px;
-    padding: 10px 12px;
-    cursor: pointer;
+  .prereq-title {
     font-size: 14px;
-    text-align: center;
-    width: 100%;
-    box-sizing: border-box;
-    transition: background-color 0.2s;
-  }
-  .add-condition-btn:hover {
-    background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05);
+    font-weight: 500;
+    color: var(--primary-color);
+    margin-bottom: 8px;
   }
 
-  .number-input {
+  .select-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .select-wrapper label {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--secondary-text-color);
+  }
+
+  .select-wrapper select {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 16px;
     background: var(--card-background-color);
     color: var(--primary-text-color);
     border: 1px solid var(--divider-color);
-    border-radius: 6px;
+    border-radius: var(--ha-card-border-radius, 6px);
     font-size: 14px;
+    cursor: pointer;
     box-sizing: border-box;
-    transition: border-color 0.2s;
+    appearance: auto;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .number-input:focus {
+
+  .select-wrapper select:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 1px var(--primary-color);
+  }
+
+  .json-hint {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    margin-top: 4px;
   }
 `;
