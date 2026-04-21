@@ -1,4 +1,6 @@
 {
   "name": "Checklist Card",
-  "render_readme": true
+  "render_readme": true,
+  "filename": "checklist-card.js",
+  "content_in_root": false
 }
