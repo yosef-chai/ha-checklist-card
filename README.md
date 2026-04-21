@@ -55,7 +55,7 @@ Or click the button above to open the repository directly in HACS.
    ```yaml
    lovelace:
      resources:
-       - url: /local/checklist-card.js?v=1.0.0
+       - url: /local/checklist-card.js?v=1.1.0
          type: module
    ```
 
