@@ -7,8 +7,9 @@ declare global {
     customCards: Array<{
       type: string;
       name: string;
-      description: string;
-      preview: boolean;
+      description?: string;
+      preview?: boolean;
+      documentationURL?: string;
     }>;
   }
 }
@@ -19,4 +20,5 @@ window.customCards.push({
   name: localizeStatic('card_name'),
   description: localizeStatic('card_description'),
   preview: true,
+  documentationURL: 'https://github.com/yosef-chai/ha-checklist-card',
 });

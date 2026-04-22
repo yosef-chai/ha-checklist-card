@@ -1,51 +1,21 @@
-/**
- * @file localize.ts
- * @description Internationalization (i18n) module for the Checklist Card.
- *
- * All user-visible strings are defined here in the `TRANSLATIONS` map, keyed
- * first by BCP 47 language tag and then by a camelCase string key. Adding a
- * new language requires only a new top-level entry in `TRANSLATIONS` — no
- * changes to component code are needed.
- *
- * Two public helpers are exported:
- * - {@link localize} — for use inside Lit components where `hass` is available.
- * - {@link localizeStatic} — for static contexts (card registration, stub
- *   config) that run before `hass` is injected.
- *
- * @supported-languages en (English), he (Hebrew / עברית)
- */
-
 import type { HomeAssistant } from './types';
 
-// ---------------------------------------------------------------------------
-// Translation table
-// ---------------------------------------------------------------------------
-
-/**
- * Master translation map. Each top-level key is a BCP 47 primary language
- * subtag; each nested object maps string keys to their translated values.
- * Placeholders in values use the `{key}` syntax and are replaced at runtime
- * by {@link _translate}.
- *
- * @internal
- */
 const TRANSLATIONS: Record<string, Record<string, string>> = {
   en: {
-    // Card picker registration
     card_name: 'Checklist Card',
     card_description: 'Check entity states and quickly fix any issues.',
-
-    // Shared
     title: 'Checklist',
     status: 'Status',
     entity: 'Entity',
-
-    // Checklist Card
     all_good: 'All good!',
     problems_found: 'Found {count} problems',
     fix_all: 'Fix All',
     fix: 'Fix',
     ok: 'OK',
+    show: 'Show',
+    hide: 'Hide',
+    show_ok_items_btn: 'Show {count} OK items',
+    hide_ok_items_btn: 'Hide {count} OK items',
     unavailable: 'Unavailable',
     required: 'Required',
     attribute: 'Attribute',
@@ -56,13 +26,8 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     config_error: 'Invalid configuration',
     expected_pattern_error: 'Error parsing expected pattern',
     fix_process_error: 'Error in entity fix process',
-
-    // Editor UI
     editor_title: 'Title',
     layout_section: 'Card Layout',
-    show_ok: 'Show OK entities?',
-    show_ok_yes: 'Yes (Show all)',
-    show_ok_no: 'No (Hide OK)',
     layout_dir: 'Item arrangement',
     layout_col: 'Columns (vertical list)',
     layout_row: 'Rows (horizontal scroll)',
@@ -97,24 +62,49 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     add_check: '+ Add new check',
     loading: 'Loading Home Assistant editor components...',
     drag_here: 'Drop here',
+    sort_mode: 'Sort by',
+    sort_manual: 'Manual (drag & drop)',
+    sort_status: 'Problem status (Problems first)',
+    sort_alphabetical: 'Alphabetical',
+    sort_domain: 'Domain',
+    sort_severity: 'Severity',
+    sort_last_changed: 'Last changed',
+    group_by: 'Group by',
+    group_none: 'None',
+    group_severity: 'Severity',
+    group_domain: 'Domain',
+    group_area: 'Area',
+    show_ok_section: 'Show OK entities',
+    show_ok_inline: 'Inline (Mixed with problems)',
+    show_ok_collapsed: 'Collapsed Section',
+    show_ok_hidden: 'Hidden completely',
+    severity: 'Severity',
+    severity_info: 'Info',
+    severity_warning: 'Warning',
+    severity_critical: 'Critical',
+    icon_override: 'Custom Icon (e.g., mdi:alert)',
+    color_override: 'Custom Color',
+    confirm_fix: 'Are you sure you want to fix {name}?',
+    advanced_settings: 'Advanced Settings',
+    status_problem: 'Problem',
+    status_ok: 'OK',
   },
 
   he: {
-    // Card picker registration
     card_name: 'כרטיס בדיקות',
     card_description: 'בדיקת מצב ישויות ותיקון מהיר של תקלות.',
-
-    // Shared
     title: 'בדיקות',
     status: 'מצב',
     entity: 'ישות',
-
-    // Checklist Card
     all_good: 'הכל תקין!',
     problems_found: 'נמצאו {count} תקלות',
     fix_all: 'תיקון הכל',
     fix: 'תיקון',
     ok: 'תקין',
+    show: 'הצג',
+    hide: 'הסתר',
+    show_ok_items_btn: 'הצג {count} פריטים תקינים',
+    hide_ok_items_btn: 'הסתר {count} פריטים תקינים',
     unavailable: 'לא זמין',
     required: 'נדרש',
     attribute: 'תכונה',
@@ -125,13 +115,8 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     config_error: 'תצורה לא תקינה',
     expected_pattern_error: 'שגיאה בפענוח תבנית ציפייה',
     fix_process_error: 'שגיאה בתהליך תיקון הישות',
-
-    // Editor UI
     editor_title: 'כותרת',
     layout_section: 'פריסת הכרטיסים',
-    show_ok: 'להציג ישויות במצב תקין?',
-    show_ok_yes: 'כן (הצג הכל)',
-    show_ok_no: 'לא (הסתר תקינים)',
     layout_dir: 'סידור פריטים',
     layout_col: 'עמודות (רשימה אנכית)',
     layout_row: 'שורות (גלילה אופקית)',
@@ -166,39 +151,35 @@ const TRANSLATIONS: Record<string, Record<string, string>> = {
     add_check: '+ הוספת בדיקה חדשה',
     loading: 'טעינת רכיבי עריכה של Home Assistant...',
     drag_here: 'העבר לכאן',
+    sort_mode: 'מיון לפי',
+    sort_manual: 'ידני (גרירה)',
+    sort_status: 'מצב (תקלות למעלה)',
+    sort_alphabetical: 'אלפביתי',
+    sort_domain: 'סוג ישות',
+    sort_severity: 'חומרה',
+    sort_last_changed: 'שינוי אחרון',
+    group_by: 'קיבוץ לפי',
+    group_none: 'ללא קיבוץ',
+    group_severity: 'חומרה',
+    group_domain: 'סוג ישות',
+    group_area: 'אזור',
+    show_ok_section: 'הצגת ישויות תקינות',
+    show_ok_inline: 'ברשימה (מעורבב עם תקלות)',
+    show_ok_collapsed: 'באזור מוסתר (נפתח בלחיצה)',
+    show_ok_hidden: 'הסתר לחלוטין',
+    severity: 'חומרה',
+    severity_info: 'מידע',
+    severity_warning: 'אזהרה',
+    severity_critical: 'קריטי',
+    icon_override: 'אייקון מותאם (למשל mdi:alert)',
+    color_override: 'צבע מותאם',
+    confirm_fix: 'האם לתקן את {name}?',
+    advanced_settings: 'הגדרות מתקדמות',
+    status_problem: 'תקלה',
+    status_ok: 'תקין',
   },
 };
 
-// ---------------------------------------------------------------------------
-// Public API
-// ---------------------------------------------------------------------------
-
-/**
- * Resolves a translation key using the language reported by the active Home
- * Assistant instance. Falls back to English when the user's language has no
- * entry in {@link TRANSLATIONS}.
- *
- * Use this function inside Lit components where `hass` is available as a
- * reactive property.
- *
- * @param hass - The active Home Assistant instance (may be `undefined` during
- *   the first render before HA injects the property).
- * @param key - A key that exists in the {@link TRANSLATIONS} map.
- * @param params - Optional named placeholders to interpolate into the string.
- *   Each `{key}` occurrence in the translated string is replaced by the
- *   corresponding value.
- * @returns The translated string, falling back to `key` if no translation
- *   exists in either the selected or the English locale.
- *
- * @example
- * ```ts
- * localize(this.hass, 'fix_all')
- * // → "Fix All" (en) | "תיקון הכל" (he)
- *
- * localize(this.hass, 'problems_found', { count: 3 })
- * // → "Found 3 problems" (en)
- * ```
- */
 export function localize(
   hass: HomeAssistant | undefined,
   key: string,
@@ -207,26 +188,8 @@ export function localize(
   return _translate(hass?.language ?? 'en', key, params);
 }
 
-/**
- * Resolves a translation key **without** a `hass` instance. Uses
- * `navigator.language` (the browser locale) as the language source, making
- * it suitable for static contexts such as `window.customCards` registration
- * and {@link ChecklistCard.getStubConfig}, which run before Home Assistant
- * injects the `hass` property.
- *
- * Falls back to English when `navigator` is unavailable (e.g. SSR/tests) or
- * when the detected language has no entry in {@link TRANSLATIONS}.
- *
- * @param key - A key that exists in the {@link TRANSLATIONS} map.
- * @returns The translated string for the browser locale.
- *
- * @example
- * ```ts
- * localizeStatic('card_name')
- * // → "Checklist Card" (browser set to English)
- * // → "כרטיס בדיקות"  (browser set to Hebrew)
- * ```
- */
+// Uses navigator.language for static contexts (card registration, getStubConfig)
+// that run before hass is injected.
 export function localizeStatic(key: string): string {
   const lang = (typeof navigator !== 'undefined' ? navigator.language : 'en')
     .split('-')[0]
@@ -234,21 +197,6 @@ export function localizeStatic(key: string): string {
   return _translate(lang, key);
 }
 
-// ---------------------------------------------------------------------------
-// Internal helpers
-// ---------------------------------------------------------------------------
-
-/**
- * Core translation resolver shared by {@link localize} and
- * {@link localizeStatic}.
- *
- * @param lang - BCP 47 primary language subtag (e.g. `"en"`, `"he"`).
- * @param key - Translation key.
- * @param params - Optional interpolation map.
- * @returns Translated and interpolated string.
- *
- * @internal
- */
 function _translate(
   lang: string,
   key: string,

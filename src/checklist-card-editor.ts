@@ -1,14 +1,3 @@
-/**
- * @file checklist-card-editor.ts
- * @description Visual configuration editor for the Checklist Card.
- *
- * Registers the `<checklist-card-editor>` custom element, which is returned
- * by {@link ChecklistCard.getConfigElement} and rendered inside the HA
- * dashboard card editor panel.
- *
- * ...
- */
-
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
@@ -25,14 +14,15 @@ export class ChecklistCardEditor extends LitElement {
   @state() private _draggedIndex: number | null = null;
   @state() private _dropTargetIndex: number | null = null;
   @state() private _collapsed: Record<string, boolean> = {};
-  private _glanceCard: any = null;
+  @state() private _pickersReady = false;
+  private _pickerLoadStarted = false;
 
   static styles = editorStyles;
 
   setConfig(config: CardConfig) {
     this._config = {
       ...config,
-      checks: config.checks.map(ensureCheckId),
+      checks: config.checks ? config.checks.map(ensureCheckId) : [],
     };
   }
 
@@ -116,7 +106,6 @@ export class ChecklistCardEditor extends LitElement {
       if (entityId && this.hass.states[entityId] && !newCheck.name) {
         newCheck.name = this.hass.states[entityId].attributes.friendly_name || entityId;
       }
-      // Reset condition state/attribute when entity changes — the old values belong to a different entity
       const firstState = this._getPossibleStates(entityId)[0] || '';
       newCheck.conditions = (check.conditions || []).map(c => ({
         ...c,
@@ -139,6 +128,7 @@ export class ChecklistCardEditor extends LitElement {
         conditions: [makeEmptyCondition()],
         conditions_mode: 'any' as const,
         default_condition_index: 0,
+        severity: 'info' as const,
       },
     ];
     this._updateConfig({ checks });
@@ -219,85 +209,27 @@ export class ChecklistCardEditor extends LitElement {
     const attrs = stateObj.attributes || {};
     let states: string[] = [];
 
-    // Attribute-first: many entity types expose their valid states through attributes.
-    // This naturally supports any integration that follows HA conventions.
-    if (Array.isArray(attrs.options)) {
-      // select, input_select, and custom integrations using options
-      states = [...attrs.options];
-    } else if (Array.isArray(attrs.hvac_modes)) {
-      // climate entities
-      states = [...attrs.hvac_modes];
-    } else if (Array.isArray(attrs.operation_list)) {
-      // water_heater and legacy climate integrations
-      states = [...attrs.operation_list];
-    } else if (Array.isArray(attrs.state_list)) {
-      states = [...attrs.state_list];
-    } else {
-      // Domain-based fallback — covers all built-in HA domains with their actual state machines
+    if (Array.isArray(attrs.options)) states = [...attrs.options];
+    else if (Array.isArray(attrs.hvac_modes)) states = [...attrs.hvac_modes];
+    else if (Array.isArray(attrs.operation_list)) states = [...attrs.operation_list];
+    else if (Array.isArray(attrs.state_list)) states = [...attrs.state_list];
+    else {
       switch (domain) {
-        case 'alarm_control_panel':
-          states = ['disarmed', 'armed_home', 'armed_away', 'armed_night',
-                    'armed_vacation', 'armed_custom_bypass', 'pending',
-                    'arming', 'disarming', 'triggered'];
-          break;
-        case 'binary_sensor':
-        case 'input_boolean':
-        case 'switch':
-        case 'light':
-        case 'fan':
-        case 'remote':
-        case 'siren':
-        case 'update':
-        case 'humidifier':
-        case 'calendar':
-          states = ['on', 'off'];
-          break;
-        case 'button':
-        case 'scene':
-          states = ['unknown'];
-          break;
-        case 'camera':
-          states = ['idle', 'recording', 'streaming'];
-          break;
-        case 'climate':
-          states = ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only', 'heat_cool'];
-          break;
-        case 'cover':
-        case 'valve':
-          states = ['open', 'closed', 'opening', 'closing'];
-          break;
-        case 'device_tracker':
-        case 'person':
-          states = ['home', 'not_home'];
-          break;
-        case 'lawn_mower':
-          states = ['mowing', 'docked', 'paused', 'error', 'returning', 'edging'];
-          break;
-        case 'lock':
-          states = ['locked', 'unlocked', 'locking', 'unlocking', 'jammed'];
-          break;
-        case 'media_player':
-          states = ['playing', 'paused', 'idle', 'standby', 'buffering', 'on', 'off'];
-          break;
-        case 'number':
-        case 'input_number': {
-          const min = attrs.min !== undefined ? String(attrs.min) : '0';
-          const max = attrs.max !== undefined ? String(attrs.max) : '100';
-          states = [min, max];
-          break;
-        }
-        case 'vacuum':
-          states = ['cleaning', 'docked', 'idle', 'returning', 'paused', 'error'];
-          break;
-        case 'water_heater':
-          states = ['off', 'eco', 'electric', 'gas', 'heat_pump', 'high_demand', 'performance'];
-          break;
-        case 'input_text':
-        case 'text':
-          states = [];
-          break;
+        case 'alarm_control_panel': states = ['disarmed', 'armed_home', 'armed_away', 'armed_night', 'pending', 'triggered']; break;
+        case 'binary_sensor': case 'input_boolean': case 'switch': case 'light': case 'fan': case 'remote': case 'siren': case 'humidifier': case 'calendar': states = ['on', 'off']; break;
+        case 'button': case 'scene': states = ['unknown']; break;
+        case 'camera': states = ['idle', 'recording', 'streaming']; break;
+        case 'climate': states = ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only', 'heat_cool']; break;
+        case 'cover': case 'valve': states = ['open', 'closed', 'opening', 'closing']; break;
+        case 'device_tracker': case 'person': states = ['home', 'not_home']; break;
+        case 'lawn_mower': states = ['mowing', 'docked', 'paused', 'error']; break;
+        case 'lock': states = ['locked', 'unlocked', 'jammed']; break;
+        case 'media_player': states = ['playing', 'paused', 'idle', 'standby', 'on', 'off']; break;
+        case 'number': case 'input_number': states = [String(attrs.min || '0'), String(attrs.max || '100')]; break;
+        case 'vacuum': states = ['cleaning', 'docked', 'idle', 'returning', 'paused', 'error']; break;
+        case 'water_heater': states = ['off', 'eco', 'electric', 'gas', 'heat_pump']; break;
+        case 'input_text': case 'text': states = []; break;
         default:
-          // Unknown domain: try to auto-detect from any array attribute that looks like a state list
           for (const key of Object.keys(attrs)) {
             if (Array.isArray(attrs[key]) && (key.endsWith('_modes') || key.endsWith('_list') || key.endsWith('_options') || key === 'options')) {
               states = attrs[key].map(String);
@@ -322,48 +254,32 @@ export class ChecklistCardEditor extends LitElement {
     const stateObj = this.hass.states[entityId];
     const attrs = stateObj.attributes || {};
 
-    // Dynamic option-list discovery: HA integrations expose valid values through
-    // attributes named with common suffixes. Check all variants before falling back.
     const candidates = [
-      // exact plural (preset_mode → preset_modes, fan_mode → fan_modes)
       attribute.endsWith('s') ? attribute : `${attribute}s`,
-      // _list suffix (operation_mode → operation_mode_list)
       `${attribute}_list`,
-      // _options suffix (sound_mode → sound_mode_options)
       `${attribute}_options`,
     ];
     for (const key of candidates) {
       if (Array.isArray(attrs[key])) return [...new Set(attrs[key].map(String))];
     }
 
-    // If the attribute itself is an array (e.g. entity_id list), use its items
     if (Array.isArray(attrs[attribute])) return [...new Set(attrs[attribute].map(String))];
 
-    // Special numeric attributes with well-known ranges
     const attrLower = attribute.toLowerCase();
-    if (attrLower === 'brightness' || attrLower === 'brightness_pct') {
-      return Array.from({ length: 11 }, (_, i) => String(i * 10));
-    }
-    if (attrLower === 'color_temp' || attrLower === 'color_temp_kelvin') {
-      return Array.from({ length: 35 }, (_, i) => String(153 + i * 10));
-    }
-
-    // Boolean attribute
+    if (attrLower === 'brightness' || attrLower === 'brightness_pct') return Array.from({ length: 11 }, (_, i) => String(i * 10));
+    if (attrLower === 'color_temp' || attrLower === 'color_temp_kelvin') return Array.from({ length: 35 }, (_, i) => String(153 + i * 10));
     if (typeof attrs[attribute] === 'boolean') return ['true', 'false'];
-
-    // Numeric attribute: generate a range using min/max if available, else steps around current
+    
     if (typeof attrs[attribute] === 'number') {
       const cur = attrs[attribute] as number;
       const min = typeof attrs.min === 'number' ? attrs.min : 0;
       const max = typeof attrs.max === 'number' ? attrs.max : 100;
-      const steps = 10;
-      const step = (max - min) / steps;
-      const range = Array.from({ length: steps + 1 }, (_, i) => String(Math.round(min + i * step)));
+      const step = (max - min) / 10;
+      const range = Array.from({ length: 11 }, (_, i) => String(Math.round(min + i * step)));
       if (!range.includes(String(cur))) range.unshift(String(cur));
       return [...new Set(range)];
     }
 
-    // String attribute: return just the current value as the only suggestion
     const current = attrs[attribute];
     if (current !== undefined && current !== null) return [String(current)];
 
@@ -375,14 +291,29 @@ export class ChecklistCardEditor extends LitElement {
     return Object.keys(this.hass.states[entityId].attributes).sort();
   }
 
-  /** @internal */
   render() {
     if (!this.hass || !this._config) return html``;
 
-    if (!this._glanceCard) {
-      this._glanceCard = customElements.get('hui-glance-card');
-      if (this._glanceCard) {
-        this._glanceCard.getConfigElement().then(() => this.requestUpdate());
+    // Force HA to lazy-load editor-only pickers (ha-entity-picker, ha-icon-picker, ...)
+    // by asking a well-known built-in card for its config element. whenDefined() is
+    // used so we retry until the core card is actually registered — otherwise the
+    // editor can get stuck on the loading state if opened before HA finishes loading.
+    if (!this._pickersReady) {
+      if (!this._pickerLoadStarted) {
+        this._pickerLoadStarted = true;
+        (async () => {
+          try {
+            await customElements.whenDefined('hui-entities-card');
+            const builtin = customElements.get('hui-entities-card') as any;
+            if (builtin?.getConfigElement) {
+              await builtin.getConfigElement();
+            }
+          } catch (e) {
+            console.warn('checklist-card: failed to preload editor pickers', e);
+          } finally {
+            this._pickersReady = true;
+          }
+        })();
       }
       return html`
         <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
@@ -394,6 +325,8 @@ export class ChecklistCardEditor extends LitElement {
 
     const checks = this._config.checks || [];
     const layout = this._config.layout || { mode: 'columns', count: 1 };
+    
+    const showOkMode = this._config.show_ok_section || 'inline';
 
     return html`
       <div class="config-container" dir=${this.hass?.translationMetadata?.dir || (this.hass?.language === 'he' ? 'rtl' : 'ltr')}>
@@ -407,12 +340,34 @@ export class ChecklistCardEditor extends LitElement {
         <h3 class="section-title">${localize(this.hass, 'layout_section')}</h3>
 
         <div class="layout-grid">
-          <ha-formfield label=${localize(this.hass, 'show_ok')}>
-            <ha-switch
-              .checked=${this._config.show_ok_items !== false}
-              @change=${(e: Event) => this._updateConfig({ show_ok_items: (e.target as any).checked })}
-            ></ha-switch>
-          </ha-formfield>
+          <div class="select-wrapper">
+            <label>${localize(this.hass, 'show_ok_section')}</label>
+            <select
+              .value=${showOkMode}
+              @change=${(e: Event) => this._updateConfig({ show_ok_section: (e.target as HTMLSelectElement).value as any })}
+            >
+              <option value="inline" ?selected=${showOkMode === 'inline'}>${localize(this.hass, 'show_ok_inline')}</option>
+              <option value="collapsed" ?selected=${showOkMode === 'collapsed'}>${localize(this.hass, 'show_ok_collapsed')}</option>
+              <option value="hidden" ?selected=${showOkMode === 'hidden'}>${localize(this.hass, 'show_ok_hidden')}</option>
+            </select>
+          </div>
+
+          <div class="select-wrapper">
+            <label>${localize(this.hass, 'sort_mode')}</label>
+            <select
+              .value=${this._config.sort || 'manual'}
+              @change=${(e: Event) => this._updateConfig({ sort: (e.target as HTMLSelectElement).value as any })}
+            >
+              <option value="manual" ?selected=${this._config.sort === 'manual'}>${localize(this.hass, 'sort_manual')}</option>
+              <option value="status" ?selected=${this._config.sort === 'status'}>${localize(this.hass, 'sort_status')}</option>
+              <option value="alphabetical" ?selected=${this._config.sort === 'alphabetical'}>${localize(this.hass, 'sort_alphabetical')}</option>
+              <option value="domain" ?selected=${this._config.sort === 'domain'}>${localize(this.hass, 'sort_domain')}</option>
+              <option value="severity" ?selected=${this._config.sort === 'severity'}>${localize(this.hass, 'sort_severity')}</option>
+              <option value="last_changed" ?selected=${this._config.sort === 'last_changed'}>${localize(this.hass, 'sort_last_changed')}</option>
+            </select>
+          </div>
+
+
 
           <div class="select-wrapper">
             <label>${localize(this.hass, 'layout_dir')}</label>
@@ -425,36 +380,22 @@ export class ChecklistCardEditor extends LitElement {
             </select>
           </div>
 
-          ${layout.mode === 'rows' ? html`
-            <ha-textfield
-              label=${localize(this.hass, 'max_items_row')}
-              type="number"
-              min="1"
-              max="10"
-              .value=${String(layout.count || 1)}
-              @input=${(e: Event) => {
-                const val = parseInt((e.target as HTMLInputElement).value, 10);
-                if (!isNaN(val) && val >= 1) this._updateLayout({ count: val });
-              }}
-            ></ha-textfield>
-            <div class="json-hint">${localize(this.hass, 'layout_rows_hint')}</div>
-          ` : html`
-            <div class="select-wrapper">
-              <label>${localize(this.hass, 'max_items_col')}</label>
-              <select
-                .value=${String(layout.count || 1)}
-                @change=${(e: Event) => {
-                  const val = parseInt((e.target as HTMLSelectElement).value, 10);
-                  if (!isNaN(val)) this._updateLayout({ count: val });
-                }}
-              >
-                ${[1, 2, 3, 4].map(n => html`
-                  <option value=${n} ?selected=${(layout.count || 1) === n}>${n}</option>
-                `)}
-              </select>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.05); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.1);">
+            <label style="font-weight: 500; font-size: 14px; color: var(--primary-text-color);">
+              ${localize(this.hass, layout.mode === 'columns' ? 'max_items_col' : 'max_items_row')}
+            </label>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <ha-icon-button
+                .path=${'M19,13H5V11H19V13Z'}
+                @click=${() => this._updateLayout({ count: Math.max(1, (layout.count || 1) - 1) })}
+              ></ha-icon-button>
+              <span style="font-size: 16px; font-weight: bold; width: 24px; text-align: center; color: var(--primary-text-color);">${layout.count || 1}</span>
+              <ha-icon-button
+                .path=${'M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z'}
+                @click=${() => this._updateLayout({ count: (layout.count || 1) + 1 })}
+              ></ha-icon-button>
             </div>
-            <div class="json-hint">${localize(this.hass, 'layout_cols_hint')}</div>
-          `}
+          </div>
         </div>
 
         <div class="divider"></div>
@@ -509,6 +450,35 @@ export class ChecklistCardEditor extends LitElement {
                     .value=${check.name || ''}
                     @input=${(e: Event) => this._updateCheck(index, 'name', (e.target as HTMLInputElement).value)}
                   ></ha-textfield>
+                  
+
+                  <details style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--divider-color);">
+                    <summary style="cursor: pointer; font-weight: 500;">${localize(this.hass, 'advanced_settings')}</summary>
+                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
+                      <div class="select-wrapper">
+                        <label>${localize(this.hass, 'severity')}</label>
+                        <select
+                          .value=${check.severity || 'info'}
+                          @change=${(e: Event) => this._updateCheck(index, 'severity', (e.target as HTMLSelectElement).value)}
+                        >
+                          <option value="info" ?selected=${check.severity === 'info' || !check.severity}>${localize(this.hass, 'severity_info')}</option>
+                          <option value="warning" ?selected=${check.severity === 'warning'}>${localize(this.hass, 'severity_warning')}</option>
+                          <option value="critical" ?selected=${check.severity === 'critical'}>${localize(this.hass, 'severity_critical')}</option>
+                        </select>
+                      </div>
+                      <ha-icon-picker
+                        .hass=${this.hass}
+                        .label=${localize(this.hass, 'icon_override')}
+                        .value=${check.icon || ''}
+                        @value-changed=${(e: CustomEvent) => this._updateCheck(index, 'icon', e.detail.value)}
+                      ></ha-icon-picker>
+                      <ha-textfield
+                        label=${localize(this.hass, 'color_override')}
+                        .value=${check.color || ''}
+                        @input=${(e: Event) => this._updateCheck(index, 'color', (e.target as HTMLInputElement).value)}
+                      ></ha-textfield>
+                    </div>
+                  </details>
 
                   ${isMulti ? html`
                     <div class="select-wrapper">
