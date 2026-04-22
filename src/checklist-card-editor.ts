@@ -116,6 +116,14 @@ export class ChecklistCardEditor extends LitElement {
       if (entityId && this.hass.states[entityId] && !newCheck.name) {
         newCheck.name = this.hass.states[entityId].attributes.friendly_name || entityId;
       }
+      // Reset condition state/attribute when entity changes — the old values belong to a different entity
+      const firstState = this._getPossibleStates(entityId)[0] || '';
+      newCheck.conditions = (check.conditions || []).map(c => ({
+        ...c,
+        state: firstState,
+        attribute: '',
+        attribute_value: '',
+      }));
       return newCheck;
     });
     this._updateConfig({ checks });
@@ -208,41 +216,96 @@ export class ChecklistCardEditor extends LitElement {
 
     const stateObj = this.hass.states[entityId];
     const domain = entityId.split('.')[0];
+    const attrs = stateObj.attributes || {};
     let states: string[] = [];
 
-    switch (domain) {
-      case 'light':
-      case 'switch':
-      case 'input_boolean':
-      case 'fan':
-      case 'binary_sensor':
-        states = ['on', 'off'];
-        break;
-      case 'lock':
-        states = ['locked', 'unlocked'];
-        break;
-      case 'cover':
-        states = ['open', 'closed', 'opening', 'closing'];
-        break;
-      case 'climate':
-        states = stateObj.attributes?.hvac_modes || ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only', 'heat_cool'];
-        break;
-      case 'select':
-      case 'input_select':
-        states = stateObj.attributes?.options || [];
-        break;
-      case 'number':
-      case 'input_number':
-        states = ['0', '50', '100'];
-        break;
-      case 'media_player':
-        states = ['playing', 'paused', 'idle', 'off', 'on'];
-        break;
-      case 'vacuum':
-        states = ['cleaning', 'docked', 'idle', 'returning', 'paused'];
-        break;
-      default:
-        states = ['on', 'off'];
+    // Attribute-first: many entity types expose their valid states through attributes.
+    // This naturally supports any integration that follows HA conventions.
+    if (Array.isArray(attrs.options)) {
+      // select, input_select, and custom integrations using options
+      states = [...attrs.options];
+    } else if (Array.isArray(attrs.hvac_modes)) {
+      // climate entities
+      states = [...attrs.hvac_modes];
+    } else if (Array.isArray(attrs.operation_list)) {
+      // water_heater and legacy climate integrations
+      states = [...attrs.operation_list];
+    } else if (Array.isArray(attrs.state_list)) {
+      states = [...attrs.state_list];
+    } else {
+      // Domain-based fallback — covers all built-in HA domains with their actual state machines
+      switch (domain) {
+        case 'alarm_control_panel':
+          states = ['disarmed', 'armed_home', 'armed_away', 'armed_night',
+                    'armed_vacation', 'armed_custom_bypass', 'pending',
+                    'arming', 'disarming', 'triggered'];
+          break;
+        case 'binary_sensor':
+        case 'input_boolean':
+        case 'switch':
+        case 'light':
+        case 'fan':
+        case 'remote':
+        case 'siren':
+        case 'update':
+        case 'humidifier':
+        case 'calendar':
+          states = ['on', 'off'];
+          break;
+        case 'button':
+        case 'scene':
+          states = ['unknown'];
+          break;
+        case 'camera':
+          states = ['idle', 'recording', 'streaming'];
+          break;
+        case 'climate':
+          states = ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only', 'heat_cool'];
+          break;
+        case 'cover':
+        case 'valve':
+          states = ['open', 'closed', 'opening', 'closing'];
+          break;
+        case 'device_tracker':
+        case 'person':
+          states = ['home', 'not_home'];
+          break;
+        case 'lawn_mower':
+          states = ['mowing', 'docked', 'paused', 'error', 'returning', 'edging'];
+          break;
+        case 'lock':
+          states = ['locked', 'unlocked', 'locking', 'unlocking', 'jammed'];
+          break;
+        case 'media_player':
+          states = ['playing', 'paused', 'idle', 'standby', 'buffering', 'on', 'off'];
+          break;
+        case 'number':
+        case 'input_number': {
+          const min = attrs.min !== undefined ? String(attrs.min) : '0';
+          const max = attrs.max !== undefined ? String(attrs.max) : '100';
+          states = [min, max];
+          break;
+        }
+        case 'vacuum':
+          states = ['cleaning', 'docked', 'idle', 'returning', 'paused', 'error'];
+          break;
+        case 'water_heater':
+          states = ['off', 'eco', 'electric', 'gas', 'heat_pump', 'high_demand', 'performance'];
+          break;
+        case 'input_text':
+        case 'text':
+          states = [];
+          break;
+        default:
+          // Unknown domain: try to auto-detect from any array attribute that looks like a state list
+          for (const key of Object.keys(attrs)) {
+            if (Array.isArray(attrs[key]) && (key.endsWith('_modes') || key.endsWith('_list') || key.endsWith('_options') || key === 'options')) {
+              states = attrs[key].map(String);
+              break;
+            }
+          }
+          if (states.length === 0) states = ['on', 'off'];
+      }
     }
 
     const current = stateObj.state;
@@ -257,44 +320,54 @@ export class ChecklistCardEditor extends LitElement {
     if (!entityId || !attribute || !this.hass?.states[entityId]) return ['true', 'false', 'on', 'off'];
 
     const stateObj = this.hass.states[entityId];
-    let values: string[] = [];
+    const attrs = stateObj.attributes || {};
 
-    switch (attribute.toLowerCase()) {
-      case 'brightness':
-      case 'brightness_pct':
-        values = Array.from({ length: 11 }, (_, i) => String(i * 10));
-        break;
-      case 'color_temp':
-      case 'color_temp_kelvin':
-        values = Array.from({ length: 35 }, (_, i) => String(153 + i * 10));
-        break;
-      case 'hvac_mode':
-      case 'hvac_modes':
-        values = stateObj.attributes?.hvac_modes || ['off', 'heat', 'cool', 'auto'];
-        break;
-      case 'preset_mode':
-      case 'preset_modes':
-        values = stateObj.attributes?.preset_modes || [];
-        break;
-      case 'fan_mode':
-      case 'fan_modes':
-        values = stateObj.attributes?.fan_modes || [];
-        break;
-      case 'swing_mode':
-      case 'swing_modes':
-        values = stateObj.attributes?.swing_modes || [];
-        break;
-      default:
-        if (Array.isArray(stateObj.attributes?.[`${attribute}_options`])) {
-          values = stateObj.attributes[`${attribute}_options`];
-        } else if (typeof stateObj.attributes?.[attribute] === 'boolean') {
-          values = ['true', 'false'];
-        } else {
-          const current = stateObj.attributes?.[attribute];
-          if (current !== undefined) values = [String(current)];
-        }
+    // Dynamic option-list discovery: HA integrations expose valid values through
+    // attributes named with common suffixes. Check all variants before falling back.
+    const candidates = [
+      // exact plural (preset_mode → preset_modes, fan_mode → fan_modes)
+      attribute.endsWith('s') ? attribute : `${attribute}s`,
+      // _list suffix (operation_mode → operation_mode_list)
+      `${attribute}_list`,
+      // _options suffix (sound_mode → sound_mode_options)
+      `${attribute}_options`,
+    ];
+    for (const key of candidates) {
+      if (Array.isArray(attrs[key])) return [...new Set(attrs[key].map(String))];
     }
-    return [...new Set(values.map(v => String(v)))];
+
+    // If the attribute itself is an array (e.g. entity_id list), use its items
+    if (Array.isArray(attrs[attribute])) return [...new Set(attrs[attribute].map(String))];
+
+    // Special numeric attributes with well-known ranges
+    const attrLower = attribute.toLowerCase();
+    if (attrLower === 'brightness' || attrLower === 'brightness_pct') {
+      return Array.from({ length: 11 }, (_, i) => String(i * 10));
+    }
+    if (attrLower === 'color_temp' || attrLower === 'color_temp_kelvin') {
+      return Array.from({ length: 35 }, (_, i) => String(153 + i * 10));
+    }
+
+    // Boolean attribute
+    if (typeof attrs[attribute] === 'boolean') return ['true', 'false'];
+
+    // Numeric attribute: generate a range using min/max if available, else steps around current
+    if (typeof attrs[attribute] === 'number') {
+      const cur = attrs[attribute] as number;
+      const min = typeof attrs.min === 'number' ? attrs.min : 0;
+      const max = typeof attrs.max === 'number' ? attrs.max : 100;
+      const steps = 10;
+      const step = (max - min) / steps;
+      const range = Array.from({ length: steps + 1 }, (_, i) => String(Math.round(min + i * step)));
+      if (!range.includes(String(cur))) range.unshift(String(cur));
+      return [...new Set(range)];
+    }
+
+    // String attribute: return just the current value as the only suggestion
+    const current = attrs[attribute];
+    if (current !== undefined && current !== null) return [String(current)];
+
+    return [];
   }
 
   private _getPossibleAttributes(entityId: string): string[] {
@@ -352,17 +425,36 @@ export class ChecklistCardEditor extends LitElement {
             </select>
           </div>
 
-          <ha-textfield
-            label=${layout.mode === 'columns' ? localize(this.hass, 'max_items_col') : localize(this.hass, 'max_items_row')}
-            type="number"
-            min="1"
-            max="10"
-            .value=${String(layout.count || 1)}
-            @input=${(e: Event) => {
-              const val = parseInt((e.target as HTMLInputElement).value, 10);
-              if (!isNaN(val) && val >= 1) this._updateLayout({ count: val });
-            }}
-          ></ha-textfield>
+          ${layout.mode === 'rows' ? html`
+            <ha-textfield
+              label=${localize(this.hass, 'max_items_row')}
+              type="number"
+              min="1"
+              max="10"
+              .value=${String(layout.count || 1)}
+              @input=${(e: Event) => {
+                const val = parseInt((e.target as HTMLInputElement).value, 10);
+                if (!isNaN(val) && val >= 1) this._updateLayout({ count: val });
+              }}
+            ></ha-textfield>
+            <div class="json-hint">${localize(this.hass, 'layout_rows_hint')}</div>
+          ` : html`
+            <div class="select-wrapper">
+              <label>${localize(this.hass, 'max_items_col')}</label>
+              <select
+                .value=${String(layout.count || 1)}
+                @change=${(e: Event) => {
+                  const val = parseInt((e.target as HTMLSelectElement).value, 10);
+                  if (!isNaN(val)) this._updateLayout({ count: val });
+                }}
+              >
+                ${[1, 2, 3, 4].map(n => html`
+                  <option value=${n} ?selected=${(layout.count || 1) === n}>${n}</option>
+                `)}
+              </select>
+            </div>
+            <div class="json-hint">${localize(this.hass, 'layout_cols_hint')}</div>
+          `}
         </div>
 
         <div class="divider"></div>
@@ -456,6 +548,59 @@ export class ChecklistCardEditor extends LitElement {
                           </div>
                         </div>
 
+                        <div class="select-wrapper">
+                          <label>${localize(this.hass, 'attr_check')}</label>
+                          <select
+                            .value=${condition.attribute || ''}
+                            @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute', (e.target as HTMLSelectElement).value, e.target)}
+                          >
+                            <option value="" ?selected=${!condition.attribute}>${localize(this.hass, 'no_attr')}</option>
+                            ${this._getPossibleAttributes(check.entity).map(attr => html`
+                              <option value=${attr} ?selected=${condition.attribute === attr}>${attr}</option>
+                            `)}
+                          </select>
+                        </div>
+
+                        ${condition.attribute && condition.attribute.trim() !== '' ? html`
+                          <div class="select-wrapper">
+                            <label>${localize(this.hass, 'attr_val')}</label>
+                            <select
+                              .value=${condition.attribute_value || ''}
+                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute_value', (e.target as HTMLSelectElement).value, e.target)}
+                            >
+                              ${[...new Set([
+                                ...(condition.attribute_value ? [condition.attribute_value] : []),
+                                ...this._getPossibleAttributeValues(check.entity, condition.attribute),
+                              ])].map(val => html`
+                                <option value=${val} ?selected=${condition.attribute_value === val}>${val}</option>
+                              `)}
+                            </select>
+                          </div>
+                        ` : html`
+                          <div class="select-wrapper">
+                            <label>${localize(this.hass, 'ok_state')}</label>
+                            <select
+                              .value=${condition.state || 'on'}
+                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'state', (e.target as HTMLSelectElement).value, e.target)}
+                            >
+                              ${[...new Set([
+                                ...(condition.state ? [condition.state] : []),
+                                ...this._getPossibleStates(check.entity),
+                              ])].map(s => html`
+                                <option value=${s} ?selected=${condition.state === s}>${s}</option>
+                              `)}
+                            </select>
+                          </div>
+                        `}
+
+                        <ha-textfield
+                          label=${localize(this.hass, 'custom_fix')}
+                          .value=${condition.fix_service || ''}
+                          @input=${(e: Event) => this._updateCondition(index, condIdx, 'fix_service', (e.target as HTMLInputElement).value)}
+                        ></ha-textfield>
+                        <div class="json-hint">${localize(this.hass, 'custom_fix_hint')}</div>
+
+                        <div class="divider"></div>
                         <div class="prereq-title">${localize(this.hass, 'prereq_entity')}</div>
 
                         <ha-entity-picker
@@ -513,61 +658,6 @@ export class ChecklistCardEditor extends LitElement {
                             <div class="json-hint">${localize(this.hass, 'prereq_hint')}</div>
                           `}
                         ` : ''}
-
-                        <div class="divider"></div>
-                        <div class="prereq-title" style="color: var(--primary-text-color);">${localize(this.hass, 'check_condition')}</div>
-
-                        <div class="select-wrapper">
-                          <label>${localize(this.hass, 'attr_check')}</label>
-                          <select
-                            .value=${condition.attribute || ''}
-                            @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute', (e.target as HTMLSelectElement).value, e.target)}
-                          >
-                            <option value="" ?selected=${!condition.attribute}>${localize(this.hass, 'no_attr')}</option>
-                            ${this._getPossibleAttributes(check.entity).map(attr => html`
-                              <option value=${attr} ?selected=${condition.attribute === attr}>${attr}</option>
-                            `)}
-                          </select>
-                        </div>
-
-                        ${condition.attribute && condition.attribute.trim() !== '' ? html`
-                          <div class="select-wrapper">
-                            <label>${localize(this.hass, 'attr_val')}</label>
-                            <select
-                              .value=${condition.attribute_value || ''}
-                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute_value', (e.target as HTMLSelectElement).value, e.target)}
-                            >
-                              ${[...new Set([
-                                ...(condition.attribute_value ? [condition.attribute_value] : []),
-                                ...this._getPossibleAttributeValues(check.entity, condition.attribute),
-                              ])].map(val => html`
-                                <option value=${val} ?selected=${condition.attribute_value === val}>${val}</option>
-                              `)}
-                            </select>
-                          </div>
-                        ` : html`
-                          <div class="select-wrapper">
-                            <label>${localize(this.hass, 'ok_state')}</label>
-                            <select
-                              .value=${condition.state || 'on'}
-                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'state', (e.target as HTMLSelectElement).value, e.target)}
-                            >
-                              ${[...new Set([
-                                ...(condition.state ? [condition.state] : []),
-                                ...this._getPossibleStates(check.entity),
-                              ])].map(s => html`
-                                <option value=${s} ?selected=${condition.state === s}>${s}</option>
-                              `)}
-                            </select>
-                          </div>
-                        `}
-
-                        <ha-textfield
-                          label=${localize(this.hass, 'custom_fix')}
-                          .value=${condition.fix_service || ''}
-                          @input=${(e: Event) => this._updateCondition(index, condIdx, 'fix_service', (e.target as HTMLInputElement).value)}
-                        ></ha-textfield>
-                        <div class="json-hint">${localize(this.hass, 'custom_fix_hint')}</div>
                       </div>
                     `)}
 

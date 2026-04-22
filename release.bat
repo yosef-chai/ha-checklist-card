@@ -13,6 +13,7 @@ chcp 65001 >nul 2>&1
 set "REPO_DIR=%~dp0"
 set "BUMP_TYPE=%~1"
 set "RELEASE_MSG=%~2"
+set "AUTO_YES=%~3"
 set "DIST_FILE=dist\checklist-card.js"
 
 :: ── Colours (ANSI via PowerShell echo trick) ────────────────
@@ -113,7 +114,11 @@ if errorlevel 1 (
     echo %C_YELLOW%  Uncommitted changes detected:%C_RESET%
     git status --short
     echo.
-    set /p "CONFIRM=  Commit all changes before releasing? [Y/n]: "
+    if /i "%AUTO_YES%"=="-y" (
+        set "CONFIRM=Y"
+    ) else (
+        set /p "CONFIRM=  Commit all changes before releasing? [Y/n]: "
+    )
     if /i "!CONFIRM!"=="n" (
         call :fail "Aborted. Please commit or stash your changes first."
         pause
@@ -126,7 +131,11 @@ if errorlevel 1 (
 for /f %%B in ('git rev-parse --abbrev-ref HEAD') do set "CURRENT_BRANCH=%%B"
 if /i not "%CURRENT_BRANCH%"=="master" if /i not "%CURRENT_BRANCH%"=="main" (
     call :warn "You are on branch '%CURRENT_BRANCH%', not master/main."
-    set /p "CONFIRM=  Continue anyway? [y/N]: "
+    if /i "%AUTO_YES%"=="-y" (
+        set "CONFIRM=y"
+    ) else (
+        set /p "CONFIRM=  Continue anyway? [y/N]: "
+    )
     if /i not "!CONFIRM!"=="y" (
         call :fail "Aborted."
         pause
@@ -149,7 +158,7 @@ call :ok "Up to date with origin"
 :: ── 5. Read current version ──────────────────────────────────
 call :step "Reading current version from package.json..."
 
-for /f "tokens=2 delims=:, " %%V in ('findstr /C:"\"version\"" package.json') do (
+for /f "tokens=2 delims=:, " %%V in ('git show HEAD:package.json ^| findstr /C:"\"version\""') do (
     set "CURRENT_VERSION=%%~V"
     goto :version_found
 )
@@ -182,11 +191,15 @@ echo   %C_DIM%  %CURRENT_VERSION%  →  %C_RESET%%C_BOLD%%C_GREEN%%NEW_VERSION%%
 echo.
 
 :: Confirm
-set /p "CONFIRM=  Proceed with release %NEW_TAG%? [Y/n]: "
-if /i "%CONFIRM%"=="n" (
-    call :warn "Release cancelled by user."
-    pause
-    exit /b 0
+if /i "%AUTO_YES%"=="-y" (
+    echo   Auto-confirming release %NEW_TAG%...
+) else (
+    set /p "CONFIRM=  Proceed with release %NEW_TAG%? [Y/n]: "
+    if /i "!CONFIRM!"=="n" (
+        call :warn "Release cancelled by user."
+        pause
+        exit /b 0
+    )
 )
 echo.
 
@@ -238,9 +251,10 @@ call :ok "Built %DIST_FILE% (%DIST_KB% KB)"
 :: ── 10. Stage and commit ─────────────────────────────────────
 call :step "Staging changes..."
 
+git add -u
 git add package.json "%DIST_FILE%"
 if errorlevel 1 ( call :fail "git add failed" & pause & exit /b 1 )
-call :ok "Staged: package.json, %DIST_FILE%"
+call :ok "Staged all modified tracked files"
 
 :: Build commit message
 if "%RELEASE_MSG%"=="" (
@@ -304,5 +318,5 @@ echo   %C_DIM%Release:%C_RESET%     https://github.com/yosef-chai/ha-checklist-c
 echo.
 
 endlocal
-pause
+if /i not "%~3"=="-y" pause
 exit /b 0

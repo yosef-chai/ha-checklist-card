@@ -670,12 +670,23 @@ var Oe = {
 }), ze = o`
   :host {
     display: block;
+    /* Enable container queries so layout adapts to the card's own width,
+       not the viewport — critical for Lovelace grid where cards can be
+       narrow or wide regardless of screen size. */
+    container-type: inline-size;
     font-family: var(--primary-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+    /* Fill the full height of the grid cell in the sections view. */
+    height: 100%;
   }
 
   ha-card {
     padding: 16px;
     box-sizing: border-box;
+    /* Flex column so the check-list stretches to fill remaining card height
+       in the sections (grid) view while still growing naturally in masonry. */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .header {
@@ -750,7 +761,11 @@ var Oe = {
 
   .check-list {
     padding: 4px;
-    max-height: 65vh;
+    /* Grow to fill whatever height ha-card has (sections grid), and scroll
+       when content overflows. min-height: 0 lets a flex child shrink below
+       its intrinsic size so the parent's height constraint is respected. */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
   }
 
@@ -881,7 +896,10 @@ var Oe = {
     100% { transform: rotate(360deg); }
   }
 
-  @media (max-width: 450px) {
+  /* Container query: responds to the card's own width, not the viewport.
+     This fires correctly whether the card is narrow because of screen size
+     OR because it sits in a small grid column. */
+  @container (max-width: 450px) {
     .header { flex-direction: column; align-items: flex-start; }
     .fix-all-btn { width: 100%; margin-top: 8px; }
     .check-item { flex-direction: column; align-items: flex-start; gap: 16px; }
@@ -914,11 +932,13 @@ var Oe = {
 		show_ok: "Show OK entities?",
 		show_ok_yes: "Yes (Show all)",
 		show_ok_no: "No (Hide OK)",
-		layout_dir: "Layout direction",
-		layout_col: "Columns (Vertical scroll)",
-		layout_row: "Rows (Horizontal scroll)",
-		max_items_col: "Max items per row",
-		max_items_row: "Max items per column",
+		layout_dir: "Item arrangement",
+		layout_col: "Columns (vertical list)",
+		layout_row: "Rows (horizontal scroll)",
+		max_items_col: "Number of columns",
+		max_items_row: "Items per column",
+		layout_cols_hint: "The card will be displayed in a larger width automatically.",
+		layout_rows_hint: "Items scroll horizontally across the card",
 		entities_section: "Entities to check",
 		check_num: "Check ",
 		remove: "Remove",
@@ -973,11 +993,13 @@ var Oe = {
 		show_ok: "להציג ישויות במצב תקין?",
 		show_ok_yes: "כן (הצג הכל)",
 		show_ok_no: "לא (הסתר תקינים)",
-		layout_dir: "כיוון פריסה",
-		layout_col: "עמודות (גלילה אנכית)",
+		layout_dir: "סידור פריטים",
+		layout_col: "עמודות (רשימה אנכית)",
 		layout_row: "שורות (גלילה אופקית)",
-		max_items_col: "מספר מקסימלי של כרטיסים בשורה",
-		max_items_row: "מספר מקסימלי של כרטיסים בעמודה",
+		max_items_col: "מספר עמודות",
+		max_items_row: "פריטים בעמודה",
+		layout_cols_hint: "הכרטיס יוצג ברוחב גדול יותר אוטומטית",
+		layout_rows_hint: "הפריטים נגללים אופקית לאורך הכרטיס",
 		entities_section: "רשימת הישויות לבדיקה",
 		check_num: "בדיקה ",
 		remove: "הסר",
@@ -1094,6 +1116,38 @@ var Q = class extends V {
 	}
 	static getConfigElement() {
 		return document.createElement("checklist-card-editor");
+	}
+	getCardSize() {
+		let e = this._config?.checks?.length ?? 1, t = this._layoutCols(), n = Math.ceil(e / t);
+		return Math.max(2, Math.ceil(n * 1.2) + 2);
+	}
+	getGridOptions() {
+		let e = this._config?.checks?.length ?? 1, t = this._config?.layout ?? {
+			mode: "columns",
+			count: 1
+		};
+		if (t.mode === "rows") {
+			let n = Math.max(1, t.count || 1);
+			return {
+				columns: Math.min(12, Math.max(6, Math.ceil(e / n) * 2)),
+				rows: Math.max(3, Math.ceil(n * 1.3) + 2),
+				min_columns: 4,
+				max_columns: 12,
+				min_rows: 2
+			};
+		}
+		let n = this._layoutCols(), r = Math.ceil(e / n);
+		return {
+			columns: Math.min(12, n * 3),
+			rows: Math.max(3, Math.ceil(r * 1.3) + 2),
+			min_columns: Math.min(12, Math.max(2, n * 2)),
+			max_columns: 12,
+			min_rows: 2
+		};
+	}
+	_layoutCols() {
+		let e = this._config?.layout;
+		return e?.mode === "columns" ? Math.max(1, e.count || 1) : 1;
 	}
 	static getStubConfig() {
 		return {
@@ -1645,7 +1699,14 @@ var Ue = o`
 				...n,
 				entity: t || ""
 			};
-			return t && this.hass.states[t] && !i.name && (i.name = this.hass.states[t].attributes.friendly_name || t), i;
+			t && this.hass.states[t] && !i.name && (i.name = this.hass.states[t].attributes.friendly_name || t);
+			let a = this._getPossibleStates(t)[0] || "";
+			return i.conditions = (n.conditions || []).map((e) => ({
+				...e,
+				state: a,
+				attribute: "",
+				attribute_value: ""
+			})), i;
 		});
 		this._updateConfig({ checks: n });
 	}
@@ -1709,28 +1770,51 @@ var Ue = o`
 			"unavailable",
 			"unknown"
 		];
-		let t = this.hass.states[e], n = e.split(".")[0], r = [];
-		switch (n) {
-			case "light":
-			case "switch":
-			case "input_boolean":
-			case "fan":
+		let t = this.hass.states[e], n = e.split(".")[0], r = t.attributes || {}, i = [];
+		if (Array.isArray(r.options)) i = [...r.options];
+		else if (Array.isArray(r.hvac_modes)) i = [...r.hvac_modes];
+		else if (Array.isArray(r.operation_list)) i = [...r.operation_list];
+		else if (Array.isArray(r.state_list)) i = [...r.state_list];
+		else switch (n) {
+			case "alarm_control_panel":
+				i = [
+					"disarmed",
+					"armed_home",
+					"armed_away",
+					"armed_night",
+					"armed_vacation",
+					"armed_custom_bypass",
+					"pending",
+					"arming",
+					"disarming",
+					"triggered"
+				];
+				break;
 			case "binary_sensor":
-				r = ["on", "off"];
+			case "input_boolean":
+			case "switch":
+			case "light":
+			case "fan":
+			case "remote":
+			case "siren":
+			case "update":
+			case "humidifier":
+			case "calendar":
+				i = ["on", "off"];
 				break;
-			case "lock":
-				r = ["locked", "unlocked"];
+			case "button":
+			case "scene":
+				i = ["unknown"];
 				break;
-			case "cover":
-				r = [
-					"open",
-					"closed",
-					"opening",
-					"closing"
+			case "camera":
+				i = [
+					"idle",
+					"recording",
+					"streaming"
 				];
 				break;
 			case "climate":
-				r = t.attributes?.hvac_modes || [
+				i = [
 					"off",
 					"heat",
 					"cool",
@@ -1740,40 +1824,87 @@ var Ue = o`
 					"heat_cool"
 				];
 				break;
-			case "select":
-			case "input_select":
-				r = t.attributes?.options || [];
+			case "cover":
+			case "valve":
+				i = [
+					"open",
+					"closed",
+					"opening",
+					"closing"
+				];
 				break;
-			case "number":
-			case "input_number":
-				r = [
-					"0",
-					"50",
-					"100"
+			case "device_tracker":
+			case "person":
+				i = ["home", "not_home"];
+				break;
+			case "lawn_mower":
+				i = [
+					"mowing",
+					"docked",
+					"paused",
+					"error",
+					"returning",
+					"edging"
+				];
+				break;
+			case "lock":
+				i = [
+					"locked",
+					"unlocked",
+					"locking",
+					"unlocking",
+					"jammed"
 				];
 				break;
 			case "media_player":
-				r = [
+				i = [
 					"playing",
 					"paused",
 					"idle",
-					"off",
-					"on"
+					"standby",
+					"buffering",
+					"on",
+					"off"
 				];
 				break;
+			case "number":
+			case "input_number":
+				i = [r.min === void 0 ? "0" : String(r.min), r.max === void 0 ? "100" : String(r.max)];
+				break;
 			case "vacuum":
-				r = [
+				i = [
 					"cleaning",
 					"docked",
 					"idle",
 					"returning",
-					"paused"
+					"paused",
+					"error"
 				];
 				break;
-			default: r = ["on", "off"];
+			case "water_heater":
+				i = [
+					"off",
+					"eco",
+					"electric",
+					"gas",
+					"heat_pump",
+					"high_demand",
+					"performance"
+				];
+				break;
+			case "input_text":
+			case "text":
+				i = [];
+				break;
+			default:
+				for (let e of Object.keys(r)) if (Array.isArray(r[e]) && (e.endsWith("_modes") || e.endsWith("_list") || e.endsWith("_options") || e === "options")) {
+					i = r[e].map(String);
+					break;
+				}
+				i.length === 0 && (i = ["on", "off"]);
 		}
-		let i = t.state;
-		return i && !r.includes(i) && r.unshift(i), r.includes("unavailable") || r.push("unavailable"), r.includes("unknown") || r.push("unknown"), [...new Set(r)];
+		let a = t.state;
+		return a && !i.includes(a) && i.unshift(a), i.includes("unavailable") || i.push("unavailable"), i.includes("unknown") || i.push("unknown"), [...new Set(i)];
 	}
 	_getPossibleAttributeValues(e, t) {
 		if (!e || !t || !this.hass?.states[e]) return [
@@ -1782,45 +1913,23 @@ var Ue = o`
 			"on",
 			"off"
 		];
-		let n = this.hass.states[e], r = [];
-		switch (t.toLowerCase()) {
-			case "brightness":
-			case "brightness_pct":
-				r = Array.from({ length: 11 }, (e, t) => String(t * 10));
-				break;
-			case "color_temp":
-			case "color_temp_kelvin":
-				r = Array.from({ length: 35 }, (e, t) => String(153 + t * 10));
-				break;
-			case "hvac_mode":
-			case "hvac_modes":
-				r = n.attributes?.hvac_modes || [
-					"off",
-					"heat",
-					"cool",
-					"auto"
-				];
-				break;
-			case "preset_mode":
-			case "preset_modes":
-				r = n.attributes?.preset_modes || [];
-				break;
-			case "fan_mode":
-			case "fan_modes":
-				r = n.attributes?.fan_modes || [];
-				break;
-			case "swing_mode":
-			case "swing_modes":
-				r = n.attributes?.swing_modes || [];
-				break;
-			default: if (Array.isArray(n.attributes?.[`${t}_options`])) r = n.attributes[`${t}_options`];
-			else if (typeof n.attributes?.[t] == "boolean") r = ["true", "false"];
-			else {
-				let e = n.attributes?.[t];
-				e !== void 0 && (r = [String(e)]);
-			}
+		let n = this.hass.states[e].attributes || {}, r = [
+			t.endsWith("s") ? t : `${t}s`,
+			`${t}_list`,
+			`${t}_options`
+		];
+		for (let e of r) if (Array.isArray(n[e])) return [...new Set(n[e].map(String))];
+		if (Array.isArray(n[t])) return [...new Set(n[t].map(String))];
+		let i = t.toLowerCase();
+		if (i === "brightness" || i === "brightness_pct") return Array.from({ length: 11 }, (e, t) => String(t * 10));
+		if (i === "color_temp" || i === "color_temp_kelvin") return Array.from({ length: 35 }, (e, t) => String(153 + t * 10));
+		if (typeof n[t] == "boolean") return ["true", "false"];
+		if (typeof n[t] == "number") {
+			let e = n[t], r = typeof n.min == "number" ? n.min : 0, i = ((typeof n.max == "number" ? n.max : 100) - r) / 10, a = Array.from({ length: 11 }, (e, t) => String(Math.round(r + t * i)));
+			return a.includes(String(e)) || a.unshift(String(e)), [...new Set(a)];
 		}
-		return [...new Set(r.map((e) => String(e)))];
+		let a = n[t];
+		return a == null ? [] : [String(a)];
 	}
 	_getPossibleAttributes(e) {
 		return !e || !this.hass?.states[e]?.attributes ? [] : Object.keys(this.hass.states[e].attributes).sort();
@@ -1867,17 +1976,41 @@ var Ue = o`
             </select>
           </div>
 
-          <ha-textfield
-            label=${t.mode === "columns" ? J(this.hass, "max_items_col") : J(this.hass, "max_items_row")}
-            type="number"
-            min="1"
-            max="10"
-            .value=${String(t.count || 1)}
-            @input=${(e) => {
+          ${t.mode === "rows" ? M`
+            <ha-textfield
+              label=${J(this.hass, "max_items_row")}
+              type="number"
+              min="1"
+              max="10"
+              .value=${String(t.count || 1)}
+              @input=${(e) => {
 			let t = parseInt(e.target.value, 10);
 			!isNaN(t) && t >= 1 && this._updateLayout({ count: t });
 		}}
-          ></ha-textfield>
+            ></ha-textfield>
+            <div class="json-hint">${J(this.hass, "layout_rows_hint")}</div>
+          ` : M`
+            <div class="select-wrapper">
+              <label>${J(this.hass, "max_items_col")}</label>
+              <select
+                .value=${String(t.count || 1)}
+                @change=${(e) => {
+			let t = parseInt(e.target.value, 10);
+			isNaN(t) || this._updateLayout({ count: t });
+		}}
+              >
+                ${[
+			1,
+			2,
+			3,
+			4
+		].map((e) => M`
+                  <option value=${e} ?selected=${(t.count || 1) === e}>${e}</option>
+                `)}
+              </select>
+            </div>
+            <div class="json-hint">${J(this.hass, "layout_cols_hint")}</div>
+          `}
         </div>
 
         <div class="divider"></div>
@@ -1973,6 +2106,53 @@ var Ue = o`
                           </div>
                         </div>
 
+                        <div class="select-wrapper">
+                          <label>${J(this.hass, "attr_check")}</label>
+                          <select
+                            .value=${e.attribute || ""}
+                            @change=${(e) => this._updateCondition(n, r, "attribute", e.target.value, e.target)}
+                          >
+                            <option value="" ?selected=${!e.attribute}>${J(this.hass, "no_attr")}</option>
+                            ${this._getPossibleAttributes(t.entity).map((t) => M`
+                              <option value=${t} ?selected=${e.attribute === t}>${t}</option>
+                            `)}
+                          </select>
+                        </div>
+
+                        ${e.attribute && e.attribute.trim() !== "" ? M`
+                          <div class="select-wrapper">
+                            <label>${J(this.hass, "attr_val")}</label>
+                            <select
+                              .value=${e.attribute_value || ""}
+                              @change=${(e) => this._updateCondition(n, r, "attribute_value", e.target.value, e.target)}
+                            >
+                              ${[...new Set([...e.attribute_value ? [e.attribute_value] : [], ...this._getPossibleAttributeValues(t.entity, e.attribute)])].map((t) => M`
+                                <option value=${t} ?selected=${e.attribute_value === t}>${t}</option>
+                              `)}
+                            </select>
+                          </div>
+                        ` : M`
+                          <div class="select-wrapper">
+                            <label>${J(this.hass, "ok_state")}</label>
+                            <select
+                              .value=${e.state || "on"}
+                              @change=${(e) => this._updateCondition(n, r, "state", e.target.value, e.target)}
+                            >
+                              ${[...new Set([...e.state ? [e.state] : [], ...this._getPossibleStates(t.entity)])].map((t) => M`
+                                <option value=${t} ?selected=${e.state === t}>${t}</option>
+                              `)}
+                            </select>
+                          </div>
+                        `}
+
+                        <ha-textfield
+                          label=${J(this.hass, "custom_fix")}
+                          .value=${e.fix_service || ""}
+                          @input=${(e) => this._updateCondition(n, r, "fix_service", e.target.value)}
+                        ></ha-textfield>
+                        <div class="json-hint">${J(this.hass, "custom_fix_hint")}</div>
+
+                        <div class="divider"></div>
                         <div class="prereq-title">${J(this.hass, "prereq_entity")}</div>
 
                         <ha-entity-picker
@@ -2024,55 +2204,6 @@ var Ue = o`
                             <div class="json-hint">${J(this.hass, "prereq_hint")}</div>
                           `}
                         ` : ""}
-
-                        <div class="divider"></div>
-                        <div class="prereq-title" style="color: var(--primary-text-color);">${J(this.hass, "check_condition")}</div>
-
-                        <div class="select-wrapper">
-                          <label>${J(this.hass, "attr_check")}</label>
-                          <select
-                            .value=${e.attribute || ""}
-                            @change=${(e) => this._updateCondition(n, r, "attribute", e.target.value, e.target)}
-                          >
-                            <option value="" ?selected=${!e.attribute}>${J(this.hass, "no_attr")}</option>
-                            ${this._getPossibleAttributes(t.entity).map((t) => M`
-                              <option value=${t} ?selected=${e.attribute === t}>${t}</option>
-                            `)}
-                          </select>
-                        </div>
-
-                        ${e.attribute && e.attribute.trim() !== "" ? M`
-                          <div class="select-wrapper">
-                            <label>${J(this.hass, "attr_val")}</label>
-                            <select
-                              .value=${e.attribute_value || ""}
-                              @change=${(e) => this._updateCondition(n, r, "attribute_value", e.target.value, e.target)}
-                            >
-                              ${[...new Set([...e.attribute_value ? [e.attribute_value] : [], ...this._getPossibleAttributeValues(t.entity, e.attribute)])].map((t) => M`
-                                <option value=${t} ?selected=${e.attribute_value === t}>${t}</option>
-                              `)}
-                            </select>
-                          </div>
-                        ` : M`
-                          <div class="select-wrapper">
-                            <label>${J(this.hass, "ok_state")}</label>
-                            <select
-                              .value=${e.state || "on"}
-                              @change=${(e) => this._updateCondition(n, r, "state", e.target.value, e.target)}
-                            >
-                              ${[...new Set([...e.state ? [e.state] : [], ...this._getPossibleStates(t.entity)])].map((t) => M`
-                                <option value=${t} ?selected=${e.state === t}>${t}</option>
-                              `)}
-                            </select>
-                          </div>
-                        `}
-
-                        <ha-textfield
-                          label=${J(this.hass, "custom_fix")}
-                          .value=${e.fix_service || ""}
-                          @input=${(e) => this._updateCondition(n, r, "fix_service", e.target.value)}
-                        ></ha-textfield>
-                        <div class="json-hint">${J(this.hass, "custom_fix_hint")}</div>
                       </div>
                     `)}
 

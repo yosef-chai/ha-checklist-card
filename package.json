@@ -1,11 +1,16 @@
 {
   "name": "ha-checklist-card",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "main": "index.js",
   "scripts": {
     "build": "tsc && vite build"
   },
-  "keywords": ["home-assistant", "lovelace", "card", "checklist"],
+  "keywords": [
+    "home-assistant",
+    "lovelace",
+    "card",
+    "checklist"
+  ],
   "author": "yosef-chai",
   "license": "MIT",
   "description": "A customizable checklist card for Home Assistant Lovelace dashboards",

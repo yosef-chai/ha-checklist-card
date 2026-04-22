@@ -94,6 +94,59 @@ export class ChecklistCard extends LitElement {
   }
 
   /**
+   * Returns the card height in Lovelace masonry grid units (1 unit ≈ 50 px).
+   * Accounts for the internal layout so a multi-column arrangement correctly
+   * reports a shorter card than a single-column one with the same item count.
+   */
+  getCardSize(): number {
+    const checks = this._config?.checks?.length ?? 1;
+    const cols = this._layoutCols();
+    const itemsPerCol = Math.ceil(checks / cols);
+    // Header ≈ 80 px (1.6 units) + each item ≈ 60 px (1.2 units) + padding
+    return Math.max(2, Math.ceil(itemsPerCol * 1.2) + 2);
+  }
+
+  /**
+   * Returns default sizing constraints for the Lovelace sections (grid) view.
+   * Columns and rows are derived from the internal layout configuration so
+   * the suggested card footprint matches what the user configured:
+   * - More check-columns → wider suggested card (each needs ≈ 3 grid columns)
+   * - Fewer items per column → shorter suggested card
+   * - Rows mode → wider card (items scroll horizontally)
+   */
+  getGridOptions() {
+    const checks = this._config?.checks?.length ?? 1;
+    const layout = this._config?.layout ?? { mode: 'columns', count: 1 };
+
+    if (layout.mode === 'rows') {
+      const rowCount = Math.max(1, layout.count || 1);
+      return {
+        columns: Math.min(12, Math.max(6, Math.ceil(checks / rowCount) * 2)),
+        rows: Math.max(3, Math.ceil(rowCount * 1.3) + 2),
+        min_columns: 4,
+        max_columns: 12,
+        min_rows: 2,
+      };
+    }
+
+    const cols = this._layoutCols();
+    const itemsPerCol = Math.ceil(checks / cols);
+    return {
+      columns: Math.min(12, cols * 3),
+      rows: Math.max(3, Math.ceil(itemsPerCol * 1.3) + 2),
+      min_columns: Math.min(12, Math.max(2, cols * 2)),
+      max_columns: 12,
+      min_rows: 2,
+    };
+  }
+
+  /** Number of check-item columns from the current layout config. */
+  private _layoutCols(): number {
+    const layout = this._config?.layout;
+    return layout?.mode === 'columns' ? Math.max(1, layout.count || 1) : 1;
+  }
+
+  /**
    * Returns a localised default configuration used when the card is added
    * from the card picker without any prior configuration. The title is
    * resolved via {@link localizeStatic} so it matches the browser locale

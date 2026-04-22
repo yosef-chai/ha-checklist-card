@@ -12,12 +12,23 @@ import { css } from 'lit';
 export const cardStyles = css`
   :host {
     display: block;
+    /* Enable container queries so layout adapts to the card's own width,
+       not the viewport — critical for Lovelace grid where cards can be
+       narrow or wide regardless of screen size. */
+    container-type: inline-size;
     font-family: var(--primary-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
+    /* Fill the full height of the grid cell in the sections view. */
+    height: 100%;
   }
 
   ha-card {
     padding: 16px;
     box-sizing: border-box;
+    /* Flex column so the check-list stretches to fill remaining card height
+       in the sections (grid) view while still growing naturally in masonry. */
+    display: flex;
+    flex-direction: column;
+    height: 100%;
   }
 
   .header {
@@ -92,7 +103,11 @@ export const cardStyles = css`
 
   .check-list {
     padding: 4px;
-    max-height: 65vh;
+    /* Grow to fill whatever height ha-card has (sections grid), and scroll
+       when content overflows. min-height: 0 lets a flex child shrink below
+       its intrinsic size so the parent's height constraint is respected. */
+    flex: 1;
+    min-height: 0;
     overflow-y: auto;
   }
 
@@ -223,7 +238,10 @@ export const cardStyles = css`
     100% { transform: rotate(360deg); }
   }
 
-  @media (max-width: 450px) {
+  /* Container query: responds to the card's own width, not the viewport.
+     This fires correctly whether the card is narrow because of screen size
+     OR because it sits in a small grid column. */
+  @container (max-width: 450px) {
     .header { flex-direction: column; align-items: flex-start; }
     .fix-all-btn { width: 100%; margin-top: 8px; }
     .check-item { flex-direction: column; align-items: flex-start; gap: 16px; }
