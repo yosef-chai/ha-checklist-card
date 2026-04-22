@@ -93,12 +93,12 @@ checks:                                             # [Required] Array of entiti
     name: Air conditioner                           # Alternative display name for the card
     severity: warning                               # 'info' | 'warning' | 'critical' (affects Fix All order)
     icon: mdi:air-conditioner                       # Optional mdi icon override
-    color: '#1976d2'                              # Optional name color
+    color: '#1976d2'                                # Optional name color
     show_last_changed: true                         # Show relative last-changed time next to name
     conditions_mode: any                            # Condition evaluation logic: 'any' (OR) or 'all' (AND)
     default_condition_index: 0                      # In 'any' mode: which condition supplies the fix
     confirmation: true                              # Confirm before fixing (boolean or { text, exemptions: [{ user }] })
-    fix_action: { action: fix }                     # Default 'fix' runs the auto/custom fix; swap for navigate/url/toggle/...
+    fix_action: { action: fix }                     # Default 'fix' runs the auto/custom fix.
     conditions:                                     # [Required] Array of validation conditions
       - state: cool                                 # [Required] Expected valid state of the entity
       - state: heat                                 # Additional expected valid state of the entity
