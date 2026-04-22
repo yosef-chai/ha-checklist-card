@@ -2,6 +2,7 @@
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
 [![GitHub Release](https://img.shields.io/github/release/yosef-chai/ha-checklist-card.svg?style=for-the-badge)](https://github.com/yosef-chai/ha-checklist-card/releases)
+[![GitHub Downloads](https://img.shields.io/github/downloads/yosef-chai/ha-checklist-card/total?style=for-the-badge)](https://github.com/yosef-chai/ha-checklist-card/releases)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 [![Open your Home Assistant instance and add a custom repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=yosef-chai&repository=ha-checklist-card&category=lovelace)
@@ -14,16 +15,15 @@ A Lovelace custom card that monitors a list of entity states against expected va
 
 ## Features
 
-- **At-a-glance status** - green header when everything is OK, red when problems exist.
-- **Auto-fix** - infers the correct HA service for lights, switches, locks, covers, climate, selects, numbers, vacuums, and more.
-- **Custom fix services** - override the auto-fix with any service call and arbitrary service data.
-- **Multi-condition checks** - combine conditions with AND / OR logic per entity.
-- **Prerequisite guards** - skip a check automatically when a prerequisite entity is not in the expected state.
-- **Attribute checks** - evaluate any entity attribute instead of (or in addition to) its state.
-- **Flexible layout** - vertical columns or horizontal rows, configurable count.
-- **Hide OK items** - keep the card compact by showing only entities with problems.
-- **RTL support** - full right-to-left rendering for Hebrew and other RTL languages.
-- **Localized UI** - English and Hebrew built-in, easy to extend.
+- **Convenient display** - a neat and clear list of each entity and its status
+- **One-click fix** - fix a single item or click **Fix All** to remediate every problem at once, with a loading spinner while the service call is in progress
+- **Smart auto-fix** - the card infers the correct HA service for lights, switches, locks, covers, climate, selects, numbers, vacuums, and more
+- **Custom fix services** - override auto-fix with any service call and arbitrary service data
+- **Multi-condition checks** - combine conditions with AND / OR logic per entity
+- **Prerequisite guards** - skip a check automatically when a prerequisite entity is not in the expected state
+- **Flexible layout** - vertical columns or horizontal rows, configurable count; supports the Lovelace Sections (grid) view
+- **Hide OK items** - keep the card compact by showing only entities with problems
+- **Visual UI editor** - configure everything from the dashboard without writing YAML
 
 ---
 
@@ -83,7 +83,7 @@ title: Checklist                                    # Card title
 show_ok_items: true                                 # Display valid entities (true/false)
 layout:                                             # Card layout configuration
   mode: columns                                     # Display layout: 'columns' or 'rows'
-  count: 2                                          # Number of columns/rows (Range: 1-10)
+  count: 1                                          # Number of columns/rows (Range: 1-10)
 checks:                                             # [Required] Array of entities and checks
   - entity: climate.home                            # [Required] Entity identifier (entity_id)
     name: Air conditioner                           # Alternative display name for the card
@@ -125,14 +125,14 @@ checks:                                             # [Required] Array of entiti
 
 | Option | Type | Default | Description |
 |---|---|---|---|
-| `state` | string | **required** | Expected entity state (e.g. `"off"`, `"locked"`, `"heat"`) |
+| `state` | string | **required** | Expected entity state (e.g. `"off"`, `"locked"`, `"heat"`). Supports `states('entity_id')` to compare against another entity's live state |
 | `attribute` | string | - | Attribute name to check instead of the entity state |
-| `attribute_value` | string | same as `state` | Expected attribute value (when `attribute` is set) |
-| `fix_service` | string | auto | Custom fix service. Accepts `"domain.service"` or a JSON string: `'{"service":"light.turn_on","data":{"brightness":255}}'` |
+| `attribute_value` | string | same as `state` | Expected attribute value (when `attribute` is set). Also supports `states('entity_id')` |
+| `fix_service` | string | auto | Custom fix service. Simple form: `"domain.service"`. Extended form: `'{"service":"light.turn_on","data":{"brightness":255}}'` |
 | `prerequisite_entity` | string | - | Skip this condition unless the prerequisite entity meets its required state |
 | `prerequisite_state` | string | `"on"` | Required state of `prerequisite_entity`. Comma-separated for OR; prefix `!=` for negation (e.g. `"!=off"`) |
 | `prerequisite_attribute` | string | - | Attribute of `prerequisite_entity` to evaluate instead of its state |
-| `prerequisite_attribute_value` | string | - | Required value for `prerequisite_attribute` |
+| `prerequisite_attribute_value` | string | - | Required value for `prerequisite_attribute`. Supports comma-separated OR and `!=` negation |
 
 ### Layout options
 
@@ -145,44 +145,26 @@ checks:                                             # [Required] Array of entiti
 
 ## Supported domains (auto-fix)
 
-When no `fix_service` is specified, the card picks the correct service automatically:
+When no `fix_service` is specified the card picks the correct service automatically:
 
 | Domain | Fix service |
 |---|---|
 | `light`, `switch`, `input_boolean`, `fan` | `turn_on` / `turn_off` |
 | `lock` | `lock` / `unlock` |
 | `cover` | `open_cover` / `close_cover` |
-| `climate` | `set_hvac_mode` |
-| `select`, `input_select` | `select_option` |
-| `number`, `input_number` | `set_value` |
+| `climate` | `set_hvac_mode` (with `hvac_mode` in service data) |
+| `select`, `input_select` | `select_option` (with `option` in service data) |
+| `number`, `input_number` | `set_value` (with `value` in service data) |
 | `vacuum` | `start` / `return_to_base` |
 | everything else | `turn_on` / `turn_off` |
+
+> **Note:** For `light` entities with a `brightness` attribute condition the card automatically passes `brightness` in the service data when calling `light.turn_on`.
 
 ---
 
 ## Translations
 
-The card ships With multiple languages. The active language is detected automatically from the Home Assistant UI language setting.
-
-### Adding a new language
-
-1. Open `src/localize.ts`.
-2. Copy the `en` block and add a new top-level key using the [BCP 47 primary language subtag](https://www.iana.org/assignments/language-subtag-registry) (e.g. `"de"` for German, `"fr"` for French).
-3. Translate every string value.
-4. Run `npm run build` and submit a pull request.
-
-```ts
-// src/localize.ts - example adding German
-const TRANSLATIONS = {
-  en: { ... },
-  he: { ... },
-  de: {
-    card_name: 'Checklisten-Karte',
-    all_good: 'Alles in Ordnung!',
-    // ... all other keys
-  },
-};
-```
+The active language is detected automatically from the Home Assistant UI language setting.
 
 ### Currently supported languages
 
@@ -190,6 +172,25 @@ const TRANSLATIONS = {
 |---|---|
 | `en` | English |
 | `he` | Hebrew (עברית) - RTL |
+
+### Adding a new language
+
+1. Open [`src/localize.ts`](src/localize.ts).
+2. Copy the `en` block and add a new top-level key using the [BCP 47 primary language subtag](https://www.iana.org/assignments/language-subtag-registry) (e.g. `"de"` for German).
+3. Translate every string value.
+4. Run `npm run build` and submit a pull request.
+
+```ts
+const TRANSLATIONS = {
+  en: { /* ... */ },
+  he: { /* ... */ },
+  de: {
+    card_name: 'Checklisten-Karte',
+    all_good: 'Alles in Ordnung!',
+    // ... all other keys
+  },
+};
+```
 
 ---
 
@@ -207,16 +208,18 @@ npm run build
 
 The project uses **Lit 3** web components and **Vite** in library mode. TypeScript strict mode is enabled.
 
+### Project structure
+
 ```
 src/
-  index.ts                    # Entry point + window.customCards registration
-  types.ts                    # TypeScript interfaces and constants
-  localize.ts                 # i18n module
-  utils.ts                    # Pure utility functions
-  checklist-card.ts           # Main card component
-  checklist-card.styles.ts    # Card CSS
-  checklist-card-editor.ts    # Visual editor component
-  checklist-card-editor.styles.ts
+  index.ts                        Entry point + window.customCards registration
+  types.ts                        TypeScript interfaces and constants
+  localize.ts                     i18n module
+  utils.ts                        Pure utility functions
+  checklist-card.ts               Main card component
+  checklist-card.styles.ts        Card CSS
+  checklist-card-editor.ts        Visual editor component
+  checklist-card-editor.styles.ts Visual editor CSS
 ```
 
 ---
