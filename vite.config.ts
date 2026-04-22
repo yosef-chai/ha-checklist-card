@@ -9,6 +9,9 @@ export default defineConfig({
       fileName: () => 'checklist-card.js'
     },
     rollupOptions: {
+      output: {
+        inlineDynamicImports: true,
+      },
     }
   }
 });
