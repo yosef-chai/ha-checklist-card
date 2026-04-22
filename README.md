@@ -67,58 +67,36 @@ Or click the button above to open the repository directly in HACS.
 
 ```yaml
 type: custom:checklist-card
+title: Checklist
 checks:
-  - entity: switch.outdoor_lights
+  - entity: climate.home
+    name: Air conditioner
     conditions:
-      - state: "off"
-  - entity: lock.front_door
-    conditions:
-      - state: locked
+      - state: cool
 ```
 
 ### Full example
 
 ```yaml
-type: custom:checklist-card
-title: Evening Checklist
-show_ok_items: false
-layout:
-  mode: columns
-  count: 2
-checks:
-  - entity: switch.outdoor_lights
-    name: Outdoor Lights
-    conditions_mode: any
-    default_condition_index: 0
-    conditions:
-      - state: "off"
-
-  - entity: climate.living_room
-    name: Living Room AC
-    conditions:
-      - state: "off"
-
-  - entity: cover.garage
-    name: Garage Door
-    conditions:
-      - state: closed
-
-  - entity: light.bedroom
-    name: Bedroom Light
-    conditions_mode: any
-    default_condition_index: 0
-    conditions:
-      - state: "off"
-      - state: "on"
-        attribute: brightness
-        attribute_value: "20"
-
-  - entity: input_boolean.night_mode
-    name: Night Mode (only at night)
-    conditions:
-      - state: "on"
-        prerequisite_entity: sun.sun
-        prerequisite_state: below_horizon
+type: custom:checklist-card                         # [Required] Card type
+title: Checklist                                    # Card title
+show_ok_items: true                                 # Display valid entities (true/false)
+layout:                                             # Card layout configuration
+  mode: columns                                     # Display layout: 'columns' or 'rows'
+  count: 2                                          # Number of columns/rows (Range: 1-10)
+checks:                                             # [Required] Array of entities and checks
+  - entity: climate.home                            # [Required] Entity identifier (entity_id)
+    name: Air conditioner                           # Alternative display name for the card
+    conditions_mode: any                            # Condition evaluation logic: 'any' (OR) or 'all' (AND)
+    conditions:                                     # [Required] Array of validation conditions
+      - state: cool                                 # [Required] Expected valid state of the entity
+        prerequisite_attribute: state_class         # Required attribute for the prerequisite entity
+      - state: heat                                 # Additional expected valid state of the entity
+        attribute: fan_mode                         # Expected valid attribute of the entity
+        attribute_value: medium                     # Expected valid value of the attribute
+        prerequisite_entity: climate.home           # Prerequisite entity to execute the check
+        prerequisite_state: cool                    # Required state for the prerequisite entity
+    default_condition_index: 0                      # Index of the default condition to apply upon resolution (if 'any' is selected)
 ```
 
 ---
