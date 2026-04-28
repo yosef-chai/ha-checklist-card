@@ -6,6 +6,7 @@ import { mdiPalette, mdiSort, mdiEyeOutline } from '@mdi/js';
 
 import { editorStyles } from './checklist-card-editor.styles';
 import { localize } from './localize';
+import { preloadEditorComponents } from './preload-editor';
 import { ensureCheckId, makeEmptyCondition } from './utils';
 import type { HomeAssistant, CardConfig, CheckRule, StateCondition, LayoutConfig } from './types';
 
@@ -487,33 +488,26 @@ export class ChecklistCardEditor extends LitElement {
   render() {
     if (!this.hass || !this._config) return html``;
 
-    // Force HA to lazy-load editor-only pickers (ha-entity-picker, ha-icon-picker, ...)
-    // by asking a well-known built-in card for its config element. whenDefined() is
-    // used so we retry until the core card is actually registered — otherwise the
-    // editor can get stuck on the loading state if opened before HA finishes loading.
+    // The card's static getConfigElement() preloads HA pickers before the editor
+    // mounts, so this branch is normally skipped. It remains as a safety net for
+    // edge cases (e.g. the editor element being constructed directly) where the
+    // preload hasn't completed by the time render() runs.
     if (!this._pickersReady) {
-      if (!this._pickerLoadStarted) {
-        this._pickerLoadStarted = true;
-        (async () => {
-          try {
-            await customElements.whenDefined('hui-entities-card');
-            const builtin = customElements.get('hui-entities-card') as any;
-            if (builtin?.getConfigElement) {
-              await builtin.getConfigElement();
-            }
-          } catch (e) {
-            console.warn('checklist-card: failed to preload editor pickers', e);
-          } finally {
-            this._pickersReady = true;
-          }
-        })();
+      const ready = !!customElements.get('ha-form') && !!customElements.get('ha-entity-picker');
+      if (ready) {
+        this._pickersReady = true;
+      } else {
+        if (!this._pickerLoadStarted) {
+          this._pickerLoadStarted = true;
+          preloadEditorComponents().finally(() => { this._pickersReady = true; });
+        }
+        return html`
+          <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
+            <ha-circular-progress indeterminate></ha-circular-progress>
+            <div style="margin-top: 16px;">${localize(this.hass, 'loading')}</div>
+          </div>
+        `;
       }
-      return html`
-        <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
-          <ha-circular-progress indeterminate></ha-circular-progress>
-          <div style="margin-top: 16px;">${localize(this.hass, 'loading')}</div>
-        </div>
-      `;
     }
 
     const checks = this._config.checks || [];

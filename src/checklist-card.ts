@@ -5,9 +5,11 @@ import { repeat } from 'lit/directives/repeat.js';
 import { cardStyles } from './checklist-card.styles';
 import { localize, localizeStatic } from './localize';
 import { ensureCheckId, getStandardServiceCall, ensureDefaults } from './utils';
-import { isRuleProblem, checkCondition, evaluateExpectedState } from './conditions';
+import { isRuleProblem, checkCondition, evaluateExpectedState, STATES_REF_PATTERN_GLOBAL } from './conditions';
 import type { HomeAssistant, CardConfig, CheckRule, StateCondition, SnoozeData } from './types';
 import { DELAY_BETWEEN_SERVICES } from './types';
+import { MarqueeController, renderMarqueeBody } from './marquee-controller';
+import { preloadEditorComponents, schedulePreloadEditorComponents } from './preload-editor';
 import './checklist-card-item';
 
 /**
@@ -29,6 +31,8 @@ export class ChecklistCard extends LitElement {
   @state() private _snoozeData: SnoozeData = {};
   @state() private _snoozeDialogRule: CheckRule | null = null;
   @state() private _customSnoozeHours = '';
+  @state() private _isTitleOverflowing = false;
+  @state() private _isSubtitleOverflowing = false;
   private _problemIds: Set<string> = new Set();
   private _snoozedIds: Set<string> = new Set();
   private _checksToDisplay: CheckRule[] = [];
@@ -36,11 +40,23 @@ export class ChecklistCard extends LitElement {
   private _watchedEntityIds: string[] = [];
   private _snoozeTimer: number | null = null;
   private _snoozeDataLoaded = false;
+  private _marquee = new MarqueeController(this, [
+    { parent: '.title', setOverflow: (v) => { this._isTitleOverflowing = v; } },
+    { parent: '.subtitle', setOverflow: (v) => { this._isSubtitleOverflowing = v; } },
+  ]);
 
   static styles = cardStyles;
 
-  static getConfigElement() {
-    return import('./checklist-card-editor').then(() => document.createElement('checklist-card-editor'));
+  static async getConfigElement() {
+    // Preload HA's editor-only components (ha-form, ha-entity-picker, ha-icon-picker, ...)
+    // BEFORE returning the editor element — otherwise the editor mounts first and has to
+    // show a "loading" placeholder while the pickers register, which flashes briefly on open.
+    // HA awaits this promise, so any work done here happens behind HA's own dialog spinner.
+    await Promise.all([
+      import('./checklist-card-editor'),
+      preloadEditorComponents(),
+    ]);
+    return document.createElement('checklist-card-editor');
   }
 
   getCardSize(): number {
@@ -109,20 +125,44 @@ export class ChecklistCard extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    this._snoozeTimer = window.setInterval(() => {
-      // Re-derive snooze state so expired snoozes are cleared from the UI
-      this._snoozedIds = this._calculateSnoozedIds();
-      this._problemIds = this._calculateProblemIds();
-      this.requestUpdate();
-    }, 60_000);
+    this._scheduleNextSnoozeExpiry();
+    // Warm up HA's editor components (ha-form, ha-entity-picker, ...) during
+    // idle time so opening the visual editor is instant instead of waiting
+    // for HA to lazy-load them on first open.
+    schedulePreloadEditorComponents();
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    this._clearSnoozeTimer();
+  }
+
+  private _clearSnoozeTimer() {
     if (this._snoozeTimer !== null) {
-      clearInterval(this._snoozeTimer);
+      clearTimeout(this._snoozeTimer);
       this._snoozeTimer = null;
     }
+  }
+
+  // Wake up exactly when the next snooze expires instead of polling every minute.
+  // Keeps the event loop quiet when nothing is snoozed.
+  private _scheduleNextSnoozeExpiry() {
+    this._clearSnoozeTimer();
+    const now = Date.now();
+    let nextExpiry = Infinity;
+    for (const expiry of Object.values(this._snoozeData)) {
+      if (expiry > now && expiry < nextExpiry) nextExpiry = expiry;
+    }
+    if (!isFinite(nextExpiry)) return;
+    // Cap at the 32-bit setTimeout limit; anything longer re-schedules on the next firing.
+    const delay = Math.min(nextExpiry - now + 50, 2_147_483_000);
+    this._snoozeTimer = window.setTimeout(() => {
+      this._snoozeTimer = null;
+      this._snoozedIds = this._calculateSnoozedIds();
+      this._problemIds = this._calculateProblemIds();
+      this.requestUpdate();
+      this._scheduleNextSnoozeExpiry();
+    }, Math.max(0, delay));
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -135,37 +175,7 @@ export class ChecklistCard extends LitElement {
     this.setAttribute('dir', dir);
     const marqueeEnabled = this._config?.text_mode === 'scroll';
     this.classList.toggle('marquee-enabled', marqueeEnabled);
-    this._checkHeaderOverflow();
-  }
-
-  private _checkHeaderOverflow() {
-    const root = this.shadowRoot;
-    if (!root) return;
-    const marqueeEnabled = this._config?.text_mode === 'scroll';
-    const elements = root.querySelectorAll('.title, .subtitle');
-    elements.forEach(el => {
-      const htmlEl = el as HTMLElement;
-      const inners = htmlEl.querySelectorAll('.marquee-inner');
-      if (inners.length > 1) {
-        for (let i = 1; i < inners.length; i++) inners[i].remove();
-      }
-      const firstInner = htmlEl.querySelector('.marquee-inner') as HTMLElement;
-      if (firstInner) delete firstInner.dataset.duplicated;
-      htmlEl.classList.remove('overflowing');
-
-      void htmlEl.offsetWidth;
-      const isOverflowing = htmlEl.scrollWidth > htmlEl.clientWidth;
-
-      if (isOverflowing && marqueeEnabled) {
-        htmlEl.classList.add('overflowing');
-        if (firstInner && !firstInner.dataset.duplicated) {
-          firstInner.dataset.duplicated = 'true';
-          const clone = firstInner.cloneNode(true) as HTMLElement;
-          clone.removeAttribute('data-duplicated');
-          htmlEl.appendChild(clone);
-        }
-      }
-    });
+    // MarqueeController re-measures via hostUpdated() automatically.
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -196,16 +206,20 @@ export class ChecklistCard extends LitElement {
       this._problemIds = this._calculateProblemIds();
       this._checksToDisplay = this._computeChecksToDisplay();
     }
+
+    // Re-aim the timer at the soonest expiry whenever the snooze map changes.
+    if (changedProps.has('_snoozeData')) {
+      this._scheduleNextSnoozeExpiry();
+    }
   }
 
   private _collectWatchedEntityIds(): string[] {
     const ids = new Set<string>();
-    const statesPattern = /states\(['"]([^'"]+)['"]\)/g;
     const collectFromTemplate = (val: string | undefined) => {
       if (!val || !val.includes('states(')) return;
       let m: RegExpExecArray | null;
-      statesPattern.lastIndex = 0;
-      while ((m = statesPattern.exec(val)) !== null) {
+      STATES_REF_PATTERN_GLOBAL.lastIndex = 0;
+      while ((m = STATES_REF_PATTERN_GLOBAL.exec(val)) !== null) {
         if (m[1]) ids.add(m[1]);
       }
     };
@@ -523,17 +537,8 @@ export class ChecklistCard extends LitElement {
               <ha-icon icon="${hasProblems ? 'mdi:alert' : 'mdi:check-circle'}"></ha-icon>
             </span>
             <div>
-              <div class="title"><span class="marquee-inner">${this._config.title || localize(this.hass, 'title')}</span></div>
-              <div class="subtitle" aria-live="polite">
-                <span class="marquee-inner">${hasProblems
-        ? localize(this.hass, 'problems_found', { count: problemCount })
-        : localize(this.hass, 'all_good')}${snoozedCount > 0 ? html`
-                  <span class="snooze-count-badge">
-                    <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
-                    ${snoozedCount}
-                  </span>
-                ` : ''}</span>
-              </div>
+              ${this._renderHeaderTitle()}
+              ${this._renderHeaderSubtitle(hasProblems, problemCount, snoozedCount)}
             </div>
           </div>
 
@@ -616,6 +621,35 @@ export class ChecklistCard extends LitElement {
           </mwc-button>
         </ha-dialog>
       ` : ''}
+    `;
+  }
+
+  private _renderHeaderTitle() {
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
+    const showMarquee = this._isTitleOverflowing && marqueeEnabled;
+    const content = this._config.title || localize(this.hass, 'title');
+    return html`
+      <div class="title ${showMarquee ? 'overflowing' : ''}">
+        ${renderMarqueeBody(content, showMarquee)}
+      </div>
+    `;
+  }
+
+  private _renderHeaderSubtitle(hasProblems: boolean, problemCount: number, snoozedCount: number) {
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
+    const showMarquee = this._isSubtitleOverflowing && marqueeEnabled;
+    const content = html`${hasProblems
+      ? localize(this.hass, 'problems_found', { count: problemCount })
+      : localize(this.hass, 'all_good')}${snoozedCount > 0 ? html`
+        <span class="snooze-count-badge">
+          <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
+          ${snoozedCount}
+        </span>
+      ` : ''}`;
+    return html`
+      <div class="subtitle ${showMarquee ? 'overflowing' : ''}" aria-live="polite">
+        ${renderMarqueeBody(content, showMarquee)}
+      </div>
     `;
   }
 

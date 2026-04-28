@@ -6,21 +6,24 @@ export interface ActionHandlerOptions {
   hasDoubleClick?: boolean;
 }
 
+// Per-element state kept off the DOM: WeakMap entries are GC'd automatically
+// when the host element is removed, so we don't pollute elements with `__action*` fields.
+const elementOptions = new WeakMap<HTMLElement, ActionHandlerOptions | undefined>();
+
 class ActionHandler extends HTMLElement {
   public holdTime = 500;
   public bind(element: HTMLElement, options?: ActionHandlerOptions) {
-    if ((element as any).__actionHandlerBound) {
-      (element as any).__actionHandlerOptions = options;
+    if (elementOptions.has(element)) {
+      elementOptions.set(element, options);
       return;
     }
-    (element as any).__actionHandlerBound = true;
-    (element as any).__actionHandlerOptions = options;
+    elementOptions.set(element, options);
 
     let timer: number | undefined;
     let held = false;
     let dblClickTimeout: number | undefined;
 
-    const getOptions = () => (element as any).__actionHandlerOptions as ActionHandlerOptions | undefined;
+    const getOptions = () => elementOptions.get(element);
 
     const clear = () => {
       if (timer) {

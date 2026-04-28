@@ -80,30 +80,59 @@ export const cardStyles = css`
     position: relative;
   }
 
+  /* Marquee: a track holds two identical inner spans side-by-side and slides
+     by exactly half its own width, so the second copy seamlessly takes the
+     place of the first. The trailing gap on each inner creates breathing
+     room between cycles. */
+  .marquee-track {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    will-change: transform;
+  }
+  .title.overflowing,
+  .subtitle.overflowing {
+    /* Hide the ellipsis once the text is scrolling — it would clip mid-glyph. */
+    text-overflow: clip;
+  }
   .title.overflowing .marquee-inner,
   .subtitle.overflowing .marquee-inner {
-    display: inline-block;
+    flex-shrink: 0;
     padding-inline-end: 2em;
   }
 
-  :host(.marquee-enabled) .title.overflowing .marquee-inner,
-  :host(.marquee-enabled) .subtitle.overflowing .marquee-inner {
-    animation: marquee-scroll 8s linear infinite;
+  :host(.marquee-enabled) .title.overflowing .marquee-track,
+  :host(.marquee-enabled) .subtitle.overflowing .marquee-track {
+    animation: marquee-scroll var(--marquee-duration, 12s) linear infinite;
   }
 
-  :host(.marquee-enabled[dir="rtl"]) .title.overflowing .marquee-inner,
-  :host(.marquee-enabled[dir="rtl"]) .subtitle.overflowing .marquee-inner {
-    animation: marquee-scroll-rtl 8s linear infinite;
+  :host(.marquee-enabled[dir="rtl"]) .title.overflowing .marquee-track,
+  :host(.marquee-enabled[dir="rtl"]) .subtitle.overflowing .marquee-track {
+    animation-name: marquee-scroll-rtl;
+  }
+
+  /* Pause when the user hovers/focuses, so the text can be read in full. */
+  .title.overflowing:hover .marquee-track,
+  .subtitle.overflowing:hover .marquee-track,
+  .title.overflowing:focus-within .marquee-track,
+  .subtitle.overflowing:focus-within .marquee-track {
+    animation-play-state: paused;
   }
 
   @keyframes marquee-scroll {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes marquee-scroll-rtl {
+    from { transform: translateX(0); }
+    to   { transform: translateX(50%); }
   }
 
-  @keyframes marquee-scroll-rtl {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(50%); }
+  @media (prefers-reduced-motion: reduce) {
+    .title.overflowing .marquee-track,
+    .subtitle.overflowing .marquee-track {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 
   .fix-all-btn {

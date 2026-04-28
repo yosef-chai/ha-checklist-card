@@ -1,9 +1,10 @@
-import { LitElement, html, css, PropertyValues, nothing } from 'lit';
-import { customElement, property } from 'lit/decorators.js';
+import { LitElement, html, css, PropertyValues } from 'lit';
+import { customElement, property, state } from 'lit/decorators.js';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { actionHandler } from './action-handler';
 import { localize } from './localize';
-import { evaluateExpectedState, checkCondition } from './conditions';
+import { evaluateExpectedState, checkCondition, STATES_REF_PATTERN_GLOBAL } from './conditions';
+import { MarqueeController, renderMarqueeBody } from './marquee-controller';
 import type { CheckRule, HomeAssistant, StateCondition } from './types';
 
 /**
@@ -26,6 +27,14 @@ export class ChecklistCardItem extends LitElement {
   @property({ type: Boolean }) public isSnoozed = false;
   @property({ type: Number }) public snoozeUntil: number | null = null;
   @property({ type: Boolean }) public marqueeEnabled = false;
+
+  @state() private _isTitleOverflowing = false;
+  @state() private _isStateOverflowing = false;
+
+  private _marquee = new MarqueeController(this, [
+    { parent: '.entity-name', setOverflow: (v) => { this._isTitleOverflowing = v; } },
+    { parent: '.entity-state', setOverflow: (v) => { this._isStateOverflowing = v; } },
+  ]);
 
   static styles = css`
     :host {
@@ -116,30 +125,55 @@ export class ChecklistCardItem extends LitElement {
       position: relative;
     }
 
+    /* See checklist-card.styles.ts for the design rationale; mirrored here
+       because shadow-DOM scoping forces each component to declare its own. */
+    .marquee-track {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      will-change: transform;
+    }
+    .entity-name.overflowing,
+    .entity-state.overflowing {
+      text-overflow: clip;
+    }
     .entity-name.overflowing .marquee-inner,
     .entity-state.overflowing .marquee-inner {
-      display: inline-block;
+      flex-shrink: 0;
       padding-inline-end: 2em;
     }
 
-    :host(.marquee-enabled) .entity-name.overflowing .marquee-inner,
-    :host(.marquee-enabled) .entity-state.overflowing .marquee-inner {
-      animation: marquee-scroll 8s linear infinite;
+    :host(.marquee-enabled) .entity-name.overflowing .marquee-track,
+    :host(.marquee-enabled) .entity-state.overflowing .marquee-track {
+      animation: marquee-scroll var(--marquee-duration, 12s) linear infinite;
     }
 
-    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-inner,
-    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-inner {
-      animation: marquee-scroll-rtl 8s linear infinite;
+    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-track,
+    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-track {
+      animation-name: marquee-scroll-rtl;
+    }
+
+    .entity-name.overflowing:hover .marquee-track,
+    .entity-state.overflowing:hover .marquee-track,
+    .entity-name.overflowing:focus-within .marquee-track,
+    .entity-state.overflowing:focus-within .marquee-track {
+      animation-play-state: paused;
     }
 
     @keyframes marquee-scroll {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-50%); }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-scroll-rtl {
+      from { transform: translateX(0); }
+      to   { transform: translateX(50%); }
     }
 
-    @keyframes marquee-scroll-rtl {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(50%); }
+    @media (prefers-reduced-motion: reduce) {
+      .entity-name.overflowing .marquee-track,
+      .entity-state.overflowing .marquee-track {
+        animation: none !important;
+        transform: none !important;
+      }
     }
 
     .fix-btn {
@@ -251,9 +285,12 @@ export class ChecklistCardItem extends LitElement {
     for (const cond of this.rule.conditions ?? []) {
       for (const val of [cond.state, cond.attribute_value, cond.prerequisite_state, cond.prerequisite_attribute_value]) {
         if (!val || !val.includes('states(')) continue;
-        const m = val.match(/states\(['"]([^'"]+)['"]\)/);
-        const id = m?.[1];
-        if (id && oldHass.states?.[id] !== this.hass.states?.[id]) return true;
+        STATES_REF_PATTERN_GLOBAL.lastIndex = 0;
+        let m: RegExpExecArray | null;
+        while ((m = STATES_REF_PATTERN_GLOBAL.exec(val)) !== null) {
+          const id = m[1];
+          if (id && oldHass.states?.[id] !== this.hass.states?.[id]) return true;
+        }
       }
     }
 
@@ -362,6 +399,30 @@ export class ChecklistCardItem extends LitElement {
     }));
   }
 
+  private _renderTitleSpan(displayName: string) {
+    const showMarquee = this._isTitleOverflowing && this.marqueeEnabled;
+    const content = html`${displayName}${this.rule.show_last_changed && this.stateObj ? html`
+      <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
+        <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
+      </span>
+    ` : ''}`;
+    const colorStyle = this.rule.color ? `color: ${this.rule.color}` : '';
+    return html`
+      <span class="entity-name ${showMarquee ? 'overflowing' : ''}" style=${colorStyle}>
+        ${renderMarqueeBody(content, showMarquee)}
+      </span>
+    `;
+  }
+
+  private _renderStateSpan(content: unknown) {
+    const showMarquee = this._isStateOverflowing && this.marqueeEnabled;
+    return html`
+      <span class="entity-state ${showMarquee ? 'overflowing' : ''}">
+        ${renderMarqueeBody(content, showMarquee)}
+      </span>
+    `;
+  }
+
   private _renderSingleConditionStatus(condition: StateCondition, currentState: string) {
     const expectedState = evaluateExpectedState(this.hass, condition.state);
     const hasAttr = !!condition.attribute?.trim();
@@ -369,11 +430,8 @@ export class ChecklistCardItem extends LitElement {
       ? evaluateExpectedState(this.hass, condition.attribute_value || condition.state)
       : null;
 
-    return html`
-      <span class="entity-state">
-        <span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} (${localize(this.hass, 'required')}: ${expectedState})${hasAttr ? html` · ${localize(this.hass, 'attribute')} ${condition.attribute}: ${this.stateObj?.attributes?.[condition.attribute!] ?? localize(this.hass, 'not_exists')} (${localize(this.hass, 'required')}: ${expectedAttrValue})` : ''}</span>
-      </span>
-    `;
+    const content = html`${localize(this.hass, 'current_state')}: ${currentState} (${localize(this.hass, 'required')}: ${expectedState})${hasAttr ? html` · ${localize(this.hass, 'attribute')} ${condition.attribute}: ${this.stateObj?.attributes?.[condition.attribute!] ?? localize(this.hass, 'not_exists')} (${localize(this.hass, 'required')}: ${expectedAttrValue})` : ''}`;
+    return this._renderStateSpan(content);
   }
 
   private _renderMultiConditionStatus(currentState: string) {
@@ -384,9 +442,8 @@ export class ChecklistCardItem extends LitElement {
         this.hass,
         this.rule.conditions[defaultIdx]?.state ?? this.rule.conditions[0]?.state
       );
-      return html`
-        <span class="entity-state"><span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'accepted_one_of')}: ${stateList} · ${localize(this.hass, 'fix_target')}: ${fixTarget}</span></span>
-      `;
+      const content = html`${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'accepted_one_of')}: ${stateList} · ${localize(this.hass, 'fix_target')}: ${fixTarget}`;
+      return this._renderStateSpan(content);
     }
 
     const failingConditions = this.stateObj
@@ -397,9 +454,8 @@ export class ChecklistCardItem extends LitElement {
       const attrPart = c.attribute?.trim() ? ` | ${c.attribute}=${evaluateExpectedState(this.hass, c.attribute_value || c.state)}` : '';
       return `${localize(this.hass, 'status')}=${s}${attrPart}`;
     }).join(' · ');
-    return html`
-      <span class="entity-state"><span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'required')}: ${failInfo}</span></span>
-    `;
+    const content = html`${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'required')}: ${failInfo}`;
+    return this._renderStateSpan(content);
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -407,41 +463,7 @@ export class ChecklistCardItem extends LitElement {
     const dir = this.hass?.translationMetadata?.dir ?? (this.hass?.language === 'he' ? 'rtl' : 'ltr');
     this.setAttribute('dir', dir);
     this.classList.toggle('marquee-enabled', this.marqueeEnabled);
-    this._checkOverflow();
-  }
-
-  private _checkOverflow() {
-    const root = this.shadowRoot;
-    if (!root) return;
-    const elements = root.querySelectorAll('.entity-name, .entity-state');
-    elements.forEach(el => {
-      const htmlEl = el as HTMLElement;
-
-      // 1. Clean up: remove duplicate spans and overflowing state
-      const inners = htmlEl.querySelectorAll('.marquee-inner');
-      if (inners.length > 1) {
-        for (let i = 1; i < inners.length; i++) inners[i].remove();
-      }
-      const firstInner = htmlEl.querySelector('.marquee-inner') as HTMLElement;
-      if (firstInner) delete firstInner.dataset.duplicated;
-      htmlEl.classList.remove('overflowing');
-
-      // 2. Force synchronous reflow so scrollWidth reflects the cleaned-up DOM
-      void htmlEl.offsetWidth;
-
-      // 3. Now measure accurately
-      const isOverflowing = htmlEl.scrollWidth > htmlEl.clientWidth;
-
-      if (isOverflowing && this.marqueeEnabled) {
-        htmlEl.classList.add('overflowing');
-        if (firstInner && !firstInner.dataset.duplicated) {
-          firstInner.dataset.duplicated = 'true';
-          const clone = firstInner.cloneNode(true) as HTMLElement;
-          clone.removeAttribute('data-duplicated');
-          htmlEl.appendChild(clone);
-        }
-      }
-    });
+    // MarqueeController re-measures via hostUpdated() automatically.
   }
 
   render() {
@@ -475,20 +497,12 @@ export class ChecklistCardItem extends LitElement {
       }
           </div>
           <div class="check-text">
-            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : nothing}>
-              <span class="marquee-inner">${displayName}${this.rule.show_last_changed && this.stateObj ? html`
-                <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
-                  <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
-                </span>
-              ` : ''}</span>
-            </span>
+            ${this._renderTitleSpan(displayName)}
             ${this.isProblem || this.isSnoozed
         ? isMulti
           ? this._renderMultiConditionStatus(currentState)
           : this._renderSingleConditionStatus(this.rule.conditions[0], currentState)
-        : html`<span class="entity-state">
-                  <span class="marquee-inner">${localize(this.hass, 'status')}: ${currentState}</span>
-                </span>`
+        : this._renderStateSpan(html`${localize(this.hass, 'status')}: ${currentState}`)
       }
           </div>
         </div>

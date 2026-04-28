@@ -263,82 +263,82 @@ var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n =
 //#endregion
 //#region node_modules/lit-html/lit-html.js
 function le(e, t) {
-	if (!O(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	if (!D(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
 	return fe === void 0 ? t : fe.createHTML(t);
 }
 function b(e, t, n = e, r) {
-	if (t === N) return t;
-	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = D(t) ? void 0 : t._$litDirective$;
+	if (t === M) return t;
+	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = E(t) ? void 0 : t._$litDirective$;
 	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = b(e, i._$AS(e, t.values), i, r)), t;
 }
-var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j, M, N, P, xe, F, Se, I, Ce, L, R, we, Te, Ee, De, Oe, ke, Ae, z = t((() => {
-	ue = globalThis, de = (e) => e, x = ue.trustedTypes, fe = x ? x.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, S = "$lit$", C = `lit$${Math.random().toFixed(9).slice(2)}$`, w = "?" + C, pe = `<${w}>`, T = document, E = () => T.createComment(""), D = (e) => e === null || typeof e != "object" && typeof e != "function", O = Array.isArray, me = (e) => O(e) || typeof e?.[Symbol.iterator] == "function", he = "[ 	\n\f\r]", k = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, _e = />/g, A = RegExp(`>|${he}(?:([^\\s"'>=/]+)(${he}*=${he}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ve = /'/g, ye = /"/g, be = /^(?:script|style|textarea|title)$/i, j = (e) => (t, ...n) => ({
+var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A, j, M, N, Se, P, Ce, F, we, I, L, Te, Ee, De, Oe, ke, Ae, je, R = t((() => {
+	ue = globalThis, de = (e) => e, x = ue.trustedTypes, fe = x ? x.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, pe = "$lit$", S = `lit$${Math.random().toFixed(9).slice(2)}$`, C = "?" + S, me = `<${C}>`, w = document, T = () => w.createComment(""), E = (e) => e === null || typeof e != "object" && typeof e != "function", D = Array.isArray, he = (e) => D(e) || typeof e?.[Symbol.iterator] == "function", ge = "[ 	\n\f\r]", O = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, _e = /-->/g, ve = />/g, k = RegExp(`>|${ge}(?:([^\\s"'>=/]+)(${ge}*=${ge}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ye = /'/g, be = /"/g, xe = /^(?:script|style|textarea|title)$/i, A = (e) => (t, ...n) => ({
 		_$litType$: e,
 		strings: t,
 		values: n
-	}), M = j(1), j(2), j(3), N = Symbol.for("lit-noChange"), P = Symbol.for("lit-nothing"), xe = /* @__PURE__ */ new WeakMap(), F = T.createTreeWalker(T, 129), Se = (e, t) => {
-		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = k;
+	}), j = A(1), A(2), A(3), M = Symbol.for("lit-noChange"), N = Symbol.for("lit-nothing"), Se = /* @__PURE__ */ new WeakMap(), P = w.createTreeWalker(w, 129), Ce = (e, t) => {
+		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = O;
 		for (let t = 0; t < n; t++) {
 			let n = e[t], s, c, l = -1, u = 0;
-			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === k ? c[1] === "!--" ? o = ge : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = A) : (be.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = A) : o = _e : o === A ? c[0] === ">" ? (o = i ?? k, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? A : c[3] === "\"" ? ye : ve) : o === ye || o === ve ? o = A : o === ge || o === _e ? o = k : (o = A, i = void 0);
-			let d = o === A && e[t + 1].startsWith("/>") ? " " : "";
-			a += o === k ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + S + n.slice(l) + C + d) : n + C + (l === -2 ? t : d);
+			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === O ? c[1] === "!--" ? o = _e : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = k) : (xe.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = k) : o = ve : o === k ? c[0] === ">" ? (o = i ?? O, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? k : c[3] === "\"" ? be : ye) : o === be || o === ye ? o = k : o === _e || o === ve ? o = O : (o = k, i = void 0);
+			let d = o === k && e[t + 1].startsWith("/>") ? " " : "";
+			a += o === O ? n + me : l >= 0 ? (r.push(s), n.slice(0, l) + pe + n.slice(l) + S + d) : n + S + (l === -2 ? t : d);
 		}
 		return [le(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
-	}, I = class e {
+	}, F = class e {
 		constructor({ strings: t, _$litType$: n }, r) {
 			let i;
 			this.parts = [];
-			let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = Se(t, n);
-			if (this.el = e.createElement(l, r), F.currentNode = this.el.content, n === 2 || n === 3) {
+			let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = Ce(t, n);
+			if (this.el = e.createElement(l, r), P.currentNode = this.el.content, n === 2 || n === 3) {
 				let e = this.el.content.firstChild;
 				e.replaceWith(...e.childNodes);
 			}
-			for (; (i = F.nextNode()) !== null && c.length < s;) {
+			for (; (i = P.nextNode()) !== null && c.length < s;) {
 				if (i.nodeType === 1) {
-					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(S)) {
-						let t = u[o++], n = i.getAttribute(e).split(C), r = /([.?@])?(.*)/.exec(t);
+					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(pe)) {
+						let t = u[o++], n = i.getAttribute(e).split(S), r = /([.?@])?(.*)/.exec(t);
 						c.push({
 							type: 1,
 							index: a,
 							name: r[2],
 							strings: n,
-							ctor: r[1] === "." ? we : r[1] === "?" ? Te : r[1] === "@" ? Ee : R
+							ctor: r[1] === "." ? Te : r[1] === "?" ? Ee : r[1] === "@" ? De : L
 						}), i.removeAttribute(e);
-					} else e.startsWith(C) && (c.push({
+					} else e.startsWith(S) && (c.push({
 						type: 6,
 						index: a
 					}), i.removeAttribute(e));
-					if (be.test(i.tagName)) {
-						let e = i.textContent.split(C), t = e.length - 1;
+					if (xe.test(i.tagName)) {
+						let e = i.textContent.split(S), t = e.length - 1;
 						if (t > 0) {
 							i.textContent = x ? x.emptyScript : "";
-							for (let n = 0; n < t; n++) i.append(e[n], E()), F.nextNode(), c.push({
+							for (let n = 0; n < t; n++) i.append(e[n], T()), P.nextNode(), c.push({
 								type: 2,
 								index: ++a
 							});
-							i.append(e[t], E());
+							i.append(e[t], T());
 						}
 					}
-				} else if (i.nodeType === 8) if (i.data === w) c.push({
+				} else if (i.nodeType === 8) if (i.data === C) c.push({
 					type: 2,
 					index: a
 				});
 				else {
 					let e = -1;
-					for (; (e = i.data.indexOf(C, e + 1)) !== -1;) c.push({
+					for (; (e = i.data.indexOf(S, e + 1)) !== -1;) c.push({
 						type: 7,
 						index: a
-					}), e += C.length - 1;
+					}), e += S.length - 1;
 				}
 				a++;
 			}
 		}
 		static createElement(e, t) {
-			let n = T.createElement("template");
+			let n = w.createElement("template");
 			return n.innerHTML = e, n;
 		}
-	}, Ce = class {
+	}, we = class {
 		constructor(e, t) {
 			this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = t;
 		}
@@ -349,28 +349,28 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 			return this._$AM._$AU;
 		}
 		u(e) {
-			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? T).importNode(t, !0);
-			F.currentNode = r;
-			let i = F.nextNode(), a = 0, o = 0, s = n[0];
+			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? w).importNode(t, !0);
+			P.currentNode = r;
+			let i = P.nextNode(), a = 0, o = 0, s = n[0];
 			for (; s !== void 0;) {
 				if (a === s.index) {
 					let t;
-					s.type === 2 ? t = new L(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new De(i, this, e)), this._$AV.push(t), s = n[++o];
+					s.type === 2 ? t = new I(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Oe(i, this, e)), this._$AV.push(t), s = n[++o];
 				}
-				a !== s?.index && (i = F.nextNode(), a++);
+				a !== s?.index && (i = P.nextNode(), a++);
 			}
-			return F.currentNode = T, r;
+			return P.currentNode = w, r;
 		}
 		p(e) {
 			let t = 0;
 			for (let n of this._$AV) n !== void 0 && (n.strings === void 0 ? n._$AI(e[t]) : (n._$AI(e, n, t), t += n.strings.length - 2)), t++;
 		}
-	}, L = class e {
+	}, I = class e {
 		get _$AU() {
 			return this._$AM?._$AU ?? this._$Cv;
 		}
 		constructor(e, t, n, r) {
-			this.type = 2, this._$AH = P, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
+			this.type = 2, this._$AH = N, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
 		}
 		get parentNode() {
 			let e = this._$AA.parentNode, t = this._$AM;
@@ -383,7 +383,7 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 			return this._$AB;
 		}
 		_$AI(e, t = this) {
-			e = b(this, e, t), D(e) ? e === P || e == null || e === "" ? (this._$AH !== P && this._$AR(), this._$AH = P) : e !== this._$AH && e !== N && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? me(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+			e = b(this, e, t), E(e) ? e === N || e == null || e === "" ? (this._$AH !== N && this._$AR(), this._$AH = N) : e !== this._$AH && e !== M && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? he(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 		}
 		O(e) {
 			return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -392,24 +392,24 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 			this._$AH !== e && (this._$AR(), this._$AH = this.O(e));
 		}
 		_(e) {
-			this._$AH !== P && D(this._$AH) ? this._$AA.nextSibling.data = e : this.T(T.createTextNode(e)), this._$AH = e;
+			this._$AH !== N && E(this._$AH) ? this._$AA.nextSibling.data = e : this.T(w.createTextNode(e)), this._$AH = e;
 		}
 		$(e) {
-			let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = I.createElement(le(n.h, n.h[0]), this.options)), n);
+			let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = F.createElement(le(n.h, n.h[0]), this.options)), n);
 			if (this._$AH?._$AD === r) this._$AH.p(t);
 			else {
-				let e = new Ce(r, this), n = e.u(this.options);
+				let e = new we(r, this), n = e.u(this.options);
 				e.p(t), this.T(n), this._$AH = e;
 			}
 		}
 		_$AC(e) {
-			let t = xe.get(e.strings);
-			return t === void 0 && xe.set(e.strings, t = new I(e)), t;
+			let t = Se.get(e.strings);
+			return t === void 0 && Se.set(e.strings, t = new F(e)), t;
 		}
 		k(t) {
-			O(this._$AH) || (this._$AH = [], this._$AR());
+			D(this._$AH) || (this._$AH = [], this._$AR());
 			let n = this._$AH, r, i = 0;
-			for (let a of t) i === n.length ? n.push(r = new e(this.O(E()), this.O(E()), this, this.options)) : r = n[i], r._$AI(a), i++;
+			for (let a of t) i === n.length ? n.push(r = new e(this.O(T()), this.O(T()), this, this.options)) : r = n[i], r._$AI(a), i++;
 			i < n.length && (this._$AR(r && r._$AB.nextSibling, i), n.length = i);
 		}
 		_$AR(e = this._$AA.nextSibling, t) {
@@ -421,7 +421,7 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 		setConnected(e) {
 			this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
 		}
-	}, R = class {
+	}, L = class {
 		get tagName() {
 			return this.element.tagName;
 		}
@@ -429,47 +429,47 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 			return this._$AM._$AU;
 		}
 		constructor(e, t, n, r, i) {
-			this.type = 1, this._$AH = P, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = P;
+			this.type = 1, this._$AH = N, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = N;
 		}
 		_$AI(e, t = this, n, r) {
 			let i = this.strings, a = !1;
-			if (i === void 0) e = b(this, e, t, 0), a = !D(e) || e !== this._$AH && e !== N, a && (this._$AH = e);
+			if (i === void 0) e = b(this, e, t, 0), a = !E(e) || e !== this._$AH && e !== M, a && (this._$AH = e);
 			else {
 				let r = e, o, s;
-				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === N && (s = this._$AH[o]), a ||= !D(s) || s !== this._$AH[o], s === P ? e = P : e !== P && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
+				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === M && (s = this._$AH[o]), a ||= !E(s) || s !== this._$AH[o], s === N ? e = N : e !== N && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
 			}
 			a && !r && this.j(e);
 		}
 		j(e) {
-			e === P ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
+			e === N ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
 		}
-	}, we = class extends R {
+	}, Te = class extends L {
 		constructor() {
 			super(...arguments), this.type = 3;
 		}
 		j(e) {
-			this.element[this.name] = e === P ? void 0 : e;
+			this.element[this.name] = e === N ? void 0 : e;
 		}
-	}, Te = class extends R {
+	}, Ee = class extends L {
 		constructor() {
 			super(...arguments), this.type = 4;
 		}
 		j(e) {
-			this.element.toggleAttribute(this.name, !!e && e !== P);
+			this.element.toggleAttribute(this.name, !!e && e !== N);
 		}
-	}, Ee = class extends R {
+	}, De = class extends L {
 		constructor(e, t, n, r, i) {
 			super(e, t, n, r, i), this.type = 5;
 		}
 		_$AI(e, t = this) {
-			if ((e = b(this, e, t, 0) ?? P) === N) return;
-			let n = this._$AH, r = e === P && n !== P || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== P && (n === P || r);
+			if ((e = b(this, e, t, 0) ?? N) === M) return;
+			let n = this._$AH, r = e === N && n !== N || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== N && (n === N || r);
 			r && this.element.removeEventListener(this.name, this, n), i && this.element.addEventListener(this.name, this, e), this._$AH = e;
 		}
 		handleEvent(e) {
 			typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
 		}
-	}, De = class {
+	}, Oe = class {
 		constructor(e, t, n) {
 			this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
 		}
@@ -479,31 +479,31 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 		_$AI(e) {
 			b(this, e);
 		}
-	}, Oe = {
-		M: S,
-		P: C,
-		A: w,
+	}, ke = {
+		M: pe,
+		P: S,
+		A: C,
 		C: 1,
-		L: Se,
-		R: Ce,
-		D: me,
+		L: Ce,
+		R: we,
+		D: he,
 		V: b,
-		I: L,
-		H: R,
-		N: Te,
-		U: Ee,
-		B: we,
-		F: De
-	}, ke = ue.litHtmlPolyfillSupport, ke?.(I, L), (ue.litHtmlVersions ??= []).push("3.3.2"), Ae = (e, t, n) => {
+		I,
+		H: L,
+		N: Ee,
+		U: De,
+		B: Te,
+		F: Oe
+	}, Ae = ue.litHtmlPolyfillSupport, Ae?.(F, I), (ue.litHtmlVersions ??= []).push("3.3.2"), je = (e, t, n) => {
 		let r = n?.renderBefore ?? t, i = r._$litPart$;
 		if (i === void 0) {
 			let e = n?.renderBefore ?? null;
-			r._$litPart$ = i = new L(t.insertBefore(E(), e), e, void 0, n ?? {});
+			r._$litPart$ = i = new I(t.insertBefore(T(), e), e, void 0, n ?? {});
 		}
 		return i._$AI(e), i;
 	};
-})), B, V, je, Me = t((() => {
-	ce(), ce(), z(), z(), B = globalThis, V = class extends y {
+})), z, B, Me, Ne = t((() => {
+	ce(), ce(), R(), R(), z = globalThis, B = class extends y {
 		constructor() {
 			super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
 		}
@@ -513,7 +513,7 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 		}
 		update(e) {
 			let t = this.render();
-			this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = Ae(t, this.renderRoot, this.renderOptions);
+			this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = je(t, this.renderRoot, this.renderOptions);
 		}
 		connectedCallback() {
 			super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -522,13 +522,13 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 			super.disconnectedCallback(), this._$Do?.setConnected(!1);
 		}
 		render() {
-			return N;
+			return M;
 		}
-	}, V._$litElement$ = !0, V.finalized = !0, B.litElementHydrateSupport?.({ LitElement: V }), je = B.litElementPolyfillSupport, je?.({ LitElement: V }), (B.litElementVersions ??= []).push("4.2.2");
-})), Ne = t((() => {})), H = t((() => {
-	ce(), z(), Me(), Ne();
-})), U, Pe = t((() => {
-	U = (e) => (t, n) => {
+	}, B._$litElement$ = !0, B.finalized = !0, z.litElementHydrateSupport?.({ LitElement: B }), Me = z.litElementPolyfillSupport, Me?.({ LitElement: B }), (z.litElementVersions ??= []).push("4.2.2");
+})), Pe = t((() => {})), V = t((() => {
+	ce(), R(), Ne(), Pe();
+})), H, Fe = t((() => {
+	H = (e) => (t, n) => {
 		n === void 0 ? customElements.define(e, t) : n.addInitializer(() => {
 			customElements.define(e, t);
 		});
@@ -536,20 +536,20 @@ var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j,
 }));
 //#endregion
 //#region node_modules/@lit/reactive-element/decorators/property.js
-function W(e) {
-	return (t, n) => typeof n == "object" ? Ie(e, t, n) : ((e, t, n) => {
+function U(e) {
+	return (t, n) => typeof n == "object" ? Le(e, t, n) : ((e, t, n) => {
 		let r = t.hasOwnProperty(n);
 		return t.constructor.createProperty(n, e), r ? Object.getOwnPropertyDescriptor(t, n) : void 0;
 	})(e, t, n);
 }
-var Fe, Ie, Le = t((() => {
-	ce(), Fe = {
+var Ie, Le, Re = t((() => {
+	ce(), Ie = {
 		attribute: !0,
 		type: String,
 		converter: _,
 		reflect: !1,
 		hasChanged: v
-	}, Ie = (e = Fe, t, n) => {
+	}, Le = (e = Ie, t, n) => {
 		let { kind: r, metadata: i } = n, a = globalThis.litPropertyMetadata.get(i);
 		if (a === void 0 && globalThis.litPropertyMetadata.set(i, a = /* @__PURE__ */ new Map()), r === "setter" && ((e = Object.create(e)).wrapped = !0), a.set(n.name, e), r === "accessor") {
 			let { name: r } = n;
@@ -575,29 +575,29 @@ var Fe, Ie, Le = t((() => {
 }));
 //#endregion
 //#region node_modules/@lit/reactive-element/decorators/state.js
-function G(e) {
-	return W({
+function W(e) {
+	return U({
 		...e,
 		state: !0,
 		attribute: !1
 	});
 }
-var Re = t((() => {
-	Le();
-})), ze = t((() => {})), Be = t((() => {})), Ve = t((() => {})), He = t((() => {})), Ue = t((() => {})), We = t((() => {})), Ge = t((() => {
-	Pe(), Le(), Re(), ze(), Be(), Ve(), He(), Ue(), We();
-})), Ke, qe, Je, Ye = t((() => {
-	Ke = {
+var ze = t((() => {
+	Re();
+})), Be = t((() => {})), Ve = t((() => {})), He = t((() => {})), Ue = t((() => {})), We = t((() => {})), Ge = t((() => {})), Ke = t((() => {
+	Fe(), Re(), ze(), Be(), Ve(), He(), Ue(), We(), Ge();
+})), qe, Je, Ye, Xe = t((() => {
+	qe = {
 		ATTRIBUTE: 1,
 		CHILD: 2,
 		PROPERTY: 3,
 		BOOLEAN_ATTRIBUTE: 4,
 		EVENT: 5,
 		ELEMENT: 6
-	}, qe = (e) => (...t) => ({
+	}, Je = (e) => (...t) => ({
 		_$litDirective$: e,
 		values: t
-	}), Je = class {
+	}), Ye = class {
 		constructor(e) {}
 		get _$AU() {
 			return this._$AM._$AU;
@@ -612,10 +612,10 @@ var Re = t((() => {
 			return this.render(...t);
 		}
 	};
-})), Xe, Ze, Qe, K, q, $e, et, tt, nt, rt = t((() => {
-	z(), {I: Xe} = Oe, Ze = (e) => e, Qe = () => document.createComment(""), K = (e, t, n) => {
+})), Ze, Qe, $e, G, K, et, tt, nt, rt, it = t((() => {
+	R(), {I: Ze} = ke, Qe = (e) => e, $e = () => document.createComment(""), G = (e, t, n) => {
 		let r = e._$AA.parentNode, i = t === void 0 ? e._$AB : t._$AA;
-		if (n === void 0) n = new Xe(r.insertBefore(Qe(), i), r.insertBefore(Qe(), i), e, e.options);
+		if (n === void 0) n = new Ze(r.insertBefore($e(), i), r.insertBefore($e(), i), e, e.options);
 		else {
 			let t = n._$AB.nextSibling, a = n._$AM, o = a !== e;
 			if (o) {
@@ -625,23 +625,23 @@ var Re = t((() => {
 			if (t !== i || o) {
 				let e = n._$AA;
 				for (; e !== t;) {
-					let t = Ze(e).nextSibling;
-					Ze(r).insertBefore(e, i), e = t;
+					let t = Qe(e).nextSibling;
+					Qe(r).insertBefore(e, i), e = t;
 				}
 			}
 		}
 		return n;
-	}, q = (e, t, n = e) => (e._$AI(t, n), e), $e = {}, et = (e, t = $e) => e._$AH = t, tt = (e) => e._$AH, nt = (e) => {
+	}, K = (e, t, n = e) => (e._$AI(t, n), e), et = {}, tt = (e, t = et) => e._$AH = t, nt = (e) => e._$AH, rt = (e) => {
 		e._$AR(), e._$AA.remove();
 	};
-})), it, at, ot = t((() => {
-	z(), Ye(), rt(), it = (e, t, n) => {
+})), at, ot, st = t((() => {
+	R(), Xe(), it(), at = (e, t, n) => {
 		let r = /* @__PURE__ */ new Map();
 		for (let i = t; i <= n; i++) r.set(e[i], i);
 		return r;
-	}, at = qe(class extends Je {
+	}, ot = Je(class extends Ye {
 		constructor(e) {
-			if (super(e), e.type !== Ke.CHILD) throw Error("repeat() can only be used in text expressions");
+			if (super(e), e.type !== qe.CHILD) throw Error("repeat() can only be used in text expressions");
 		}
 		dt(e, t, n) {
 			let r;
@@ -657,40 +657,40 @@ var Re = t((() => {
 			return this.dt(e, t, n).values;
 		}
 		update(e, [t, n, r]) {
-			let i = tt(e), { values: a, keys: o } = this.dt(t, n, r);
+			let i = nt(e), { values: a, keys: o } = this.dt(t, n, r);
 			if (!Array.isArray(i)) return this.ut = o, a;
 			let s = this.ut ??= [], c = [], l, u, d = 0, f = i.length - 1, p = 0, m = a.length - 1;
 			for (; d <= f && p <= m;) if (i[d] === null) d++;
 			else if (i[f] === null) f--;
-			else if (s[d] === o[p]) c[p] = q(i[d], a[p]), d++, p++;
-			else if (s[f] === o[m]) c[m] = q(i[f], a[m]), f--, m--;
-			else if (s[d] === o[m]) c[m] = q(i[d], a[m]), K(e, c[m + 1], i[d]), d++, m--;
-			else if (s[f] === o[p]) c[p] = q(i[f], a[p]), K(e, i[d], i[f]), f--, p++;
-			else if (l === void 0 && (l = it(o, p, m), u = it(s, d, f)), l.has(s[d])) if (l.has(s[f])) {
+			else if (s[d] === o[p]) c[p] = K(i[d], a[p]), d++, p++;
+			else if (s[f] === o[m]) c[m] = K(i[f], a[m]), f--, m--;
+			else if (s[d] === o[m]) c[m] = K(i[d], a[m]), G(e, c[m + 1], i[d]), d++, m--;
+			else if (s[f] === o[p]) c[p] = K(i[f], a[p]), G(e, i[d], i[f]), f--, p++;
+			else if (l === void 0 && (l = at(o, p, m), u = at(s, d, f)), l.has(s[d])) if (l.has(s[f])) {
 				let t = u.get(o[p]), n = t === void 0 ? null : i[t];
 				if (n === null) {
-					let t = K(e, i[d]);
-					q(t, a[p]), c[p] = t;
-				} else c[p] = q(n, a[p]), K(e, i[d], n), i[t] = null;
+					let t = G(e, i[d]);
+					K(t, a[p]), c[p] = t;
+				} else c[p] = K(n, a[p]), G(e, i[d], n), i[t] = null;
 				p++;
-			} else nt(i[f]), f--;
-			else nt(i[d]), d++;
+			} else rt(i[f]), f--;
+			else rt(i[d]), d++;
 			for (; p <= m;) {
-				let t = K(e, c[m + 1]);
-				q(t, a[p]), c[p++] = t;
+				let t = G(e, c[m + 1]);
+				K(t, a[p]), c[p++] = t;
 			}
 			for (; d <= f;) {
 				let e = i[d++];
-				e !== null && nt(e);
+				e !== null && rt(e);
 			}
-			return this.ut = o, et(e, c), N;
+			return this.ut = o, tt(e, c), M;
 		}
 	});
-})), st = t((() => {
-	ot();
+})), ct = t((() => {
+	st();
 }));
-Ge(), st(), H();
-var ct = l`
+Ke(), ct(), V();
+var lt = l`
   :host {
     display: block;
     container-type: inline-size;
@@ -765,30 +765,59 @@ var ct = l`
     position: relative;
   }
 
+  /* Marquee: a track holds two identical inner spans side-by-side and slides
+     by exactly half its own width, so the second copy seamlessly takes the
+     place of the first. The trailing gap on each inner creates breathing
+     room between cycles. */
+  .marquee-track {
+    display: inline-flex;
+    flex-wrap: nowrap;
+    will-change: transform;
+  }
+  .title.overflowing,
+  .subtitle.overflowing {
+    /* Hide the ellipsis once the text is scrolling — it would clip mid-glyph. */
+    text-overflow: clip;
+  }
   .title.overflowing .marquee-inner,
   .subtitle.overflowing .marquee-inner {
-    display: inline-block;
+    flex-shrink: 0;
     padding-inline-end: 2em;
   }
 
-  :host(.marquee-enabled) .title.overflowing .marquee-inner,
-  :host(.marquee-enabled) .subtitle.overflowing .marquee-inner {
-    animation: marquee-scroll 8s linear infinite;
+  :host(.marquee-enabled) .title.overflowing .marquee-track,
+  :host(.marquee-enabled) .subtitle.overflowing .marquee-track {
+    animation: marquee-scroll var(--marquee-duration, 12s) linear infinite;
   }
 
-  :host(.marquee-enabled[dir="rtl"]) .title.overflowing .marquee-inner,
-  :host(.marquee-enabled[dir="rtl"]) .subtitle.overflowing .marquee-inner {
-    animation: marquee-scroll-rtl 8s linear infinite;
+  :host(.marquee-enabled[dir="rtl"]) .title.overflowing .marquee-track,
+  :host(.marquee-enabled[dir="rtl"]) .subtitle.overflowing .marquee-track {
+    animation-name: marquee-scroll-rtl;
+  }
+
+  /* Pause when the user hovers/focuses, so the text can be read in full. */
+  .title.overflowing:hover .marquee-track,
+  .subtitle.overflowing:hover .marquee-track,
+  .title.overflowing:focus-within .marquee-track,
+  .subtitle.overflowing:focus-within .marquee-track {
+    animation-play-state: paused;
   }
 
   @keyframes marquee-scroll {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(-50%); }
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+  @keyframes marquee-scroll-rtl {
+    from { transform: translateX(0); }
+    to   { transform: translateX(50%); }
   }
 
-  @keyframes marquee-scroll-rtl {
-    0% { transform: translateX(0%); }
-    100% { transform: translateX(50%); }
+  @media (prefers-reduced-motion: reduce) {
+    .title.overflowing .marquee-track,
+    .subtitle.overflowing .marquee-track {
+      animation: none !important;
+      transform: none !important;
+    }
   }
 
   .fix-all-btn {
@@ -958,19 +987,19 @@ var ct = l`
 `;
 //#endregion
 //#region src/localize.ts
-function J(e, t, n) {
-	return ut(e?.language ?? "en", t, n);
+function q(e, t, n) {
+	return dt(e?.language ?? "en", t, n);
 }
-function lt(e) {
-	return ut((typeof navigator < "u" ? navigator.language : "en").split("-")[0].toLowerCase(), e);
+function ut(e) {
+	return dt((typeof navigator < "u" ? navigator.language : "en").split("-")[0].toLowerCase(), e);
 }
-function ut(e, t, n) {
-	let r = dt[e in dt ? e : "en"][t] ?? dt.en[t] ?? t;
+function dt(e, t, n) {
+	let r = ft[e in ft ? e : "en"][t] ?? ft.en[t] ?? t;
 	if (n) for (let [e, t] of Object.entries(n)) r = r.replace(`{${e}}`, String(t));
 	return r;
 }
-var dt, ft = t((() => {
-	dt = {
+var ft, pt = t((() => {
+	ft = {
 		en: {
 			card_name: "Checklist Card",
 			card_description: "Check entity states and quickly fix any issues.",
@@ -1211,7 +1240,7 @@ var dt, ft = t((() => {
 }));
 //#endregion
 //#region src/utils.ts
-function pt(e) {
+function mt(e) {
 	return {
 		...e,
 		id: e.id || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -1222,7 +1251,7 @@ function pt(e) {
 		conditions: e.conditions || []
 	};
 }
-function mt() {
+function ht() {
 	return {
 		state: "off",
 		attribute: "",
@@ -1230,11 +1259,11 @@ function mt() {
 		fix_service: ""
 	};
 }
-function ht(e) {
+function gt(e) {
 	let t = { ...e };
 	return t.show_ok_section ||= "inline", t.sort ||= "manual", t.sort_direction ||= "asc", t;
 }
-function gt(e, t, n) {
+function _t(e, t, n) {
 	let r = "", i = {};
 	if (n?.attribute?.trim()) {
 		let a = t, o = parseFloat(a);
@@ -1373,26 +1402,27 @@ function gt(e, t, n) {
 		serviceData: i
 	};
 }
-var _t = t((() => {}));
-ft(), _t();
-function Y(e, t) {
+var vt = t((() => {}));
+pt(), vt();
+var yt = /states\(['"]([^'"]+)['"]\)/, bt = /states\(['"]([^'"]+)['"]\)/g;
+function J(e, t) {
 	if (!t || !t.includes("states(")) return t;
 	try {
-		let n = t.match(/states\(['"]([^'"]+)['"]\)/);
+		let n = yt.exec(t);
 		if (n?.[1] && e.states[n[1]]) return e.states[n[1]].state;
 	} catch (e) {
 		console.warn("Error parsing expected pattern", e);
 	}
 	return t;
 }
-function vt(e, t, n) {
+function xt(e, t, n) {
 	if (n.prerequisite_entity?.trim()) {
 		let t = e.states[n.prerequisite_entity];
 		if (t) {
 			let r;
 			if (n.prerequisite_attribute?.trim()) {
 				let i = t.attributes?.[n.prerequisite_attribute], a = n.prerequisite_attribute_value?.trim() ? n.prerequisite_attribute_value : n.prerequisite_state || "on";
-				if (a = Y(e, a), a.startsWith("!=")) {
+				if (a = J(e, a), a.startsWith("!=")) {
 					let e = a.slice(2).split(",").map((e) => e.trim());
 					r = i !== void 0 && !e.includes(String(i));
 				} else {
@@ -1401,7 +1431,7 @@ function vt(e, t, n) {
 				}
 			} else {
 				let i = n.prerequisite_state || "on";
-				i = Y(e, i), r = i.startsWith("!=") ? !i.slice(2).split(",").map((e) => e.trim()).includes(t.state) : i.split(",").map((e) => e.trim()).includes(t.state);
+				i = J(e, i), r = i.startsWith("!=") ? !i.slice(2).split(",").map((e) => e.trim()).includes(t.state) : i.split(",").map((e) => e.trim()).includes(t.state);
 			}
 			if (!r) return !0;
 		}
@@ -1409,34 +1439,141 @@ function vt(e, t, n) {
 	let r = t.state;
 	if (r === "unavailable" || r === "unknown") return !1;
 	if (n.attribute?.trim()) {
-		let r = t.attributes?.[n.attribute], i = Y(e, n.attribute_value?.trim() ? n.attribute_value : n.state);
+		let r = t.attributes?.[n.attribute], i = J(e, n.attribute_value?.trim() ? n.attribute_value : n.state);
 		return r !== void 0 && String(r) === String(i);
 	}
-	return r === Y(e, n.state);
+	return r === J(e, n.state);
 }
-function yt(e, t) {
+function St(e, t) {
 	if (!t.entity) return !1;
 	let n = e.states[t.entity];
 	if (!n) return !0;
-	let r = t.conditions.map((t) => vt(e, n, t));
+	let r = t.conditions.map((t) => xt(e, n, t));
 	return t.conditions_mode === "all" ? !r.every(Boolean) : !r.some(Boolean);
 }
 //#endregion
-//#region node_modules/lit/directive.js
-Ye();
+//#region src/marquee-controller.ts
+V();
+var Ct = 20, wt = 4, Tt = 30, Et = 1, Dt = class {
+	constructor(e, t) {
+		this.overflowState = /* @__PURE__ */ new Map(), this.resizeObserver = null, this.intersectionObserver = null, this.rafId = null, this.isVisible = !0, this.host = e, this.targets = t, e.addController(this);
+	}
+	hostConnected() {
+		typeof ResizeObserver < "u" && (this.resizeObserver = new ResizeObserver(() => this.scheduleCheck()), this.resizeObserver.observe(this.host)), typeof IntersectionObserver < "u" && (this.intersectionObserver = new IntersectionObserver((e) => {
+			let t = e.some((e) => e.isIntersecting);
+			t && !this.isVisible && this.scheduleCheck(), this.isVisible = t;
+		}), this.intersectionObserver.observe(this.host));
+		let e = document.fonts;
+		e?.ready && e.ready.then(() => {
+			this.host.isConnected && this.scheduleCheck();
+		});
+	}
+	hostDisconnected() {
+		this.resizeObserver?.disconnect(), this.resizeObserver = null, this.intersectionObserver?.disconnect(), this.intersectionObserver = null, this.rafId !== null && (cancelAnimationFrame(this.rafId), this.rafId = null), this.overflowState.clear();
+	}
+	hostUpdated() {
+		this.scheduleCheck();
+	}
+	scheduleCheck() {
+		this.rafId === null && (this.rafId = requestAnimationFrame(() => {
+			this.rafId = null, this.check();
+		}));
+	}
+	check() {
+		let e = this.host.shadowRoot;
+		if (e) for (let t of this.targets) {
+			let n = e.querySelector(t.parent);
+			if (!n) {
+				this.publish(t, !1);
+				continue;
+			}
+			let r = n.querySelector(".marquee-inner");
+			if (!r) {
+				this.publish(t, !1);
+				continue;
+			}
+			let i = n.clientWidth;
+			if (i <= 0) continue;
+			let a = Ot(r), o = a > i + Et;
+			if (o) {
+				let e = kt(a / Ct, wt, Tt);
+				n.style.setProperty("--marquee-duration", `${e.toFixed(2)}s`);
+			} else n.style.removeProperty("--marquee-duration");
+			this.publish(t, o);
+		}
+	}
+	publish(e, t) {
+		this.overflowState.get(e.parent) !== t && (this.overflowState.set(e.parent, t), e.setOverflow(t));
+	}
+};
+function Ot(e) {
+	if (typeof document.createRange != "function") return e.getBoundingClientRect().width;
+	let t = document.createRange();
+	try {
+		return t.selectNodeContents(e), t.getBoundingClientRect().width;
+	} finally {
+		t.detach?.();
+	}
+}
+function kt(e, t, n) {
+	return Math.min(n, Math.max(t, e));
+}
+function At(e, t) {
+	return t ? j`
+    <span class="marquee-track">
+      <span class="marquee-inner">${e}</span>
+      <span class="marquee-inner" aria-hidden="true">${e}</span>
+    </span>
+  ` : j`<span class="marquee-inner">${e}</span>`;
+}
+//#endregion
+//#region src/preload-editor.ts
+function jt() {
+	if (Y) return;
+	let e = window.requestIdleCallback, t = () => {
+		Mt();
+	};
+	e ? e(t, { timeout: 2e3 }) : setTimeout(t, 500);
+}
+function Mt() {
+	return Y || (customElements.get("ha-form") && customElements.get("ha-entity-picker") ? (Y = Promise.resolve(), Y) : (Y = (async () => {
+		try {
+			let e = window.loadCardHelpers;
+			if (e) {
+				let t = (await e())?.createCardElement?.({
+					type: "entities",
+					entities: []
+				})?.constructor;
+				if (t?.getConfigElement) {
+					await t.getConfigElement();
+					return;
+				}
+			}
+			await customElements.whenDefined("hui-entities-card");
+			let t = customElements.get("hui-entities-card");
+			t?.getConfigElement && await t.getConfigElement();
+		} catch (e) {
+			console.warn("[checklist-card] failed to preload editor components", e);
+		}
+	})(), Y));
+}
+var Y, Nt = t((() => {
+	Y = null;
+}));
+Nt(), Xe();
 //#endregion
 //#region src/action-handler.ts
-var bt = class extends HTMLElement {
+var Pt = /* @__PURE__ */ new WeakMap(), Ft = class extends HTMLElement {
 	constructor(...e) {
 		super(...e), this.holdTime = 500;
 	}
 	bind(e, t) {
-		if (e.__actionHandlerBound) {
-			e.__actionHandlerOptions = t;
+		if (Pt.has(e)) {
+			Pt.set(e, t);
 			return;
 		}
-		e.__actionHandlerBound = !0, e.__actionHandlerOptions = t;
-		let n, r = !1, i, a = () => e.__actionHandlerOptions, o = () => {
+		Pt.set(e, t);
+		let n, r = !1, i, a = () => Pt.get(e), o = () => {
 			n &&= (clearTimeout(n), void 0);
 		}, s = (t) => {
 			let n = new CustomEvent("action", {
@@ -1457,14 +1594,14 @@ var bt = class extends HTMLElement {
 		}), e.addEventListener("pointercancel", o), e.addEventListener("pointerleave", o);
 	}
 };
-customElements.define("checklist-action-handler", bt);
-var xt = document.createElement("checklist-action-handler"), St = qe(class extends Je {
+customElements.define("checklist-action-handler", Ft);
+var It = document.createElement("checklist-action-handler"), Lt = Je(class extends Ye {
 	constructor(e) {
 		super(e);
 	}
 	render(e) {}
 	update(e, [t]) {
-		return xt.bind(e.element, t), this.render(t);
+		return It.bind(e.element, t), this.render(t);
 	}
 });
 //#endregion
@@ -1475,11 +1612,21 @@ function X(e, t, n, r) {
 	else for (var s = e.length - 1; s >= 0; s--) (o = e[s]) && (a = (i < 3 ? o(a) : i > 3 ? o(t, n, a) : o(t, n)) || a);
 	return i > 3 && a && Object.defineProperty(t, n, a), a;
 }
-var Ct = t((() => {}));
-H(), Ct();
-var Z = class extends V {
+var Rt = t((() => {}));
+V(), Rt();
+var Z = class extends B {
 	constructor(...e) {
-		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info", this.isSnoozed = !1, this.snoozeUntil = null, this.marqueeEnabled = !1;
+		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info", this.isSnoozed = !1, this.snoozeUntil = null, this.marqueeEnabled = !1, this._isTitleOverflowing = !1, this._isStateOverflowing = !1, this._marquee = new Dt(this, [{
+			parent: ".entity-name",
+			setOverflow: (e) => {
+				this._isTitleOverflowing = e;
+			}
+		}, {
+			parent: ".entity-state",
+			setOverflow: (e) => {
+				this._isStateOverflowing = e;
+			}
+		}]);
 	}
 	static {
 		this.styles = l`
@@ -1571,30 +1718,55 @@ var Z = class extends V {
       position: relative;
     }
 
+    /* See checklist-card.styles.ts for the design rationale; mirrored here
+       because shadow-DOM scoping forces each component to declare its own. */
+    .marquee-track {
+      display: inline-flex;
+      flex-wrap: nowrap;
+      will-change: transform;
+    }
+    .entity-name.overflowing,
+    .entity-state.overflowing {
+      text-overflow: clip;
+    }
     .entity-name.overflowing .marquee-inner,
     .entity-state.overflowing .marquee-inner {
-      display: inline-block;
+      flex-shrink: 0;
       padding-inline-end: 2em;
     }
 
-    :host(.marquee-enabled) .entity-name.overflowing .marquee-inner,
-    :host(.marquee-enabled) .entity-state.overflowing .marquee-inner {
-      animation: marquee-scroll 8s linear infinite;
+    :host(.marquee-enabled) .entity-name.overflowing .marquee-track,
+    :host(.marquee-enabled) .entity-state.overflowing .marquee-track {
+      animation: marquee-scroll var(--marquee-duration, 12s) linear infinite;
     }
 
-    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-inner,
-    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-inner {
-      animation: marquee-scroll-rtl 8s linear infinite;
+    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-track,
+    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-track {
+      animation-name: marquee-scroll-rtl;
+    }
+
+    .entity-name.overflowing:hover .marquee-track,
+    .entity-state.overflowing:hover .marquee-track,
+    .entity-name.overflowing:focus-within .marquee-track,
+    .entity-state.overflowing:focus-within .marquee-track {
+      animation-play-state: paused;
     }
 
     @keyframes marquee-scroll {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-50%); }
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    @keyframes marquee-scroll-rtl {
+      from { transform: translateX(0); }
+      to   { transform: translateX(50%); }
     }
 
-    @keyframes marquee-scroll-rtl {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(50%); }
+    @media (prefers-reduced-motion: reduce) {
+      .entity-name.overflowing .marquee-track,
+      .entity-state.overflowing .marquee-track {
+        animation: none !important;
+        transform: none !important;
+      }
     }
 
     .fix-btn {
@@ -1694,8 +1866,12 @@ var Z = class extends V {
 			e.prerequisite_attribute_value
 		]) {
 			if (!n || !n.includes("states(")) continue;
-			let e = n.match(/states\(['"]([^'"]+)['"]\)/)?.[1];
-			if (e && t.states?.[e] !== this.hass.states?.[e]) return !0;
+			bt.lastIndex = 0;
+			let e;
+			for (; (e = bt.exec(n)) !== null;) {
+				let n = e[1];
+				if (n && t.states?.[n] !== this.hass.states?.[n]) return !0;
+			}
 		}
 		return t.language !== this.hass.language || t.user?.id !== this.hass.user?.id || (t.translationMetadata?.dir ?? (t.language === "he" ? "rtl" : "ltr")) !== (this.hass.translationMetadata?.dir ?? (this.hass.language === "he" ? "rtl" : "ltr"));
 	}
@@ -1756,7 +1932,7 @@ var Z = class extends V {
 	_handleFixClick(e) {
 		if (e.stopPropagation(), this.isFixing) return;
 		if (this.rule.confirmation) {
-			let e = J(this.hass, "confirm_fix", { name: this.rule.name || this.rule.entity });
+			let e = q(this.hass, "confirm_fix", { name: this.rule.name || this.rule.entity });
 			if (typeof this.rule.confirmation == "object") {
 				if (!this.rule.confirmation.exemptions?.some((e) => e.user === this.hass.user?.id) && (e = this.rule.confirmation.text || e, !window.confirm(e))) return;
 			} else if (this.rule.confirmation === !0 && !window.confirm(e)) return;
@@ -1783,56 +1959,55 @@ var Z = class extends V {
 			composed: !0
 		}));
 	}
-	_renderSingleConditionStatus(e, t) {
-		let n = Y(this.hass, e.state), r = !!e.attribute?.trim(), i = r ? Y(this.hass, e.attribute_value || e.state) : null;
-		return M`
-      <span class="entity-state">
-        <span class="marquee-inner">${J(this.hass, "current_state")}: ${t} (${J(this.hass, "required")}: ${n})${r ? M` · ${J(this.hass, "attribute")} ${e.attribute}: ${this.stateObj?.attributes?.[e.attribute] ?? J(this.hass, "not_exists")} (${J(this.hass, "required")}: ${i})` : ""}</span>
+	_renderTitleSpan(e) {
+		let t = this._isTitleOverflowing && this.marqueeEnabled, n = j`${e}${this.rule.show_last_changed && this.stateObj ? j`
+      <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
+        <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
+      </span>
+    ` : ""}`, r = this.rule.color ? `color: ${this.rule.color}` : "";
+		return j`
+      <span class="entity-name ${t ? "overflowing" : ""}" style=${r}>
+        ${At(n, t)}
       </span>
     `;
 	}
+	_renderStateSpan(e) {
+		let t = this._isStateOverflowing && this.marqueeEnabled;
+		return j`
+      <span class="entity-state ${t ? "overflowing" : ""}">
+        ${At(e, t)}
+      </span>
+    `;
+	}
+	_renderSingleConditionStatus(e, t) {
+		let n = J(this.hass, e.state), r = !!e.attribute?.trim(), i = r ? J(this.hass, e.attribute_value || e.state) : null, a = j`${q(this.hass, "current_state")}: ${t} (${q(this.hass, "required")}: ${n})${r ? j` · ${q(this.hass, "attribute")} ${e.attribute}: ${this.stateObj?.attributes?.[e.attribute] ?? q(this.hass, "not_exists")} (${q(this.hass, "required")}: ${i})` : ""}`;
+		return this._renderStateSpan(a);
+	}
 	_renderMultiConditionStatus(e) {
 		if (this.rule.conditions_mode === "any") {
-			let t = this.rule.conditions.map((e) => Y(this.hass, e.state)).join(", "), n = this.rule.default_condition_index ?? 0, r = Y(this.hass, this.rule.conditions[n]?.state ?? this.rule.conditions[0]?.state);
-			return M`
-        <span class="entity-state"><span class="marquee-inner">${J(this.hass, "current_state")}: ${e} · ${J(this.hass, "accepted_one_of")}: ${t} · ${J(this.hass, "fix_target")}: ${r}</span></span>
-      `;
+			let t = this.rule.conditions.map((e) => J(this.hass, e.state)).join(", "), n = this.rule.default_condition_index ?? 0, r = J(this.hass, this.rule.conditions[n]?.state ?? this.rule.conditions[0]?.state), i = j`${q(this.hass, "current_state")}: ${e} · ${q(this.hass, "accepted_one_of")}: ${t} · ${q(this.hass, "fix_target")}: ${r}`;
+			return this._renderStateSpan(i);
 		}
-		let t = (this.stateObj ? this.rule.conditions.filter((e) => !vt(this.hass, this.stateObj, e)) : this.rule.conditions).map((e) => {
-			let t = Y(this.hass, e.state), n = e.attribute?.trim() ? ` | ${e.attribute}=${Y(this.hass, e.attribute_value || e.state)}` : "";
-			return `${J(this.hass, "status")}=${t}${n}`;
-		}).join(" · ");
-		return M`
-      <span class="entity-state"><span class="marquee-inner">${J(this.hass, "current_state")}: ${e} · ${J(this.hass, "required")}: ${t}</span></span>
-    `;
+		let t = (this.stateObj ? this.rule.conditions.filter((e) => !xt(this.hass, this.stateObj, e)) : this.rule.conditions).map((e) => {
+			let t = J(this.hass, e.state), n = e.attribute?.trim() ? ` | ${e.attribute}=${J(this.hass, e.attribute_value || e.state)}` : "";
+			return `${q(this.hass, "status")}=${t}${n}`;
+		}).join(" · "), n = j`${q(this.hass, "current_state")}: ${e} · ${q(this.hass, "required")}: ${t}`;
+		return this._renderStateSpan(n);
 	}
 	updated(e) {
 		super.updated(e);
 		let t = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr");
-		this.setAttribute("dir", t), this.classList.toggle("marquee-enabled", this.marqueeEnabled), this._checkOverflow();
-	}
-	_checkOverflow() {
-		let e = this.shadowRoot;
-		e && e.querySelectorAll(".entity-name, .entity-state").forEach((e) => {
-			let t = e, n = t.querySelectorAll(".marquee-inner");
-			if (n.length > 1) for (let e = 1; e < n.length; e++) n[e].remove();
-			let r = t.querySelector(".marquee-inner");
-			if (r && delete r.dataset.duplicated, t.classList.remove("overflowing"), t.offsetWidth, t.scrollWidth > t.clientWidth && this.marqueeEnabled && (t.classList.add("overflowing"), r && !r.dataset.duplicated)) {
-				r.dataset.duplicated = "true";
-				let e = r.cloneNode(!0);
-				e.removeAttribute("data-duplicated"), t.appendChild(e);
-			}
-		});
+		this.setAttribute("dir", t), this.classList.toggle("marquee-enabled", this.marqueeEnabled);
 	}
 	render() {
-		let e = this.stateObj?.state ?? J(this.hass, "unavailable"), t = this.rule.conditions.length > 1, n = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity, r = `${n}, ${J(this.hass, this.isProblem ? "status_problem" : "status_ok")}`, i = this.rule.icon;
-		return M`
+		let e = this.stateObj?.state ?? q(this.hass, "unavailable"), t = this.rule.conditions.length > 1, n = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity, r = `${n}, ${q(this.hass, this.isProblem ? "status_problem" : "status_ok")}`, i = this.rule.icon;
+		return j`
       <div
         class="check-item${this.isSnoozed ? " is-snoozed" : ""}"
         role=${"listitem"}
         aria-label=${r}
         @action=${this._handleAction}
-        .actionHandler=${St({
+        .actionHandler=${Lt({
 			hasHold: !0,
 			hasDoubleClick: !0
 		})}
@@ -1841,46 +2016,38 @@ var Z = class extends V {
         <ha-ripple></ha-ripple>
         <div class="entity-info-container">
           <div class="icon-wrapper ${this.isSnoozed ? "snoozed" : this.isProblem ? "problem" : "ok"}">
-            ${i ? M`<ha-icon .icon=${i}></ha-icon>` : M`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`}
+            ${i ? j`<ha-icon .icon=${i}></ha-icon>` : j`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`}
           </div>
           <div class="check-text">
-            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : P}>
-              <span class="marquee-inner">${n}${this.rule.show_last_changed && this.stateObj ? M`
-                <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
-                  <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
-                </span>
-              ` : ""}</span>
-            </span>
-            ${this.isProblem || this.isSnoozed ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : M`<span class="entity-state">
-                  <span class="marquee-inner">${J(this.hass, "status")}: ${e}</span>
-                </span>`}
+            ${this._renderTitleSpan(n)}
+            ${this.isProblem || this.isSnoozed ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : this._renderStateSpan(j`${q(this.hass, "status")}: ${e}`)}
           </div>
         </div>
-        ${this.isSnoozed ? M`
+        ${this.isSnoozed ? j`
           <div class="snooze-actions">
             <span class="snooze-badge">
               <ha-icon icon="mdi:alarm-snooze"></ha-icon>
-              ${this.snoozeUntil ? J(this.hass, "snoozed_until", { time: this._formatSnoozeTime() }) : J(this.hass, "snooze")}
+              ${this.snoozeUntil ? q(this.hass, "snoozed_until", { time: this._formatSnoozeTime() }) : q(this.hass, "snooze")}
             </span>
             <button class="unsnooze-btn" @click=${this._handleUnsnoozeClick}>
-              ${J(this.hass, "unsnooze")}
+              ${q(this.hass, "unsnooze")}
             </button>
           </div>
-        ` : this.isProblem ? M`
+        ` : this.isProblem ? j`
           <button
             class="fix-btn"
             @click=${this._handleFixClick}
             ?disabled=${this.isFixing}
-            aria-label=${J(this.hass, "fix")}
+            aria-label=${q(this.hass, "fix")}
             aria-busy=${this.isFixing}
           >
-            ${this.isFixing ? M`<div class="spinner"></div>` : M`${J(this.hass, "fix")}`}
+            ${this.isFixing ? j`<div class="spinner"></div>` : j`${q(this.hass, "fix")}`}
           </button>
-        ` : M`
+        ` : j`
           <div style="min-width: 60px; display: flex; justify-content: flex-end; align-items: center;">
             <span class="ok-badge">
               <ha-icon icon="mdi:check" style="--mdc-icon-size: 18px;"></ha-icon>
-              ${J(this.hass, "ok")}
+              ${q(this.hass, "ok")}
             </span>
           </div>
         `}
@@ -1888,19 +2055,19 @@ var Z = class extends V {
     `;
 	}
 };
-X([W({ attribute: !1 })], Z.prototype, "stateObj", void 0), X([W({ attribute: !1 })], Z.prototype, "rule", void 0), X([W({ attribute: !1 })], Z.prototype, "hass", void 0), X([W({ type: Boolean })], Z.prototype, "isProblem", void 0), X([W({ type: Boolean })], Z.prototype, "isFixing", void 0), X([W({ type: String })], Z.prototype, "severity", void 0), X([W({ type: Boolean })], Z.prototype, "isSnoozed", void 0), X([W({ type: Number })], Z.prototype, "snoozeUntil", void 0), X([W({ type: Boolean })], Z.prototype, "marqueeEnabled", void 0), Z = X([U("checklist-card-item")], Z);
+X([U({ attribute: !1 })], Z.prototype, "stateObj", void 0), X([U({ attribute: !1 })], Z.prototype, "rule", void 0), X([U({ attribute: !1 })], Z.prototype, "hass", void 0), X([U({ type: Boolean })], Z.prototype, "isProblem", void 0), X([U({ type: Boolean })], Z.prototype, "isFixing", void 0), X([U({ type: String })], Z.prototype, "severity", void 0), X([U({ type: Boolean })], Z.prototype, "isSnoozed", void 0), X([U({ type: Number })], Z.prototype, "snoozeUntil", void 0), X([U({ type: Boolean })], Z.prototype, "marqueeEnabled", void 0), X([W()], Z.prototype, "_isTitleOverflowing", void 0), X([W()], Z.prototype, "_isStateOverflowing", void 0), Z = X([H("checklist-card-item")], Z);
 //#endregion
 //#region node_modules/memoize-one/dist/memoize-one.esm.js
-function wt(e, t) {
-	return !!(e === t || Dt(e) && Dt(t));
+function zt(e, t) {
+	return !!(e === t || Ht(e) && Ht(t));
 }
-function Tt(e, t) {
+function Bt(e, t) {
 	if (e.length !== t.length) return !1;
-	for (var n = 0; n < e.length; n++) if (!wt(e[n], t[n])) return !1;
+	for (var n = 0; n < e.length; n++) if (!zt(e[n], t[n])) return !1;
 	return !0;
 }
-function Et(e, t) {
-	t === void 0 && (t = Tt);
+function Vt(e, t) {
+	t === void 0 && (t = Bt);
 	var n = null;
 	function r() {
 		var r = [...arguments];
@@ -1916,14 +2083,14 @@ function Et(e, t) {
 		n = null;
 	}, r;
 }
-var Dt, Ot = t((() => {
-	Dt = Number.isNaN || function(e) {
+var Ht, Ut = t((() => {
+	Ht = Number.isNaN || function(e) {
 		return typeof e == "number" && e !== e;
 	};
-})), kt, At, jt, Mt = t((() => {
-	kt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", At = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", jt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
-})), Nt, Pt = t((() => {
-	H(), Nt = l`
+})), Wt, Gt, Kt, qt = t((() => {
+	Wt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", Gt = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", Kt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
+})), Jt, Yt = t((() => {
+	V(), Jt = l`
   .config-container {
     display: flex;
     flex-direction: column;
@@ -2152,10 +2319,10 @@ var Dt, Ot = t((() => {
     margin-top: 4px;
   }
 `;
-})), Ft = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, It = t((() => {
-	H(), Ge(), Ot(), Mt(), Pt(), ft(), Ct(), Q = class extends V {
+})), Xt = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, Zt = t((() => {
+	V(), Ke(), Ut(), qt(), Yt(), pt(), Rt(), Q = class extends B {
 		constructor(...e) {
-			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1, this._appearanceSchema = Et((e) => [{
+			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1, this._appearanceSchema = Vt((e) => [{
 				name: "",
 				type: "grid",
 				schema: [{
@@ -2164,10 +2331,10 @@ var Dt, Ot = t((() => {
 						mode: "list",
 						options: [{
 							value: "columns",
-							label: J(this.hass, "layout_col")
+							label: q(this.hass, "layout_col")
 						}, {
 							value: "rows",
-							label: J(this.hass, "layout_row")
+							label: q(this.hass, "layout_row")
 						}]
 					} }
 				}, {
@@ -2185,13 +2352,13 @@ var Dt, Ot = t((() => {
 					mode: "box",
 					options: [{
 						value: "clip",
-						label: J(this.hass, "text_mode_clip")
+						label: q(this.hass, "text_mode_clip")
 					}, {
 						value: "scroll",
-						label: J(this.hass, "text_mode_scroll")
+						label: q(this.hass, "text_mode_scroll")
 					}]
 				} }
-			}]), this._sortingSchema = Et((e, t) => {
+			}]), this._sortingSchema = Vt((e, t) => {
 				let n = {
 					name: "sort",
 					selector: { select: {
@@ -2199,27 +2366,27 @@ var Dt, Ot = t((() => {
 						options: [
 							{
 								value: "manual",
-								label: J(this.hass, "sort_manual")
+								label: q(this.hass, "sort_manual")
 							},
 							{
 								value: "status",
-								label: J(this.hass, "sort_status")
+								label: q(this.hass, "sort_status")
 							},
 							{
 								value: "alphabetical",
-								label: J(this.hass, "sort_alphabetical")
+								label: q(this.hass, "sort_alphabetical")
 							},
 							{
 								value: "domain",
-								label: J(this.hass, "sort_domain")
+								label: q(this.hass, "sort_domain")
 							},
 							{
 								value: "severity",
-								label: J(this.hass, "sort_severity")
+								label: q(this.hass, "sort_severity")
 							},
 							{
 								value: "last_changed",
-								label: J(this.hass, "sort_last_changed")
+								label: q(this.hass, "sort_last_changed")
 							}
 						]
 					} }
@@ -2230,29 +2397,29 @@ var Dt, Ot = t((() => {
 						mode: "list",
 						options: [{
 							value: "asc",
-							label: J(this.hass, "sort_asc")
+							label: q(this.hass, "sort_asc")
 						}, {
 							value: "desc",
-							label: J(this.hass, "sort_desc")
+							label: q(this.hass, "sort_desc")
 						}]
 					} }
 				}];
-			}), this._displaySchema = Et((e) => [{
+			}), this._displaySchema = Vt((e) => [{
 				name: "show_ok_section",
 				selector: { select: {
 					mode: "list",
 					options: [
 						{
 							value: "inline",
-							label: J(this.hass, "show_ok_inline")
+							label: q(this.hass, "show_ok_inline")
 						},
 						{
 							value: "collapsed",
-							label: J(this.hass, "show_ok_collapsed")
+							label: q(this.hass, "show_ok_collapsed")
 						},
 						{
 							value: "hidden",
-							label: J(this.hass, "show_ok_hidden")
+							label: q(this.hass, "show_ok_hidden")
 						}
 					]
 				} }
@@ -2268,7 +2435,7 @@ var Dt, Ot = t((() => {
 					sort_direction: "sort_direction",
 					show_ok_section: "show_ok_section"
 				}[e.name];
-				return t ? J(this.hass, t) : e.name;
+				return t ? q(this.hass, t) : e.name;
 			}, this._computeHelper = (e) => {
 				let t = {
 					layout_mode: "layout_dir_helper",
@@ -2279,7 +2446,7 @@ var Dt, Ot = t((() => {
 					text_mode: "text_mode_helper",
 					show_ok_section: "show_ok_helper"
 				}[e.name];
-				return t ? J(this.hass, t) : void 0;
+				return t ? q(this.hass, t) : void 0;
 			}, this._appearanceChanged = (e) => {
 				e.stopPropagation();
 				let t = e.detail.value || {}, n = this._config.layout || {
@@ -2301,12 +2468,12 @@ var Dt, Ot = t((() => {
 			};
 		}
 		static {
-			this.styles = Nt;
+			this.styles = Jt;
 		}
 		setConfig(e) {
 			this._config = {
 				...e,
-				checks: e.checks ? e.checks.map(pt) : []
+				checks: e.checks ? e.checks.map(mt) : []
 			};
 		}
 		_updateConfig(e) {
@@ -2344,7 +2511,7 @@ var Dt, Ot = t((() => {
 			let t = this._config.checks.map((t, n) => {
 				if (n !== e) return t;
 				let r = t.conditions[0]?.state || "off", i = {
-					...mt(),
+					...ht(),
 					state: r
 				};
 				return {
@@ -2403,7 +2570,7 @@ var Dt, Ot = t((() => {
 				id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
 				entity: "",
 				name: "",
-				conditions: [mt()],
+				conditions: [ht()],
 				conditions_mode: "any",
 				default_condition_index: 0,
 				severity: "info"
@@ -2632,36 +2799,29 @@ var Dt, Ot = t((() => {
 			return !e || !this.hass?.states[e]?.attributes ? [] : Object.keys(this.hass.states[e].attributes).sort();
 		}
 		render() {
-			if (!this.hass || !this._config) return M``;
-			if (!this._pickersReady) return this._pickerLoadStarted || (this._pickerLoadStarted = !0, (async () => {
-				try {
-					await customElements.whenDefined("hui-entities-card");
-					let e = customElements.get("hui-entities-card");
-					e?.getConfigElement && await e.getConfigElement();
-				} catch (e) {
-					console.warn("checklist-card: failed to preload editor pickers", e);
-				} finally {
-					this._pickersReady = !0;
-				}
-			})()), M`
-        <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
-          <ha-circular-progress indeterminate></ha-circular-progress>
-          <div style="margin-top: 16px;">${J(this.hass, "loading")}</div>
-        </div>
-      `;
+			if (!this.hass || !this._config) return j``;
+			if (!this._pickersReady) if (customElements.get("ha-form") && customElements.get("ha-entity-picker")) this._pickersReady = !0;
+			else return this._pickerLoadStarted || (this._pickerLoadStarted = !0, Mt().finally(() => {
+				this._pickersReady = !0;
+			})), j`
+          <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
+            <ha-circular-progress indeterminate></ha-circular-progress>
+            <div style="margin-top: 16px;">${q(this.hass, "loading")}</div>
+          </div>
+        `;
 			let e = this._config.checks || [];
-			return M`
+			return j`
       <div class="config-container" dir=${this.hass?.translationMetadata?.dir || (this.hass?.language === "he" ? "rtl" : "ltr")}>
         <ha-textfield
-          label=${J(this.hass, "editor_title")}
+          label=${q(this.hass, "editor_title")}
           .value=${this._config.title || ""}
           @input=${(e) => this._updateConfig({ title: e.target.value })}
         ></ha-textfield>
 
         <div class="panels">
           <ha-expansion-panel outlined expanded>
-            <ha-svg-icon slot="leading-icon" .path=${At}></ha-svg-icon>
-            <h3 slot="header">${J(this.hass, "appearance_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${Gt}></ha-svg-icon>
+            <h3 slot="header">${q(this.hass, "appearance_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2675,8 +2835,8 @@ var Dt, Ot = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${jt}></ha-svg-icon>
-            <h3 slot="header">${J(this.hass, "sorting_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${Kt}></ha-svg-icon>
+            <h3 slot="header">${q(this.hass, "sorting_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2690,8 +2850,8 @@ var Dt, Ot = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${kt}></ha-svg-icon>
-            <h3 slot="header">${J(this.hass, "display_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${Wt}></ha-svg-icon>
+            <h3 slot="header">${q(this.hass, "display_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2706,13 +2866,13 @@ var Dt, Ot = t((() => {
         </div>
 
         <div class="divider"></div>
-        <h3 class="section-title">${J(this.hass, "entities_section")}</h3>
+        <h3 class="section-title">${q(this.hass, "entities_section")}</h3>
 
-        ${at(e, (e) => e.id, (t, n) => {
+        ${ot(e, (e) => e.id, (t, n) => {
 				let r = this._collapsed[t.id] ?? !1, i = t.conditions || [], a = i.length > 1;
-				return M`
+				return j`
             <div class="check-item ${this._draggedIndex === n ? "dragging" : ""} ${this._dropTargetIndex === n ? "drop-target" : ""}"
-                 data-drop-text=${J(this.hass, "drag_here")}
+                 data-drop-text=${q(this.hass, "drag_here")}
                  @dragover=${(e) => this._handleDragOver(e, n)}
                  @drop=${(e) => this._drop(e, n)}
                  @dragend=${this._dragEnd}>
@@ -2732,22 +2892,22 @@ var Dt, Ot = t((() => {
                   <ha-icon-button @click=${() => this._toggleCollapse(t.id)}>
                     <ha-icon icon="${r ? "mdi:chevron-down" : "mdi:chevron-up"}"></ha-icon>
                   </ha-icon-button>
-                  <strong>${J(this.hass, "check_num")}${n + 1}</strong>
+                  <strong>${q(this.hass, "check_num")}${n + 1}</strong>
                 </div>
                 <ha-button class="remove-btn" @click=${() => this._removeCheck(n)} style="--mdc-theme-primary: var(--error-color);">
-                  ${J(this.hass, "remove")}
+                  ${q(this.hass, "remove")}
                 </ha-button>
               </div>
 
-              ${r ? M`
+              ${r ? j`
                 <div style="font-size:13px; color:var(--secondary-text-color); margin-top: 8px;">
-                  ${J(this.hass, "entity")}: ${t.entity || J(this.hass, "not_selected")} |
-                  ${a ? M`${t.conditions_mode === "all" ? J(this.hass, "every") : J(this.hass, "one_of")}: ${i.map((e) => e.state).join(", ")}` : M`${J(this.hass, "status")}: ${i[0]?.state || "—"}${i[0]?.attribute ? M` | ${i[0].attribute}=${i[0].attribute_value || "—"}` : ""}`}
+                  ${q(this.hass, "entity")}: ${t.entity || q(this.hass, "not_selected")} |
+                  ${a ? j`${t.conditions_mode === "all" ? q(this.hass, "every") : q(this.hass, "one_of")}: ${i.map((e) => e.state).join(", ")}` : j`${q(this.hass, "status")}: ${i[0]?.state || "—"}${i[0]?.attribute ? j` | ${i[0].attribute}=${i[0].attribute_value || "—"}` : ""}`}
                 </div>
-              ` : M`
+              ` : j`
                 <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 8px;">
                   <ha-entity-picker
-                    label=${J(this.hass, "select_entity")}
+                    label=${q(this.hass, "select_entity")}
                     .hass=${this.hass}
                     .value=${t.entity}
                     allow-custom-entity
@@ -2755,63 +2915,63 @@ var Dt, Ot = t((() => {
                   ></ha-entity-picker>
 
                   <ha-textfield
-                    label=${J(this.hass, "display_name")}
+                    label=${q(this.hass, "display_name")}
                     .value=${t.name || ""}
                     @input=${(e) => this._updateCheck(n, "name", e.target.value)}
                   ></ha-textfield>
                   
 
                   <details style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--divider-color);">
-                    <summary style="cursor: pointer; font-weight: 500;">${J(this.hass, "advanced_settings")}</summary>
+                    <summary style="cursor: pointer; font-weight: 500;">${q(this.hass, "advanced_settings")}</summary>
                     <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
                       <div class="select-wrapper">
-                        <label>${J(this.hass, "severity")}</label>
+                        <label>${q(this.hass, "severity")}</label>
                         <select
                           .value=${t.severity || "info"}
                           @change=${(e) => this._updateCheck(n, "severity", e.target.value)}
                         >
-                          <option value="info" ?selected=${t.severity === "info" || !t.severity}>${J(this.hass, "severity_info")}</option>
-                          <option value="warning" ?selected=${t.severity === "warning"}>${J(this.hass, "severity_warning")}</option>
-                          <option value="critical" ?selected=${t.severity === "critical"}>${J(this.hass, "severity_critical")}</option>
+                          <option value="info" ?selected=${t.severity === "info" || !t.severity}>${q(this.hass, "severity_info")}</option>
+                          <option value="warning" ?selected=${t.severity === "warning"}>${q(this.hass, "severity_warning")}</option>
+                          <option value="critical" ?selected=${t.severity === "critical"}>${q(this.hass, "severity_critical")}</option>
                         </select>
                       </div>
                       <ha-icon-picker
                         .hass=${this.hass}
-                        .label=${J(this.hass, "icon_override")}
+                        .label=${q(this.hass, "icon_override")}
                         .value=${t.icon || ""}
                         @value-changed=${(e) => this._updateCheck(n, "icon", e.detail.value)}
                       ></ha-icon-picker>
                       <ha-textfield
-                        label=${J(this.hass, "color_override")}
+                        label=${q(this.hass, "color_override")}
                         .value=${t.color || ""}
                         @input=${(e) => this._updateCheck(n, "color", e.target.value)}
                       ></ha-textfield>
                     </div>
                   </details>
 
-                  ${a ? M`
+                  ${a ? j`
                     <div class="select-wrapper">
-                      <label>${J(this.hass, "check_condition")}</label>
+                      <label>${q(this.hass, "check_condition")}</label>
                       <select
                         .value=${t.conditions_mode === "all" ? "all" : "any"}
                         @change=${(e) => this._setConditionsMode(n, e.target.value)}
                       >
-                        <option value="any" ?selected=${t.conditions_mode !== "all"}>${J(this.hass, "cond_any")}</option>
-                        <option value="all" ?selected=${t.conditions_mode === "all"}>${J(this.hass, "cond_all")}</option>
+                        <option value="any" ?selected=${t.conditions_mode !== "all"}>${q(this.hass, "cond_any")}</option>
+                        <option value="all" ?selected=${t.conditions_mode === "all"}>${q(this.hass, "cond_all")}</option>
                       </select>
                     </div>
                   ` : ""}
 
                   <div class="conditions-section">
-                    ${i.map((e, r) => M`
+                    ${i.map((e, r) => j`
                       <div class="condition-item">
                         <div class="condition-header">
                           <span class="condition-title">
-                            ${a ? `${J(this.hass, "ok_state")} ${r + 1}` : J(this.hass, "ok_state")}
+                            ${a ? `${q(this.hass, "ok_state")} ${r + 1}` : q(this.hass, "ok_state")}
                           </span>
                           <div class="condition-actions">
-                            ${a && t.conditions_mode !== "all" ? M`
-                              <ha-formfield label=${t.default_condition_index === r ? J(this.hass, "default_fix_star") : J(this.hass, "default_fix")}>
+                            ${a && t.conditions_mode !== "all" ? j`
+                              <ha-formfield label=${t.default_condition_index === r ? q(this.hass, "default_fix_star") : q(this.hass, "default_fix")}>
                                 <ha-radio
                                   name="default_${t.id}"
                                   .checked=${t.default_condition_index === r}
@@ -2819,47 +2979,47 @@ var Dt, Ot = t((() => {
                                 ></ha-radio>
                               </ha-formfield>
                             ` : ""}
-                            ${a ? M`
+                            ${a ? j`
                               <ha-button @click=${() => this._removeCondition(n, r)} style="--mdc-theme-primary: var(--error-color);">
-                                ${J(this.hass, "remove_state")}
+                                ${q(this.hass, "remove_state")}
                               </ha-button>
                             ` : ""}
                           </div>
                         </div>
 
                         <div class="select-wrapper">
-                          <label>${J(this.hass, "attr_check")}</label>
+                          <label>${q(this.hass, "attr_check")}</label>
                           <select
                             .value=${e.attribute || ""}
                             @change=${(e) => this._updateCondition(n, r, "attribute", e.target.value, e.target)}
                           >
-                            <option value="" ?selected=${!e.attribute}>${J(this.hass, "no_attr")}</option>
-                            ${this._getPossibleAttributes(t.entity).map((t) => M`
+                            <option value="" ?selected=${!e.attribute}>${q(this.hass, "no_attr")}</option>
+                            ${this._getPossibleAttributes(t.entity).map((t) => j`
                               <option value=${t} ?selected=${e.attribute === t}>${t}</option>
                             `)}
                           </select>
                         </div>
 
-                        ${e.attribute && e.attribute.trim() !== "" ? M`
+                        ${e.attribute && e.attribute.trim() !== "" ? j`
                           <div class="select-wrapper">
-                            <label>${J(this.hass, "attr_val")}</label>
+                            <label>${q(this.hass, "attr_val")}</label>
                             <select
                               .value=${e.attribute_value || ""}
                               @change=${(e) => this._updateCondition(n, r, "attribute_value", e.target.value, e.target)}
                             >
-                              ${[...new Set([...e.attribute_value ? [e.attribute_value] : [], ...this._getPossibleAttributeValues(t.entity, e.attribute)])].map((t) => M`
+                              ${[...new Set([...e.attribute_value ? [e.attribute_value] : [], ...this._getPossibleAttributeValues(t.entity, e.attribute)])].map((t) => j`
                                 <option value=${t} ?selected=${e.attribute_value === t}>${t}</option>
                               `)}
                             </select>
                           </div>
-                        ` : M`
+                        ` : j`
                           <div class="select-wrapper">
-                            <label>${J(this.hass, "ok_state")}</label>
+                            <label>${q(this.hass, "ok_state")}</label>
                             <select
                               .value=${e.state || "on"}
                               @change=${(e) => this._updateCondition(n, r, "state", e.target.value, e.target)}
                             >
-                              ${[...new Set([...e.state ? [e.state] : [], ...this._getPossibleStates(t.entity)])].map((t) => M`
+                              ${[...new Set([...e.state ? [e.state] : [], ...this._getPossibleStates(t.entity)])].map((t) => j`
                                 <option value=${t} ?selected=${e.state === t}>${t}</option>
                               `)}
                             </select>
@@ -2867,14 +3027,14 @@ var Dt, Ot = t((() => {
                         `}
 
                         <ha-textfield
-                          label=${J(this.hass, "custom_fix")}
+                          label=${q(this.hass, "custom_fix")}
                           .value=${e.fix_service || ""}
                           @input=${(e) => this._updateCondition(n, r, "fix_service", e.target.value)}
                         ></ha-textfield>
-                        <div class="json-hint">${J(this.hass, "custom_fix_hint")}</div>
+                        <div class="json-hint">${q(this.hass, "custom_fix_hint")}</div>
 
                         <div class="divider"></div>
-                        <div class="prereq-title">${J(this.hass, "prereq_entity")}</div>
+                        <div class="prereq-title">${q(this.hass, "prereq_entity")}</div>
 
                         <ha-entity-picker
                           .hass=${this.hass}
@@ -2883,46 +3043,46 @@ var Dt, Ot = t((() => {
                           @value-changed=${(e) => this._updateCondition(n, r, "prerequisite_entity", e.detail.value)}
                         ></ha-entity-picker>
 
-                        ${e.prerequisite_entity && e.prerequisite_entity.trim() !== "" ? M`
+                        ${e.prerequisite_entity && e.prerequisite_entity.trim() !== "" ? j`
                           <div class="select-wrapper">
-                            <label>${J(this.hass, "attr_check")}</label>
+                            <label>${q(this.hass, "attr_check")}</label>
                             <select
                               .value=${e.prerequisite_attribute || ""}
                               @change=${(e) => this._updateCondition(n, r, "prerequisite_attribute", e.target.value, e.target)}
                             >
-                              <option value="" ?selected=${!e.prerequisite_attribute}>${J(this.hass, "no_attr")}</option>
-                              ${this._getPossibleAttributes(e.prerequisite_entity).map((t) => M`
+                              <option value="" ?selected=${!e.prerequisite_attribute}>${q(this.hass, "no_attr")}</option>
+                              ${this._getPossibleAttributes(e.prerequisite_entity).map((t) => j`
                                 <option value=${t} ?selected=${e.prerequisite_attribute === t}>${t}</option>
                               `)}
                             </select>
                           </div>
 
-                          ${e.prerequisite_attribute && e.prerequisite_attribute.trim() !== "" ? M`
+                          ${e.prerequisite_attribute && e.prerequisite_attribute.trim() !== "" ? j`
                             <div class="select-wrapper">
-                              <label>${J(this.hass, "attr_val")}</label>
+                              <label>${q(this.hass, "attr_val")}</label>
                               <select
                                 .value=${e.prerequisite_attribute_value || ""}
                                 @change=${(e) => this._updateCondition(n, r, "prerequisite_attribute_value", e.target.value, e.target)}
                               >
-                                ${[...new Set([...e.prerequisite_attribute_value ? [e.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(e.prerequisite_entity, e.prerequisite_attribute)])].map((t) => M`
+                                ${[...new Set([...e.prerequisite_attribute_value ? [e.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(e.prerequisite_entity, e.prerequisite_attribute)])].map((t) => j`
                                   <option value=${t} ?selected=${e.prerequisite_attribute_value === t}>${t}</option>
                                 `)}
                               </select>
                             </div>
-                            <div class="json-hint">${J(this.hass, "prereq_hint")}</div>
-                          ` : M`
+                            <div class="json-hint">${q(this.hass, "prereq_hint")}</div>
+                          ` : j`
                             <div class="select-wrapper">
-                              <label>${J(this.hass, "prereq_state")}</label>
+                              <label>${q(this.hass, "prereq_state")}</label>
                               <select
                                 .value=${e.prerequisite_state || "on"}
                                 @change=${(e) => this._updateCondition(n, r, "prerequisite_state", e.target.value, e.target)}
                               >
-                                ${[...new Set([...e.prerequisite_state ? [e.prerequisite_state] : [], ...this._getPossibleStates(e.prerequisite_entity)])].map((t) => M`
+                                ${[...new Set([...e.prerequisite_state ? [e.prerequisite_state] : [], ...this._getPossibleStates(e.prerequisite_entity)])].map((t) => j`
                                   <option value=${t} ?selected=${(e.prerequisite_state || "on") === t}>${t}</option>
                                 `)}
                               </select>
                             </div>
-                            <div class="json-hint">${J(this.hass, "prereq_hint")}</div>
+                            <div class="json-hint">${q(this.hass, "prereq_hint")}</div>
                           `}
                         ` : ""}
                       </div>
@@ -2930,7 +3090,7 @@ var Dt, Ot = t((() => {
 
                     <ha-button outlined @click=${() => this._addCondition(n)}>
                       <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
-                      ${J(this.hass, "add_state")}
+                      ${q(this.hass, "add_state")}
                     </ha-button>
                   </div>
                 </div>
@@ -2941,23 +3101,33 @@ var Dt, Ot = t((() => {
 
         <ha-button class="add-btn" outlined @click=${this._addCheck}>
           <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
-          ${J(this.hass, "add_check")}
+          ${q(this.hass, "add_check")}
         </ha-button>
       </div>
     `;
 		}
-	}, X([W({ attribute: !1 })], Q.prototype, "hass", void 0), X([G()], Q.prototype, "_config", void 0), X([G()], Q.prototype, "_draggedIndex", void 0), X([G()], Q.prototype, "_dropTargetIndex", void 0), X([G()], Q.prototype, "_collapsed", void 0), X([G()], Q.prototype, "_pickersReady", void 0), Q = X([U("checklist-card-editor")], Q);
+	}, X([U({ attribute: !1 })], Q.prototype, "hass", void 0), X([W()], Q.prototype, "_config", void 0), X([W()], Q.prototype, "_draggedIndex", void 0), X([W()], Q.prototype, "_dropTargetIndex", void 0), X([W()], Q.prototype, "_collapsed", void 0), X([W()], Q.prototype, "_pickersReady", void 0), Q = X([H("checklist-card-editor")], Q);
 }));
-H(), Ge(), st(), ft(), _t(), Ct();
-var $ = class extends V {
+V(), Ke(), ct(), pt(), vt(), Nt(), Rt();
+var $ = class extends B {
 	constructor(...e) {
-		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._showSnoozedExpanded = !1, this._snoozeData = {}, this._snoozeDialogRule = null, this._customSnoozeHours = "", this._problemIds = /* @__PURE__ */ new Set(), this._snoozedIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [], this._snoozeTimer = null, this._snoozeDataLoaded = !1;
+		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._showSnoozedExpanded = !1, this._snoozeData = {}, this._snoozeDialogRule = null, this._customSnoozeHours = "", this._isTitleOverflowing = !1, this._isSubtitleOverflowing = !1, this._problemIds = /* @__PURE__ */ new Set(), this._snoozedIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [], this._snoozeTimer = null, this._snoozeDataLoaded = !1, this._marquee = new Dt(this, [{
+			parent: ".title",
+			setOverflow: (e) => {
+				this._isTitleOverflowing = e;
+			}
+		}, {
+			parent: ".subtitle",
+			setOverflow: (e) => {
+				this._isSubtitleOverflowing = e;
+			}
+		}]);
 	}
 	static {
-		this.styles = ct;
+		this.styles = lt;
 	}
-	static getConfigElement() {
-		return Promise.resolve().then(() => (It(), Ft)).then(() => document.createElement("checklist-card-editor"));
+	static async getConfigElement() {
+		return await Promise.all([Promise.resolve().then(() => (Zt(), Xt)), Mt()]), document.createElement("checklist-card-editor");
 	}
 	getCardSize() {
 		let e = this._config?.checks?.length ?? 1, t = this._layoutCols(), n = Math.ceil(e / t);
@@ -2992,7 +3162,7 @@ var $ = class extends V {
 	static getStubConfig() {
 		return {
 			type: "custom:checklist-card",
-			title: lt("title"),
+			title: ut("title"),
 			checks: [{
 				id: Date.now().toString(),
 				entity: "",
@@ -3014,42 +3184,38 @@ var $ = class extends V {
 		};
 	}
 	setConfig(e) {
-		if (!e || !e.checks) throw Error(J(this.hass, "config_error"));
-		let t = ht(e);
+		if (!e || !e.checks) throw Error(q(this.hass, "config_error"));
+		let t = gt(e);
 		this._config = {
 			...t,
-			checks: t.checks.map(pt)
+			checks: t.checks.map(mt)
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._snoozeTimer = window.setInterval(() => {
-			this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this.requestUpdate();
-		}, 6e4);
+		super.connectedCallback(), this._scheduleNextSnoozeExpiry(), jt();
 	}
 	disconnectedCallback() {
-		super.disconnectedCallback(), this._snoozeTimer !== null && (clearInterval(this._snoozeTimer), this._snoozeTimer = null);
+		super.disconnectedCallback(), this._clearSnoozeTimer();
+	}
+	_clearSnoozeTimer() {
+		this._snoozeTimer !== null && (clearTimeout(this._snoozeTimer), this._snoozeTimer = null);
+	}
+	_scheduleNextSnoozeExpiry() {
+		this._clearSnoozeTimer();
+		let e = Date.now(), t = Infinity;
+		for (let n of Object.values(this._snoozeData)) n > e && n < t && (t = n);
+		if (!isFinite(t)) return;
+		let n = Math.min(t - e + 50, 2147483e3);
+		this._snoozeTimer = window.setTimeout(() => {
+			this._snoozeTimer = null, this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this.requestUpdate(), this._scheduleNextSnoozeExpiry();
+		}, Math.max(0, n));
 	}
 	updated(e) {
 		super.updated(e), e.has("hass") && this.hass && !this._snoozeDataLoaded && (this._snoozeDataLoaded = !0, this._loadSnoozeData());
 		let t = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr");
 		this.setAttribute("dir", t);
 		let n = this._config?.text_mode === "scroll";
-		this.classList.toggle("marquee-enabled", n), this._checkHeaderOverflow();
-	}
-	_checkHeaderOverflow() {
-		let e = this.shadowRoot;
-		if (!e) return;
-		let t = this._config?.text_mode === "scroll";
-		e.querySelectorAll(".title, .subtitle").forEach((e) => {
-			let n = e, r = n.querySelectorAll(".marquee-inner");
-			if (r.length > 1) for (let e = 1; e < r.length; e++) r[e].remove();
-			let i = n.querySelector(".marquee-inner");
-			if (i && delete i.dataset.duplicated, n.classList.remove("overflowing"), n.offsetWidth, n.scrollWidth > n.clientWidth && t && (n.classList.add("overflowing"), i && !i.dataset.duplicated)) {
-				i.dataset.duplicated = "true";
-				let e = i.cloneNode(!0);
-				e.removeAttribute("data-duplicated"), n.appendChild(e);
-			}
-		});
+		this.classList.toggle("marquee-enabled", n);
 	}
 	shouldUpdate(e) {
 		if (e.size > 1 || !e.has("hass")) return !0;
@@ -3057,17 +3223,17 @@ var $ = class extends V {
 		return !t || this._watchedEntityIds.length === 0 ? !0 : this._watchedEntityIds.some((e) => t.states?.[e] !== this.hass.states?.[e]);
 	}
 	willUpdate(e) {
-		super.willUpdate(e), e.has("_config") && (this._watchedEntityIds = this._collectWatchedEntityIds(), this._listStyle = this._computeListStyle()), (e.has("_config") || e.has("hass") || e.has("_snoozeData")) && (this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this._checksToDisplay = this._computeChecksToDisplay());
+		super.willUpdate(e), e.has("_config") && (this._watchedEntityIds = this._collectWatchedEntityIds(), this._listStyle = this._computeListStyle()), (e.has("_config") || e.has("hass") || e.has("_snoozeData")) && (this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this._checksToDisplay = this._computeChecksToDisplay()), e.has("_snoozeData") && this._scheduleNextSnoozeExpiry();
 	}
 	_collectWatchedEntityIds() {
-		let e = /* @__PURE__ */ new Set(), t = /states\(['"]([^'"]+)['"]\)/g, n = (n) => {
-			if (!n || !n.includes("states(")) return;
-			let r;
-			for (t.lastIndex = 0; (r = t.exec(n)) !== null;) r[1] && e.add(r[1]);
+		let e = /* @__PURE__ */ new Set(), t = (t) => {
+			if (!t || !t.includes("states(")) return;
+			let n;
+			for (bt.lastIndex = 0; (n = bt.exec(t)) !== null;) n[1] && e.add(n[1]);
 		};
-		for (let t of this._config.checks) {
-			t.entity && e.add(t.entity);
-			for (let r of t.conditions ?? []) r.prerequisite_entity && e.add(r.prerequisite_entity), n(r.state), n(r.attribute_value), n(r.prerequisite_state), n(r.prerequisite_attribute_value);
+		for (let n of this._config.checks) {
+			n.entity && e.add(n.entity);
+			for (let r of n.conditions ?? []) r.prerequisite_entity && e.add(r.prerequisite_entity), t(r.state), t(r.attribute_value), t(r.prerequisite_state), t(r.prerequisite_attribute_value);
 		}
 		return Array.from(e);
 	}
@@ -3113,7 +3279,7 @@ var $ = class extends V {
 		return new Set(this._config.checks.filter((t) => t.entity && this._snoozeData[t.id] && this._snoozeData[t.id] > e).map((e) => e.id));
 	}
 	_calculateProblemIds() {
-		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => yt(this.hass, e) && !this._snoozedIds.has(e.id)).map((e) => e.id));
+		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => St(this.hass, e) && !this._snoozedIds.has(e.id)).map((e) => e.id));
 	}
 	async _loadSnoozeData() {
 		if (this.hass?.callWS) try {
@@ -3188,18 +3354,18 @@ var $ = class extends V {
 					await this.hass.callService(t, n, r);
 				} else throw Error(`fix_service must be "domain.service" or a JSON object, got: ${e}`);
 			} catch (e) {
-				console.error(J(this.hass, "fix_process_error") + " (Parse/Execute):", e), this._errorBanner = J(this.hass, "fix_process_error") + " - " + String(e);
+				console.error(q(this.hass, "fix_process_error") + " (Parse/Execute):", e), this._errorBanner = q(this.hass, "fix_process_error") + " - " + String(e);
 			}
 			return;
 		}
-		let i = gt(n, Y(this.hass, t.state), t);
+		let i = _t(n, J(this.hass, t.state), t);
 		try {
 			await this.hass.callService(i.domain || n, i.service, {
 				...r,
 				...i.serviceData
 			});
 		} catch (e) {
-			console.error("Service call failed", e), this._errorBanner = J(this.hass, "fix_process_error") + " - " + String(e);
+			console.error("Service call failed", e), this._errorBanner = q(this.hass, "fix_process_error") + " - " + String(e);
 		}
 	}
 	async _fixIssue(e) {
@@ -3210,10 +3376,10 @@ var $ = class extends V {
 				n && await this._fixCondition(e.entity, n);
 			} else for (let t = 0; t < e.conditions.length; t++) {
 				let n = e.conditions[t], r = this.hass.states[e.entity];
-				(!r || !vt(this.hass, r, n)) && (await this._fixCondition(e.entity, n), t < e.conditions.length - 1 && await new Promise((e) => setTimeout(e, 300)));
+				(!r || !xt(this.hass, r, n)) && (await this._fixCondition(e.entity, n), t < e.conditions.length - 1 && await new Promise((e) => setTimeout(e, 300)));
 			}
 		} catch (e) {
-			console.error(J(this.hass, "fix_process_error"), e), this._errorBanner = J(this.hass, "fix_process_error");
+			console.error(q(this.hass, "fix_process_error"), e), this._errorBanner = q(this.hass, "fix_process_error");
 		} finally {
 			let t = new Set(this._fixingItems);
 			t.delete(e.id), this._fixingItems = t;
@@ -3245,14 +3411,14 @@ var $ = class extends V {
 		this._snoozeDialogRule && e > 0 && e <= 8760 && this._snoozeItem(this._snoozeDialogRule, e);
 	}
 	render() {
-		if (!this._config) return M``;
+		if (!this._config) return j``;
 		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._snoozedIds.size, i = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), a = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id) && !this._snoozedIds.has(e.id)), o = this._config.checks.filter((e) => e.entity && this._snoozedIds.has(e.id)), s = this._config.show_ok_section || "inline";
-		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", M``;
+		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", j``;
 		this.style.display = "";
 		let c = this._snoozeDialogRule, l = c ? c.name || this.hass?.states[c.entity]?.attributes?.friendly_name || c.entity : "";
-		return M`
-      <ha-card dir=${n} role="region" aria-label=${this._config.title || J(this.hass, "title")}>
-        ${this._errorBanner ? M`
+		return j`
+      <ha-card dir=${n} role="region" aria-label=${this._config.title || q(this.hass, "title")}>
+        ${this._errorBanner ? j`
           <ha-alert alert-type="error" dismissable @alert-dismissed-clicked=${() => this._errorBanner = null}>
             ${this._errorBanner}
           </ha-alert>
@@ -3264,36 +3430,29 @@ var $ = class extends V {
               <ha-icon icon="${t ? "mdi:alert" : "mdi:check-circle"}"></ha-icon>
             </span>
             <div>
-              <div class="title"><span class="marquee-inner">${this._config.title || J(this.hass, "title")}</span></div>
-              <div class="subtitle" aria-live="polite">
-                <span class="marquee-inner">${t ? J(this.hass, "problems_found", { count: e }) : J(this.hass, "all_good")}${r > 0 ? M`
-                  <span class="snooze-count-badge">
-                    <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
-                    ${r}
-                  </span>
-                ` : ""}</span>
-              </div>
+              ${this._renderHeaderTitle()}
+              ${this._renderHeaderSubtitle(t, e, r)}
             </div>
           </div>
 
           <div class="header-actions">
-            ${s === "collapsed" && a.length > 0 ? M`
+            ${s === "collapsed" && a.length > 0 ? j`
               <button class="ok-toggle-btn" @click=${() => this._showOkExpanded = !this._showOkExpanded}>
                 <ha-icon icon="mdi:check-circle"></ha-icon>
-                ${this._showOkExpanded ? J(this.hass, "hide_ok_items_btn", { count: a.length }) : J(this.hass, "show_ok_items_btn", { count: a.length })}
+                ${this._showOkExpanded ? q(this.hass, "hide_ok_items_btn", { count: a.length }) : q(this.hass, "show_ok_items_btn", { count: a.length })}
               </button>
             ` : ""}
 
-            ${o.length > 0 ? M`
+            ${o.length > 0 ? j`
               <button class="ok-toggle-btn" @click=${() => this._showSnoozedExpanded = !this._showSnoozedExpanded}>
                 <ha-icon icon="mdi:alarm-snooze" style="color: #e59b2dff;"></ha-icon>
-                ${this._showSnoozedExpanded ? J(this.hass, "snoozed_section_hide", { count: o.length }) : J(this.hass, "snoozed_section_show", { count: o.length })}
+                ${this._showSnoozedExpanded ? q(this.hass, "snoozed_section_hide", { count: o.length }) : q(this.hass, "snoozed_section_show", { count: o.length })}
               </button>
             ` : ""}
 
-            ${i.length > 0 ? M`
-              <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${J(this.hass, "fix_all")}>
-                ${this._isFixingAll ? M`<div class="spinner"></div>` : J(this.hass, "fix_all")}
+            ${i.length > 0 ? j`
+              <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${q(this.hass, "fix_all")}>
+                ${this._isFixingAll ? j`<div class="spinner"></div>` : q(this.hass, "fix_all")}
               </button>
             ` : ""}
           </div>
@@ -3313,17 +3472,17 @@ var $ = class extends V {
         </div>
       </ha-card>
 
-      ${c ? M`
+      ${c ? j`
         <ha-dialog
           .open=${!0}
           @closed=${() => {
 			this._snoozeDialogRule = null, this._customSnoozeHours = "";
 		}}
-          .heading=${J(this.hass, "snooze_dialog_title")}
+          .heading=${q(this.hass, "snooze_dialog_title")}
         >
           <div class="snooze-dialog-content">
             <div class="snooze-dialog-entity">${l}</div>
-            <p class="snooze-dialog-desc">${J(this.hass, "snooze_dialog_desc")}</p>
+            <p class="snooze-dialog-desc">${q(this.hass, "snooze_dialog_desc")}</p>
             <div class="snooze-presets">
               ${[
 			1,
@@ -3332,9 +3491,9 @@ var $ = class extends V {
 			8,
 			24,
 			72
-		].map((e, t) => M`
+		].map((e, t) => j`
                 <button class="snooze-preset-btn" @click=${() => this._snoozeItem(c, e)}>
-                  ${J(this.hass, [
+                  ${q(this.hass, [
 			"snooze_1h",
 			"snooze_2h",
 			"snooze_4h",
@@ -3353,29 +3512,50 @@ var $ = class extends V {
                 max="8760"
                 .value=${this._customSnoozeHours}
                 @input=${(e) => this._customSnoozeHours = e.target.value}
-                placeholder=${J(this.hass, "snooze_custom_placeholder")}
+                placeholder=${q(this.hass, "snooze_custom_placeholder")}
               />
               <button
                 class="snooze-preset-btn snooze-custom-confirm"
                 ?disabled=${!this._customSnoozeHours || parseFloat(this._customSnoozeHours) <= 0}
                 @click=${this._handleCustomSnooze}
               >
-                ${J(this.hass, "snooze_confirm_btn")}
+                ${q(this.hass, "snooze_confirm_btn")}
               </button>
             </div>
           </div>
           <mwc-button slot="secondaryAction" @click=${() => {
 			this._snoozeDialogRule = null, this._customSnoozeHours = "";
 		}}>
-            ${J(this.hass, "cancel")}
+            ${q(this.hass, "cancel")}
           </mwc-button>
         </ha-dialog>
       ` : ""}
     `;
 	}
+	_renderHeaderTitle() {
+		let e = this._config?.text_mode === "scroll", t = this._isTitleOverflowing && e, n = this._config.title || q(this.hass, "title");
+		return j`
+      <div class="title ${t ? "overflowing" : ""}">
+        ${At(n, t)}
+      </div>
+    `;
+	}
+	_renderHeaderSubtitle(e, t, n) {
+		let r = this._config?.text_mode === "scroll", i = this._isSubtitleOverflowing && r, a = j`${e ? q(this.hass, "problems_found", { count: t }) : q(this.hass, "all_good")}${n > 0 ? j`
+        <span class="snooze-count-badge">
+          <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
+          ${n}
+        </span>
+      ` : ""}`;
+		return j`
+      <div class="subtitle ${i ? "overflowing" : ""}" aria-live="polite">
+        ${At(a, i)}
+      </div>
+    `;
+	}
 	_renderItems(e) {
 		let t = this._config?.text_mode === "scroll";
-		return at(e, (e) => e.id, (e) => M`
+		return ot(e, (e) => e.id, (e) => j`
         <checklist-card-item
           .rule=${e}
           .hass=${this.hass}
@@ -3389,7 +3569,7 @@ var $ = class extends V {
 	}
 	_renderSnoozedItems(e) {
 		let t = this._config?.text_mode === "scroll";
-		return at(e, (e) => e.id, (e) => M`
+		return ot(e, (e) => e.id, (e) => j`
         <checklist-card-item
           .rule=${e}
           .hass=${this.hass}
@@ -3404,10 +3584,10 @@ var $ = class extends V {
       `);
 	}
 };
-X([W({ attribute: !1 })], $.prototype, "hass", void 0), X([G()], $.prototype, "_config", void 0), X([G()], $.prototype, "_isFixingAll", void 0), X([G()], $.prototype, "_fixingItems", void 0), X([G()], $.prototype, "_errorBanner", void 0), X([G()], $.prototype, "_showOkExpanded", void 0), X([G()], $.prototype, "_showSnoozedExpanded", void 0), X([G()], $.prototype, "_snoozeData", void 0), X([G()], $.prototype, "_snoozeDialogRule", void 0), X([G()], $.prototype, "_customSnoozeHours", void 0), $ = X([U("checklist-card")], $), It(), ft(), window.customCards = window.customCards || [], window.customCards.push({
+X([U({ attribute: !1 })], $.prototype, "hass", void 0), X([W()], $.prototype, "_config", void 0), X([W()], $.prototype, "_isFixingAll", void 0), X([W()], $.prototype, "_fixingItems", void 0), X([W()], $.prototype, "_errorBanner", void 0), X([W()], $.prototype, "_showOkExpanded", void 0), X([W()], $.prototype, "_showSnoozedExpanded", void 0), X([W()], $.prototype, "_snoozeData", void 0), X([W()], $.prototype, "_snoozeDialogRule", void 0), X([W()], $.prototype, "_customSnoozeHours", void 0), X([W()], $.prototype, "_isTitleOverflowing", void 0), X([W()], $.prototype, "_isSubtitleOverflowing", void 0), $ = X([H("checklist-card")], $), Zt(), pt(), window.customCards = window.customCards || [], window.customCards.push({
 	type: "checklist-card",
-	name: lt("card_name"),
-	description: lt("card_description"),
+	name: ut("card_name"),
+	description: ut("card_description"),
 	preview: !0,
 	documentationURL: "https://github.com/yosef-chai/ha-checklist-card"
 });

@@ -1,10 +1,14 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import type { CheckRule, HomeAssistant, StateCondition } from './types';
 
+// Hot-path regex: hoisted so it's compiled once, not on every render of every row.
+const STATES_REF_PATTERN = /states\(['"]([^'"]+)['"]\)/;
+export const STATES_REF_PATTERN_GLOBAL = /states\(['"]([^'"]+)['"]\)/g;
+
 export function evaluateExpectedState(hass: HomeAssistant, expected: string): string {
   if (!expected || !expected.includes('states(')) return expected;
   try {
-    const match = expected.match(/states\(['"]([^'"]+)['"]\)/);
+    const match = STATES_REF_PATTERN.exec(expected);
     if (match?.[1] && hass.states[match[1]]) {
       return hass.states[match[1]].state;
     }
