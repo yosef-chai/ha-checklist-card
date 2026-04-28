@@ -263,16 +263,16 @@ var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n =
 //#endregion
 //#region node_modules/lit-html/lit-html.js
 function le(e, t) {
-	if (!me(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
-	return de === void 0 ? t : de.createHTML(t);
+	if (!O(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	return fe === void 0 ? t : fe.createHTML(t);
 }
 function b(e, t, n = e, r) {
 	if (t === N) return t;
 	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = D(t) ? void 0 : t._$litDirective$;
 	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = b(e, i._$AS(e, t.values), i, r)), t;
 }
-var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j, M, N, P, xe, F, Se, I, Ce, L, R, we, Te, Ee, De, Oe, ke, Ae, z = t((() => {
-	x = globalThis, ue = (e) => e, S = x.trustedTypes, de = S ? S.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, C = "$lit$", w = `lit$${Math.random().toFixed(9).slice(2)}$`, fe = "?" + w, pe = `<${fe}>`, T = document, E = () => T.createComment(""), D = (e) => e === null || typeof e != "object" && typeof e != "function", me = Array.isArray, he = (e) => me(e) || typeof e?.[Symbol.iterator] == "function", O = "[ 	\n\f\r]", k = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, _e = />/g, A = RegExp(`>|${O}(?:([^\\s"'>=/]+)(${O}*=${O}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ve = /'/g, ye = /"/g, be = /^(?:script|style|textarea|title)$/i, j = (e) => (t, ...n) => ({
+var ue, de, x, fe, S, C, w, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, j, M, N, P, xe, F, Se, I, Ce, L, R, we, Te, Ee, De, Oe, ke, Ae, z = t((() => {
+	ue = globalThis, de = (e) => e, x = ue.trustedTypes, fe = x ? x.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, S = "$lit$", C = `lit$${Math.random().toFixed(9).slice(2)}$`, w = "?" + C, pe = `<${w}>`, T = document, E = () => T.createComment(""), D = (e) => e === null || typeof e != "object" && typeof e != "function", O = Array.isArray, me = (e) => O(e) || typeof e?.[Symbol.iterator] == "function", he = "[ 	\n\f\r]", k = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, _e = />/g, A = RegExp(`>|${he}(?:([^\\s"'>=/]+)(${he}*=${he}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ve = /'/g, ye = /"/g, be = /^(?:script|style|textarea|title)$/i, j = (e) => (t, ...n) => ({
 		_$litType$: e,
 		strings: t,
 		values: n
@@ -282,7 +282,7 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 			let n = e[t], s, c, l = -1, u = 0;
 			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === k ? c[1] === "!--" ? o = ge : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = A) : (be.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = A) : o = _e : o === A ? c[0] === ">" ? (o = i ?? k, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? A : c[3] === "\"" ? ye : ve) : o === ye || o === ve ? o = A : o === ge || o === _e ? o = k : (o = A, i = void 0);
 			let d = o === A && e[t + 1].startsWith("/>") ? " " : "";
-			a += o === k ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + C + n.slice(l) + w + d) : n + w + (l === -2 ? t : d);
+			a += o === k ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + S + n.slice(l) + C + d) : n + C + (l === -2 ? t : d);
 		}
 		return [le(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
 	}, I = class e {
@@ -296,8 +296,8 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 			}
 			for (; (i = F.nextNode()) !== null && c.length < s;) {
 				if (i.nodeType === 1) {
-					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(C)) {
-						let t = u[o++], n = i.getAttribute(e).split(w), r = /([.?@])?(.*)/.exec(t);
+					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(S)) {
+						let t = u[o++], n = i.getAttribute(e).split(C), r = /([.?@])?(.*)/.exec(t);
 						c.push({
 							type: 1,
 							index: a,
@@ -305,14 +305,14 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 							strings: n,
 							ctor: r[1] === "." ? we : r[1] === "?" ? Te : r[1] === "@" ? Ee : R
 						}), i.removeAttribute(e);
-					} else e.startsWith(w) && (c.push({
+					} else e.startsWith(C) && (c.push({
 						type: 6,
 						index: a
 					}), i.removeAttribute(e));
 					if (be.test(i.tagName)) {
-						let e = i.textContent.split(w), t = e.length - 1;
+						let e = i.textContent.split(C), t = e.length - 1;
 						if (t > 0) {
-							i.textContent = S ? S.emptyScript : "";
+							i.textContent = x ? x.emptyScript : "";
 							for (let n = 0; n < t; n++) i.append(e[n], E()), F.nextNode(), c.push({
 								type: 2,
 								index: ++a
@@ -320,16 +320,16 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 							i.append(e[t], E());
 						}
 					}
-				} else if (i.nodeType === 8) if (i.data === fe) c.push({
+				} else if (i.nodeType === 8) if (i.data === w) c.push({
 					type: 2,
 					index: a
 				});
 				else {
 					let e = -1;
-					for (; (e = i.data.indexOf(w, e + 1)) !== -1;) c.push({
+					for (; (e = i.data.indexOf(C, e + 1)) !== -1;) c.push({
 						type: 7,
 						index: a
-					}), e += w.length - 1;
+					}), e += C.length - 1;
 				}
 				a++;
 			}
@@ -383,7 +383,7 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 			return this._$AB;
 		}
 		_$AI(e, t = this) {
-			e = b(this, e, t), D(e) ? e === P || e == null || e === "" ? (this._$AH !== P && this._$AR(), this._$AH = P) : e !== this._$AH && e !== N && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? he(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+			e = b(this, e, t), D(e) ? e === P || e == null || e === "" ? (this._$AH !== P && this._$AR(), this._$AH = P) : e !== this._$AH && e !== N && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? me(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 		}
 		O(e) {
 			return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -407,15 +407,15 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 			return t === void 0 && xe.set(e.strings, t = new I(e)), t;
 		}
 		k(t) {
-			me(this._$AH) || (this._$AH = [], this._$AR());
+			O(this._$AH) || (this._$AH = [], this._$AR());
 			let n = this._$AH, r, i = 0;
 			for (let a of t) i === n.length ? n.push(r = new e(this.O(E()), this.O(E()), this, this.options)) : r = n[i], r._$AI(a), i++;
 			i < n.length && (this._$AR(r && r._$AB.nextSibling, i), n.length = i);
 		}
 		_$AR(e = this._$AA.nextSibling, t) {
 			for (this._$AP?.(!1, !0, t); e !== this._$AB;) {
-				let t = ue(e).nextSibling;
-				ue(e).remove(), e = t;
+				let t = de(e).nextSibling;
+				de(e).remove(), e = t;
 			}
 		}
 		setConnected(e) {
@@ -480,13 +480,13 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 			b(this, e);
 		}
 	}, Oe = {
-		M: C,
-		P: w,
-		A: fe,
+		M: S,
+		P: C,
+		A: w,
 		C: 1,
 		L: Se,
 		R: Ce,
-		D: he,
+		D: me,
 		V: b,
 		I: L,
 		H: R,
@@ -494,7 +494,7 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, me, he, O, k, ge, _e, A, ve, ye, be, j,
 		U: Ee,
 		B: we,
 		F: De
-	}, ke = x.litHtmlPolyfillSupport, ke?.(I, L), (x.litHtmlVersions ??= []).push("3.3.2"), Ae = (e, t, n) => {
+	}, ke = ue.litHtmlPolyfillSupport, ke?.(I, L), (ue.litHtmlVersions ??= []).push("3.3.2"), Ae = (e, t, n) => {
 		let r = n?.renderBefore ?? t, i = r._$litPart$;
 		if (i === void 0) {
 			let e = n?.renderBefore ?? null;
@@ -749,12 +749,46 @@ var ct = l`
     font-weight: 500;
     letter-spacing: -0.012em;
     line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
   }
 
   .subtitle {
     font-size: 14px;
     color: var(--secondary-text-color);
     margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    position: relative;
+  }
+
+  .title.overflowing .marquee-inner,
+  .subtitle.overflowing .marquee-inner {
+    display: inline-block;
+    padding-inline-end: 2em;
+  }
+
+  :host(.marquee-enabled) .title.overflowing .marquee-inner,
+  :host(.marquee-enabled) .subtitle.overflowing .marquee-inner {
+    animation: marquee-scroll 8s linear infinite;
+  }
+
+  :host(.marquee-enabled[dir="rtl"]) .title.overflowing .marquee-inner,
+  :host(.marquee-enabled[dir="rtl"]) .subtitle.overflowing .marquee-inner {
+    animation: marquee-scroll-rtl 8s linear infinite;
+  }
+
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(-50%); }
+  }
+
+  @keyframes marquee-scroll-rtl {
+    0% { transform: translateX(0%); }
+    100% { transform: translateX(50%); }
   }
 
   .fix-all-btn {
@@ -786,8 +820,6 @@ var ct = l`
   .check-list::-webkit-scrollbar { width: 6px; }
   .check-list::-webkit-scrollbar-track { background: transparent; }
   .check-list::-webkit-scrollbar-thumb { background-color: var(--divider-color); border-radius: 3px; }
-
-
 
   .header-actions {
     display: flex;
@@ -846,6 +878,83 @@ var ct = l`
     .header { flex-direction: column; align-items: flex-start; }
     .fix-all-btn { width: 100%; margin-top: 8px; }
   }
+
+  /* Snooze count badge in subtitle */
+  .snooze-count-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-inline-start: 6px;
+    color: #e59b2dff;
+    font-size: 13px;
+  }
+
+  .snooze-dialog-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 4px;
+    min-width: 260px;
+  }
+
+  .snooze-dialog-entity {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--primary-text-color);
+  }
+
+  .snooze-dialog-desc {
+    margin: 0;
+    font-size: 13px;
+    color: var(--secondary-text-color);
+  }
+
+  .snooze-presets {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .snooze-preset-btn {
+    background-color: var(--secondary-background-color, rgba(0,0,0,0.06));
+    color: var(--primary-text-color);
+    border: 1px solid var(--divider-color, rgba(0,0,0,0.12));
+    border-radius: 16px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .snooze-preset-btn:hover:not([disabled]) {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+  }
+  .snooze-preset-btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .snooze-custom-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .snooze-custom-input {
+    flex: 1;
+    border: 1px solid var(--divider-color, rgba(0,0,0,0.2));
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 13px;
+    background: var(--card-background-color);
+    color: var(--primary-text-color);
+    min-width: 0;
+  }
+  .snooze-custom-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+  }
 `;
 //#endregion
 //#region src/localize.ts
@@ -889,6 +998,9 @@ var dt, ft = t((() => {
 			fix_process_error: "Error in entity fix process",
 			editor_title: "Title",
 			layout_section: "Card Layout",
+			appearance_section: "Appearance",
+			sorting_section: "Sorting",
+			display_section: "Display",
 			layout_dir: "Item arrangement",
 			layout_col: "Columns (vertical list)",
 			layout_row: "Rows (horizontal scroll)",
@@ -896,6 +1008,14 @@ var dt, ft = t((() => {
 			max_items_row: "Items per column",
 			layout_cols_hint: "The card will be displayed in a larger width automatically.",
 			layout_rows_hint: "Items scroll horizontally across the card",
+			layout_dir_helper: "Vertical list or horizontal scroll",
+			count_helper_col: "Number of columns to spread items across",
+			count_helper_row: "Items per row before scrolling",
+			sort_direction: "Sort direction",
+			sort_asc: "Ascending",
+			sort_desc: "Descending",
+			text_mode_helper: "Long item names scroll horizontally instead of being clipped",
+			show_ok_helper: "Choose how valid items will be displayed",
 			entities_section: "Entities to check",
 			check_num: "Check ",
 			remove: "Remove",
@@ -948,7 +1068,26 @@ var dt, ft = t((() => {
 			confirm_fix: "Are you sure you want to fix {name}?",
 			advanced_settings: "Advanced Settings",
 			status_problem: "Problem",
-			status_ok: "OK"
+			status_ok: "OK",
+			cancel: "Cancel",
+			snooze: "Snooze",
+			snooze_dialog_title: "Snooze check",
+			snooze_dialog_desc: "Ignore this check for:",
+			snooze_1h: "1 hour",
+			snooze_2h: "2 hours",
+			snooze_4h: "4 hours",
+			snooze_8h: "8 hours",
+			snooze_24h: "1 day",
+			snooze_3d: "3 days",
+			snooze_custom_placeholder: "Custom hours...",
+			snooze_confirm_btn: "Snooze",
+			unsnooze: "Unsnooze",
+			snoozed_section_show: "Show {count} snoozed items",
+			snoozed_section_hide: "Hide {count} snoozed items",
+			snoozed_until: "Snoozed until {time}",
+			text_mode_label: "Long text behavior",
+			text_mode_clip: "Clip",
+			text_mode_scroll: "Auto-scroll"
 		},
 		he: {
 			card_name: "כרטיס בדיקות",
@@ -969,14 +1108,17 @@ var dt, ft = t((() => {
 			required: "נדרש",
 			attribute: "תכונה",
 			not_exists: "לא קיים",
-			current_state: "כרגע",
+			current_state: "מצב נוכחי",
 			accepted_one_of: "מקובל אחד מ",
-			fix_target: "תיקון ל",
+			fix_target: "יעד לתיקון",
 			config_error: "תצורה לא תקינה",
-			expected_pattern_error: "שגיאה בפענוח תבנית ציפייה",
+			expected_pattern_error: "שגיאה בפענוח התבנית הצפויה",
 			fix_process_error: "שגיאה בתהליך תיקון הישות",
 			editor_title: "כותרת",
-			layout_section: "פריסת הכרטיסים",
+			layout_section: "פריסת הכרטיס",
+			appearance_section: "מראה",
+			sorting_section: "מיון",
+			display_section: "תצוגה",
 			layout_dir: "סידור פריטים",
 			layout_col: "עמודות (רשימה אנכית)",
 			layout_row: "שורות (גלילה אופקית)",
@@ -984,6 +1126,14 @@ var dt, ft = t((() => {
 			max_items_row: "פריטים בעמודה",
 			layout_cols_hint: "הכרטיס יוצג ברוחב גדול יותר אוטומטית",
 			layout_rows_hint: "הפריטים נגללים אופקית לאורך הכרטיס",
+			layout_dir_helper: "רשימה אנכית או גלילה אופקית",
+			count_helper_col: "מספר העמודות שעליהן יתפרסו הפריטים",
+			count_helper_row: "פריטים בשורה לפני גלילה",
+			sort_direction: "כיוון מיון",
+			sort_asc: "עולה",
+			sort_desc: "יורד",
+			text_mode_helper: "שמות פריטים ארוכים ייגללו אופקית במקום להיחתך",
+			show_ok_helper: "בחר כיצד יוצגו פריטים תקינים",
 			entities_section: "רשימת הישויות לבדיקה",
 			check_num: "בדיקה ",
 			remove: "הסר",
@@ -1003,14 +1153,14 @@ var dt, ft = t((() => {
 			custom_fix_hint: "דוגמה: {\"service\": \"light.turn_on\"}",
 			prereq_entity: "ישות תנאי מוקדם (אופציונלי)",
 			prereq_state: "מצב נדרש",
-			prereq_hint: "הפרדה בפסיקים או != לשלילה (למשל: !=off)",
+			prereq_hint: "הפרדה בפסיקים מהווה OR, שימוש ב-!= לשלילה (למשל: !=off)",
 			add_state: "+ הוסף מצב תקין נוסף",
 			not_selected: "לא נבחרה",
 			every: "כל",
 			one_of: "אחד מ",
 			add_check: "+ הוספת בדיקה חדשה",
 			loading: "טעינת רכיבי עריכה של Home Assistant...",
-			drag_here: "העבר לכאן",
+			drag_here: "שחרר כאן",
 			sort_mode: "מיון לפי",
 			sort_manual: "ידני (גרירה)",
 			sort_status: "מצב (תקלות למעלה)",
@@ -1026,7 +1176,7 @@ var dt, ft = t((() => {
 			show_ok_section: "הצגת ישויות תקינות",
 			show_ok_inline: "ברשימה (מעורבב עם תקלות)",
 			show_ok_collapsed: "באזור מוסתר (נפתח בלחיצה)",
-			show_ok_hidden: "הסתר לחלוטין",
+			show_ok_hidden: "מוסתר לחלוטין",
 			severity: "חומרה",
 			severity_info: "מידע",
 			severity_warning: "אזהרה",
@@ -1036,7 +1186,26 @@ var dt, ft = t((() => {
 			confirm_fix: "האם לתקן את {name}?",
 			advanced_settings: "הגדרות מתקדמות",
 			status_problem: "תקלה",
-			status_ok: "תקין"
+			status_ok: "תקין",
+			cancel: "ביטול",
+			snooze: "דחה",
+			snooze_dialog_title: "דחיית בדיקה",
+			snooze_dialog_desc: "להתעלם מבדיקה זו למשך:",
+			snooze_1h: "שעה",
+			snooze_2h: "שעתיים",
+			snooze_4h: "4 שעות",
+			snooze_8h: "8 שעות",
+			snooze_24h: "יום",
+			snooze_3d: "3 ימים",
+			snooze_custom_placeholder: "שעות מותאמות...",
+			snooze_confirm_btn: "דחה",
+			unsnooze: "בטל דחייה",
+			snoozed_section_show: "הצגת {count} פריטים דחויים",
+			snoozed_section_hide: "הסתרת {count} פריטים דחויים",
+			snoozed_until: "נדחה עד {time}",
+			text_mode_label: "טיפול בטקסט ארוך",
+			text_mode_clip: "חיתוך",
+			text_mode_scroll: "גלילה אוטומטית"
 		}
 	};
 }));
@@ -1310,7 +1479,7 @@ var Ct = t((() => {}));
 H(), Ct();
 var Z = class extends V {
 	constructor(...e) {
-		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info";
+		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info", this.isSnoozed = !1, this.snoozeUntil = null, this.marqueeEnabled = !1;
 	}
 	static {
 		this.styles = l`
@@ -1334,6 +1503,9 @@ var Z = class extends V {
     }
     .check-item:hover {
       background-color: rgba(128, 128, 128, 0.1);
+    }
+    .check-item.is-snoozed {
+      opacity: 0.75;
     }
     .check-item:focus-visible {
       background-color: rgba(128, 128, 128, 0.1);
@@ -1367,6 +1539,10 @@ var Z = class extends V {
       background-color: rgba(76, 175, 80, 0.2);
       color: #4caf50;
     }
+    .icon-wrapper.snoozed {
+      background-color: rgba(229, 155, 45, 0.18);
+      color: #e59b2dff;
+    }
 
     .check-text {
       display: flex;
@@ -1382,6 +1558,7 @@ var Z = class extends V {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      position: relative;
     }
 
     .entity-state {
@@ -1391,12 +1568,37 @@ var Z = class extends V {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      position: relative;
     }
 
+    .entity-name.overflowing .marquee-inner,
+    .entity-state.overflowing .marquee-inner {
+      display: inline-block;
+      padding-inline-end: 2em;
+    }
 
+    :host(.marquee-enabled) .entity-name.overflowing .marquee-inner,
+    :host(.marquee-enabled) .entity-state.overflowing .marquee-inner {
+      animation: marquee-scroll 8s linear infinite;
+    }
+
+    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-inner,
+    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-inner {
+      animation: marquee-scroll-rtl 8s linear infinite;
+    }
+
+    @keyframes marquee-scroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes marquee-scroll-rtl {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(50%); }
+    }
 
     .fix-btn {
-      background-color: #f8aa35;
+      background-color: #e59b2dff;
       color: #ffffff;
       border: none;
       border-radius: 20px;
@@ -1438,6 +1640,42 @@ var Z = class extends V {
       font-weight: 500;
     }
 
+    .snooze-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      margin-inline-start: 12px;
+      flex-shrink: 0;
+    }
+
+    .snooze-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      color: #e59b2dff;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .snooze-badge ha-icon {
+      --mdc-icon-size: 14px;
+      color: #e59b2dff;
+    }
+
+    .unsnooze-btn {
+      background-color: transparent;
+      color: var(--secondary-text-color);
+      border: 1px solid var(--divider-color, rgba(0,0,0,0.12));
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .unsnooze-btn:hover {
+      background-color: var(--secondary-background-color);
+    }
 
   `;
 	}
@@ -1459,15 +1697,31 @@ var Z = class extends V {
 			let e = n.match(/states\(['"]([^'"]+)['"]\)/)?.[1];
 			if (e && t.states?.[e] !== this.hass.states?.[e]) return !0;
 		}
-		return t.language !== this.hass.language || t.user?.id !== this.hass.user?.id;
+		return t.language !== this.hass.language || t.user?.id !== this.hass.user?.id || (t.translationMetadata?.dir ?? (t.language === "he" ? "rtl" : "ltr")) !== (this.hass.translationMetadata?.dir ?? (this.hass.language === "he" ? "rtl" : "ltr"));
 	}
 	_handleAction(e) {
 		let t = e.detail.action;
 		if (t === "fix") return;
+		if (t === "hold" && !this.rule.hold_action) {
+			this.dispatchEvent(new CustomEvent("snooze-requested", {
+				detail: { ruleId: this.rule.id },
+				bubbles: !0,
+				composed: !0
+			}));
+			return;
+		}
+		if (t === "double_tap" && this.isProblem && !this.isSnoozed && !this.rule.double_tap_action) {
+			this.dispatchEvent(new CustomEvent("snooze-requested", {
+				detail: { ruleId: this.rule.id },
+				bubbles: !0,
+				composed: !0
+			}));
+			return;
+		}
 		let n = {
 			entity: this.rule.entity,
 			tap_action: this.rule.tap_action || { action: "more-info" },
-			hold_action: this.rule.hold_action || { action: "more-info" },
+			hold_action: this.rule.hold_action || { action: "none" },
 			double_tap_action: this.rule.double_tap_action || { action: "none" }
 		}, r = new CustomEvent("hass-action", {
 			detail: {
@@ -1478,6 +1732,26 @@ var Z = class extends V {
 			composed: !0
 		});
 		this.dispatchEvent(r);
+	}
+	_handleUnsnoozeClick(e) {
+		e.stopPropagation(), this.dispatchEvent(new CustomEvent("unsnooze-requested", {
+			detail: { ruleId: this.rule.id },
+			bubbles: !0,
+			composed: !0
+		}));
+	}
+	_formatSnoozeTime() {
+		if (!this.snoozeUntil) return "";
+		let e = new Date(this.snoozeUntil), t = /* @__PURE__ */ new Date(), n = e.toDateString() === t.toDateString() ? {
+			hour: "2-digit",
+			minute: "2-digit"
+		} : {
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit"
+		};
+		return e.toLocaleString(this.hass?.language ?? "en", n);
 	}
 	_handleFixClick(e) {
 		if (e.stopPropagation(), this.isFixing) return;
@@ -1513,42 +1787,48 @@ var Z = class extends V {
 		let n = Y(this.hass, e.state), r = !!e.attribute?.trim(), i = r ? Y(this.hass, e.attribute_value || e.state) : null;
 		return M`
       <span class="entity-state">
-        ${J(this.hass, "current_state")}: ${t}
-        (${J(this.hass, "required")}: ${n})
+        <span class="marquee-inner">${J(this.hass, "current_state")}: ${t} (${J(this.hass, "required")}: ${n})${r ? M` · ${J(this.hass, "attribute")} ${e.attribute}: ${this.stateObj?.attributes?.[e.attribute] ?? J(this.hass, "not_exists")} (${J(this.hass, "required")}: ${i})` : ""}</span>
       </span>
-      ${r ? M`
-        <span class="entity-state">
-          ${J(this.hass, "attribute")} <strong>${e.attribute}</strong>:
-          <strong>${this.stateObj?.attributes?.[e.attribute] ?? J(this.hass, "not_exists")}</strong>
-          (${J(this.hass, "required")}: ${i})
-        </span>
-      ` : ""}
     `;
 	}
 	_renderMultiConditionStatus(e) {
 		if (this.rule.conditions_mode === "any") {
 			let t = this.rule.conditions.map((e) => Y(this.hass, e.state)).join(", "), n = this.rule.default_condition_index ?? 0, r = Y(this.hass, this.rule.conditions[n]?.state ?? this.rule.conditions[0]?.state);
 			return M`
-        <span class="entity-state">${J(this.hass, "current_state")}: <strong>${e}</strong></span>
-        <span class="entity-state">${J(this.hass, "accepted_one_of")}: ${t}</span>
-        <span class="entity-state">${J(this.hass, "fix_target")}: <strong>${r}</strong></span>
+        <span class="entity-state"><span class="marquee-inner">${J(this.hass, "current_state")}: ${e} · ${J(this.hass, "accepted_one_of")}: ${t} · ${J(this.hass, "fix_target")}: ${r}</span></span>
       `;
 		}
-		let t = this.stateObj ? this.rule.conditions.filter((e) => !vt(this.hass, this.stateObj, e)) : this.rule.conditions;
+		let t = (this.stateObj ? this.rule.conditions.filter((e) => !vt(this.hass, this.stateObj, e)) : this.rule.conditions).map((e) => {
+			let t = Y(this.hass, e.state), n = e.attribute?.trim() ? ` | ${e.attribute}=${Y(this.hass, e.attribute_value || e.state)}` : "";
+			return `${J(this.hass, "status")}=${t}${n}`;
+		}).join(" · ");
 		return M`
-      <span class="entity-state">${J(this.hass, "current_state")}: ${e}</span>
-      ${t.map((e) => M`
-        <span class="entity-state">
-          ${J(this.hass, "required")}: ${J(this.hass, "status")}=${Y(this.hass, e.state)}${e.attribute?.trim() ? M` | ${e.attribute}=${Y(this.hass, e.attribute_value || e.state)}` : ""}
-        </span>
-      `)}
+      <span class="entity-state"><span class="marquee-inner">${J(this.hass, "current_state")}: ${e} · ${J(this.hass, "required")}: ${t}</span></span>
     `;
+	}
+	updated(e) {
+		super.updated(e);
+		let t = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr");
+		this.setAttribute("dir", t), this.classList.toggle("marquee-enabled", this.marqueeEnabled), this._checkOverflow();
+	}
+	_checkOverflow() {
+		let e = this.shadowRoot;
+		e && e.querySelectorAll(".entity-name, .entity-state").forEach((e) => {
+			let t = e, n = t.querySelectorAll(".marquee-inner");
+			if (n.length > 1) for (let e = 1; e < n.length; e++) n[e].remove();
+			let r = t.querySelector(".marquee-inner");
+			if (r && delete r.dataset.duplicated, t.classList.remove("overflowing"), t.offsetWidth, t.scrollWidth > t.clientWidth && this.marqueeEnabled && (t.classList.add("overflowing"), r && !r.dataset.duplicated)) {
+				r.dataset.duplicated = "true";
+				let e = r.cloneNode(!0);
+				e.removeAttribute("data-duplicated"), t.appendChild(e);
+			}
+		});
 	}
 	render() {
 		let e = this.stateObj?.state ?? J(this.hass, "unavailable"), t = this.rule.conditions.length > 1, n = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity, r = `${n}, ${J(this.hass, this.isProblem ? "status_problem" : "status_ok")}`, i = this.rule.icon;
 		return M`
       <div
-        class="check-item"
+        class="check-item${this.isSnoozed ? " is-snoozed" : ""}"
         role=${"listitem"}
         aria-label=${r}
         @action=${this._handleAction}
@@ -1560,34 +1840,41 @@ var Z = class extends V {
       >
         <ha-ripple></ha-ripple>
         <div class="entity-info-container">
-          <div class="icon-wrapper ${this.isProblem ? "problem" : "ok"}">
+          <div class="icon-wrapper ${this.isSnoozed ? "snoozed" : this.isProblem ? "problem" : "ok"}">
             ${i ? M`<ha-icon .icon=${i}></ha-icon>` : M`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`}
           </div>
           <div class="check-text">
-            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : ""}>
-              ${n}
-              ${this.rule.show_last_changed && this.stateObj ? M`
+            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : P}>
+              <span class="marquee-inner">${n}${this.rule.show_last_changed && this.stateObj ? M`
                 <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
                   <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
                 </span>
-              ` : ""}
+              ` : ""}</span>
             </span>
-            ${this.isProblem ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : M`<span class="entity-state">
-                  ${J(this.hass, "status")}: ${e}
+            ${this.isProblem || this.isSnoozed ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : M`<span class="entity-state">
+                  <span class="marquee-inner">${J(this.hass, "status")}: ${e}</span>
                 </span>`}
           </div>
         </div>
-        ${this.isProblem ? M`
-          <button 
-            class="fix-btn" 
-            @click=${this._handleFixClick} 
+        ${this.isSnoozed ? M`
+          <div class="snooze-actions">
+            <span class="snooze-badge">
+              <ha-icon icon="mdi:alarm-snooze"></ha-icon>
+              ${this.snoozeUntil ? J(this.hass, "snoozed_until", { time: this._formatSnoozeTime() }) : J(this.hass, "snooze")}
+            </span>
+            <button class="unsnooze-btn" @click=${this._handleUnsnoozeClick}>
+              ${J(this.hass, "unsnooze")}
+            </button>
+          </div>
+        ` : this.isProblem ? M`
+          <button
+            class="fix-btn"
+            @click=${this._handleFixClick}
             ?disabled=${this.isFixing}
             aria-label=${J(this.hass, "fix")}
             aria-busy=${this.isFixing}
           >
-            ${this.isFixing ? M`<div class="spinner"></div>` : M`
-                  ${J(this.hass, "fix")}
-                `}
+            ${this.isFixing ? M`<div class="spinner"></div>` : M`${J(this.hass, "fix")}`}
           </button>
         ` : M`
           <div style="min-width: 60px; display: flex; justify-content: flex-end; align-items: center;">
@@ -1601,11 +1888,42 @@ var Z = class extends V {
     `;
 	}
 };
-X([W({ attribute: !1 })], Z.prototype, "stateObj", void 0), X([W({ attribute: !1 })], Z.prototype, "rule", void 0), X([W({ attribute: !1 })], Z.prototype, "hass", void 0), X([W({ type: Boolean })], Z.prototype, "isProblem", void 0), X([W({ type: Boolean })], Z.prototype, "isFixing", void 0), X([W({ type: String })], Z.prototype, "severity", void 0), Z = X([U("checklist-card-item")], Z);
+X([W({ attribute: !1 })], Z.prototype, "stateObj", void 0), X([W({ attribute: !1 })], Z.prototype, "rule", void 0), X([W({ attribute: !1 })], Z.prototype, "hass", void 0), X([W({ type: Boolean })], Z.prototype, "isProblem", void 0), X([W({ type: Boolean })], Z.prototype, "isFixing", void 0), X([W({ type: String })], Z.prototype, "severity", void 0), X([W({ type: Boolean })], Z.prototype, "isSnoozed", void 0), X([W({ type: Number })], Z.prototype, "snoozeUntil", void 0), X([W({ type: Boolean })], Z.prototype, "marqueeEnabled", void 0), Z = X([U("checklist-card-item")], Z);
 //#endregion
-//#region src/checklist-card-editor.styles.ts
-var wt, Tt = t((() => {
-	H(), wt = l`
+//#region node_modules/memoize-one/dist/memoize-one.esm.js
+function wt(e, t) {
+	return !!(e === t || Dt(e) && Dt(t));
+}
+function Tt(e, t) {
+	if (e.length !== t.length) return !1;
+	for (var n = 0; n < e.length; n++) if (!wt(e[n], t[n])) return !1;
+	return !0;
+}
+function Et(e, t) {
+	t === void 0 && (t = Tt);
+	var n = null;
+	function r() {
+		var r = [...arguments];
+		if (n && n.lastThis === this && t(r, n.lastArgs)) return n.lastResult;
+		var i = e.apply(this, r);
+		return n = {
+			lastResult: i,
+			lastArgs: r,
+			lastThis: this
+		}, i;
+	}
+	return r.clear = function() {
+		n = null;
+	}, r;
+}
+var Dt, Ot = t((() => {
+	Dt = Number.isNaN || function(e) {
+		return typeof e == "number" && e !== e;
+	};
+})), kt, At, jt, Mt = t((() => {
+	kt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", At = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", jt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
+})), Nt, Pt = t((() => {
+	H(), Nt = l`
   .config-container {
     display: flex;
     flex-direction: column;
@@ -1627,12 +1945,45 @@ var wt, Tt = t((() => {
     color: var(--primary-text-color);
   }
 
-  /* Basic grid for sections with multiple controls */
-  .layout-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 24px;
-    align-items: center;
+  ha-form {
+    display: block;
+  }
+
+  ha-expansion-panel {
+    display: block;
+    border-radius: var(--ha-card-border-radius, 12px);
+    --expansion-panel-content-padding: 0;
+    --expansion-panel-summary-padding: 0 16px;
+    margin-bottom: 8px;
+  }
+
+  ha-expansion-panel[outlined] {
+    border: 1px solid var(--divider-color);
+  }
+
+  ha-expansion-panel .panel-content {
+    padding: 12px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  ha-expansion-panel h3 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+
+  ha-expansion-panel ha-svg-icon[slot="leading-icon"] {
+    color: var(--secondary-text-color);
+    margin-inline-end: 8px;
+  }
+
+  .panels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .check-item {
@@ -1801,13 +2152,156 @@ var wt, Tt = t((() => {
     margin-top: 4px;
   }
 `;
-})), Et = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, Dt = t((() => {
-	H(), Ge(), Tt(), ft(), Ct(), Q = class extends V {
+})), Ft = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, It = t((() => {
+	H(), Ge(), Ot(), Mt(), Pt(), ft(), Ct(), Q = class extends V {
 		constructor(...e) {
-			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1;
+			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1, this._appearanceSchema = Et((e) => [{
+				name: "",
+				type: "grid",
+				schema: [{
+					name: "layout_mode",
+					selector: { select: {
+						mode: "list",
+						options: [{
+							value: "columns",
+							label: J(this.hass, "layout_col")
+						}, {
+							value: "rows",
+							label: J(this.hass, "layout_row")
+						}]
+					} }
+				}, {
+					name: "layout_count",
+					selector: { number: {
+						min: 1,
+						max: 12,
+						step: 1,
+						mode: "box"
+					} }
+				}]
+			}, {
+				name: "text_mode",
+				selector: { select: {
+					mode: "box",
+					options: [{
+						value: "clip",
+						label: J(this.hass, "text_mode_clip")
+					}, {
+						value: "scroll",
+						label: J(this.hass, "text_mode_scroll")
+					}]
+				} }
+			}]), this._sortingSchema = Et((e, t) => {
+				let n = {
+					name: "sort",
+					selector: { select: {
+						mode: "dropdown",
+						options: [
+							{
+								value: "manual",
+								label: J(this.hass, "sort_manual")
+							},
+							{
+								value: "status",
+								label: J(this.hass, "sort_status")
+							},
+							{
+								value: "alphabetical",
+								label: J(this.hass, "sort_alphabetical")
+							},
+							{
+								value: "domain",
+								label: J(this.hass, "sort_domain")
+							},
+							{
+								value: "severity",
+								label: J(this.hass, "sort_severity")
+							},
+							{
+								value: "last_changed",
+								label: J(this.hass, "sort_last_changed")
+							}
+						]
+					} }
+				};
+				return e === "manual" ? [n] : [n, {
+					name: "sort_direction",
+					selector: { select: {
+						mode: "list",
+						options: [{
+							value: "asc",
+							label: J(this.hass, "sort_asc")
+						}, {
+							value: "desc",
+							label: J(this.hass, "sort_desc")
+						}]
+					} }
+				}];
+			}), this._displaySchema = Et((e) => [{
+				name: "show_ok_section",
+				selector: { select: {
+					mode: "list",
+					options: [
+						{
+							value: "inline",
+							label: J(this.hass, "show_ok_inline")
+						},
+						{
+							value: "collapsed",
+							label: J(this.hass, "show_ok_collapsed")
+						},
+						{
+							value: "hidden",
+							label: J(this.hass, "show_ok_hidden")
+						}
+					]
+				} }
+			}]), this._computeLabel = (e) => {
+				let t = {
+					layout_mode: "layout_dir",
+					layout_count: (this._config?.layout || {
+						mode: "columns",
+						count: 1
+					}).mode === "rows" ? "max_items_row" : "max_items_col",
+					text_mode: "text_mode_label",
+					sort: "sort_mode",
+					sort_direction: "sort_direction",
+					show_ok_section: "show_ok_section"
+				}[e.name];
+				return t ? J(this.hass, t) : e.name;
+			}, this._computeHelper = (e) => {
+				let t = {
+					layout_mode: "layout_dir_helper",
+					layout_count: (this._config?.layout || {
+						mode: "columns",
+						count: 1
+					}).mode === "rows" ? "count_helper_row" : "count_helper_col",
+					text_mode: "text_mode_helper",
+					show_ok_section: "show_ok_helper"
+				}[e.name];
+				return t ? J(this.hass, t) : void 0;
+			}, this._appearanceChanged = (e) => {
+				e.stopPropagation();
+				let t = e.detail.value || {}, n = this._config.layout || {
+					mode: "columns",
+					count: 1
+				}, r = {}, i = Math.max(1, Math.min(12, Number(t.layout_count) || 1));
+				(t.layout_mode !== n.mode || i !== n.count) && (r.layout = {
+					mode: t.layout_mode === "rows" ? "rows" : "columns",
+					count: i
+				}), t.text_mode && t.text_mode !== (this._config.text_mode || "clip") && (r.text_mode = t.text_mode), Object.keys(r).length && this._updateConfig(r);
+			}, this._sortingChanged = (e) => {
+				e.stopPropagation();
+				let t = e.detail.value || {}, n = {};
+				t.sort && t.sort !== (this._config.sort || "manual") && (n.sort = t.sort), t.sort_direction && t.sort_direction !== (this._config.sort_direction || "asc") && (n.sort_direction = t.sort_direction), Object.keys(n).length && this._updateConfig(n);
+			}, this._displayChanged = (e) => {
+				e.stopPropagation();
+				let t = e.detail.value || {};
+				t.show_ok_section && t.show_ok_section !== (this._config.show_ok_section || "inline") && this._updateConfig({ show_ok_section: t.show_ok_section });
+			};
 		}
 		static {
-			this.styles = wt;
+			this.styles = Nt;
 		}
 		setConfig(e) {
 			this._config = {
@@ -1957,6 +2451,26 @@ var wt, Tt = t((() => {
 				...t,
 				...e
 			} });
+		}
+		_appearanceData() {
+			let e = this._config.layout || {
+				mode: "columns",
+				count: 1
+			};
+			return {
+				layout_mode: e.mode === "rows" ? "rows" : "columns",
+				layout_count: e.count || 1,
+				text_mode: this._config.text_mode || "clip"
+			};
+		}
+		_sortingData() {
+			return {
+				sort: this._config.sort || "manual",
+				sort_direction: this._config.sort_direction || "asc"
+			};
+		}
+		_displayData() {
+			return { show_ok_section: this._config.show_ok_section || "inline" };
 		}
 		_getPossibleStates(e) {
 			if (!e || !this.hass?.states[e]) return [
@@ -2135,10 +2649,7 @@ var wt, Tt = t((() => {
           <div style="margin-top: 16px;">${J(this.hass, "loading")}</div>
         </div>
       `;
-			let e = this._config.checks || [], t = this._config.layout || {
-				mode: "columns",
-				count: 1
-			}, n = this._config.show_ok_section || "inline";
+			let e = this._config.checks || [];
 			return M`
       <div class="config-container" dir=${this.hass?.translationMetadata?.dir || (this.hass?.language === "he" ? "rtl" : "ltr")}>
         <ha-textfield
@@ -2147,66 +2658,51 @@ var wt, Tt = t((() => {
           @input=${(e) => this._updateConfig({ title: e.target.value })}
         ></ha-textfield>
 
-        <div class="divider"></div>
-        <h3 class="section-title">${J(this.hass, "layout_section")}</h3>
-
-        <div class="layout-grid">
-          <div class="select-wrapper">
-            <label>${J(this.hass, "show_ok_section")}</label>
-            <select
-              .value=${n}
-              @change=${(e) => this._updateConfig({ show_ok_section: e.target.value })}
-            >
-              <option value="inline" ?selected=${n === "inline"}>${J(this.hass, "show_ok_inline")}</option>
-              <option value="collapsed" ?selected=${n === "collapsed"}>${J(this.hass, "show_ok_collapsed")}</option>
-              <option value="hidden" ?selected=${n === "hidden"}>${J(this.hass, "show_ok_hidden")}</option>
-            </select>
-          </div>
-
-          <div class="select-wrapper">
-            <label>${J(this.hass, "sort_mode")}</label>
-            <select
-              .value=${this._config.sort || "manual"}
-              @change=${(e) => this._updateConfig({ sort: e.target.value })}
-            >
-              <option value="manual" ?selected=${this._config.sort === "manual"}>${J(this.hass, "sort_manual")}</option>
-              <option value="status" ?selected=${this._config.sort === "status"}>${J(this.hass, "sort_status")}</option>
-              <option value="alphabetical" ?selected=${this._config.sort === "alphabetical"}>${J(this.hass, "sort_alphabetical")}</option>
-              <option value="domain" ?selected=${this._config.sort === "domain"}>${J(this.hass, "sort_domain")}</option>
-              <option value="severity" ?selected=${this._config.sort === "severity"}>${J(this.hass, "sort_severity")}</option>
-              <option value="last_changed" ?selected=${this._config.sort === "last_changed"}>${J(this.hass, "sort_last_changed")}</option>
-            </select>
-          </div>
-
-
-
-          <div class="select-wrapper">
-            <label>${J(this.hass, "layout_dir")}</label>
-            <select
-              .value=${t.mode === "rows" ? "rows" : "columns"}
-              @change=${(e) => this._updateLayout({ mode: e.target.value })}
-            >
-              <option value="columns" ?selected=${t.mode === "columns"}>${J(this.hass, "layout_col")}</option>
-              <option value="rows" ?selected=${t.mode === "rows"}>${J(this.hass, "layout_row")}</option>
-            </select>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.05); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.1);">
-            <label style="font-weight: 500; font-size: 14px; color: var(--primary-text-color);">
-              ${J(this.hass, t.mode === "columns" ? "max_items_col" : "max_items_row")}
-            </label>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <ha-icon-button
-                .path=${"M19,13H5V11H19V13Z"}
-                @click=${() => this._updateLayout({ count: Math.max(1, (t.count || 1) - 1) })}
-              ></ha-icon-button>
-              <span style="font-size: 16px; font-weight: bold; width: 24px; text-align: center; color: var(--primary-text-color);">${t.count || 1}</span>
-              <ha-icon-button
-                .path=${"M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"}
-                @click=${() => this._updateLayout({ count: (t.count || 1) + 1 })}
-              ></ha-icon-button>
+        <div class="panels">
+          <ha-expansion-panel outlined expanded>
+            <ha-svg-icon slot="leading-icon" .path=${At}></ha-svg-icon>
+            <h3 slot="header">${J(this.hass, "appearance_section")}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._appearanceData()}
+                .schema=${this._appearanceSchema(this.hass?.language || "en")}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._appearanceChanged}
+              ></ha-form>
             </div>
-          </div>
+          </ha-expansion-panel>
+
+          <ha-expansion-panel outlined>
+            <ha-svg-icon slot="leading-icon" .path=${jt}></ha-svg-icon>
+            <h3 slot="header">${J(this.hass, "sorting_section")}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._sortingData()}
+                .schema=${this._sortingSchema(this._config.sort || "manual", this.hass?.language || "en")}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._sortingChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
+
+          <ha-expansion-panel outlined>
+            <ha-svg-icon slot="leading-icon" .path=${kt}></ha-svg-icon>
+            <h3 slot="header">${J(this.hass, "display_section")}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._displayData()}
+                .schema=${this._displaySchema(this.hass?.language || "en")}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._displayChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
         </div>
 
         <div class="divider"></div>
@@ -2455,13 +2951,13 @@ var wt, Tt = t((() => {
 H(), Ge(), st(), ft(), _t(), Ct();
 var $ = class extends V {
 	constructor(...e) {
-		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._problemIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [];
+		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._showSnoozedExpanded = !1, this._snoozeData = {}, this._snoozeDialogRule = null, this._customSnoozeHours = "", this._problemIds = /* @__PURE__ */ new Set(), this._snoozedIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [], this._snoozeTimer = null, this._snoozeDataLoaded = !1;
 	}
 	static {
 		this.styles = ct;
 	}
 	static getConfigElement() {
-		return Promise.resolve().then(() => (Dt(), Et)).then(() => document.createElement("checklist-card-editor"));
+		return Promise.resolve().then(() => (It(), Ft)).then(() => document.createElement("checklist-card-editor"));
 	}
 	getCardSize() {
 		let e = this._config?.checks?.length ?? 1, t = this._layoutCols(), n = Math.ceil(e / t);
@@ -2526,10 +3022,34 @@ var $ = class extends V {
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback();
+		super.connectedCallback(), this._snoozeTimer = window.setInterval(() => {
+			this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this.requestUpdate();
+		}, 6e4);
 	}
 	disconnectedCallback() {
-		super.disconnectedCallback();
+		super.disconnectedCallback(), this._snoozeTimer !== null && (clearInterval(this._snoozeTimer), this._snoozeTimer = null);
+	}
+	updated(e) {
+		super.updated(e), e.has("hass") && this.hass && !this._snoozeDataLoaded && (this._snoozeDataLoaded = !0, this._loadSnoozeData());
+		let t = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr");
+		this.setAttribute("dir", t);
+		let n = this._config?.text_mode === "scroll";
+		this.classList.toggle("marquee-enabled", n), this._checkHeaderOverflow();
+	}
+	_checkHeaderOverflow() {
+		let e = this.shadowRoot;
+		if (!e) return;
+		let t = this._config?.text_mode === "scroll";
+		e.querySelectorAll(".title, .subtitle").forEach((e) => {
+			let n = e, r = n.querySelectorAll(".marquee-inner");
+			if (r.length > 1) for (let e = 1; e < r.length; e++) r[e].remove();
+			let i = n.querySelector(".marquee-inner");
+			if (i && delete i.dataset.duplicated, n.classList.remove("overflowing"), n.offsetWidth, n.scrollWidth > n.clientWidth && t && (n.classList.add("overflowing"), i && !i.dataset.duplicated)) {
+				i.dataset.duplicated = "true";
+				let e = i.cloneNode(!0);
+				e.removeAttribute("data-duplicated"), n.appendChild(e);
+			}
+		});
 	}
 	shouldUpdate(e) {
 		if (e.size > 1 || !e.has("hass")) return !0;
@@ -2537,7 +3057,7 @@ var $ = class extends V {
 		return !t || this._watchedEntityIds.length === 0 ? !0 : this._watchedEntityIds.some((e) => t.states?.[e] !== this.hass.states?.[e]);
 	}
 	willUpdate(e) {
-		super.willUpdate(e), e.has("_config") && (this._watchedEntityIds = this._collectWatchedEntityIds(), this._listStyle = this._computeListStyle()), (e.has("_config") || e.has("hass")) && (this._problemIds = this._calculateProblemIds(), this._checksToDisplay = this._computeChecksToDisplay());
+		super.willUpdate(e), e.has("_config") && (this._watchedEntityIds = this._collectWatchedEntityIds(), this._listStyle = this._computeListStyle()), (e.has("_config") || e.has("hass") || e.has("_snoozeData")) && (this._snoozedIds = this._calculateSnoozedIds(), this._problemIds = this._calculateProblemIds(), this._checksToDisplay = this._computeChecksToDisplay());
 	}
 	_collectWatchedEntityIds() {
 		let e = /* @__PURE__ */ new Set(), t = /states\(['"]([^'"]+)['"]\)/g, n = (n) => {
@@ -2587,8 +3107,62 @@ var $ = class extends V {
 			return n < r ? this._config.sort_direction === "desc" ? 1 : -1 : n > r ? this._config.sort_direction === "desc" ? -1 : 1 : 0;
 		}), e;
 	}
+	_calculateSnoozedIds() {
+		if (!this._config?.checks) return /* @__PURE__ */ new Set();
+		let e = Date.now();
+		return new Set(this._config.checks.filter((t) => t.entity && this._snoozeData[t.id] && this._snoozeData[t.id] > e).map((e) => e.id));
+	}
 	_calculateProblemIds() {
-		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => yt(this.hass, e)).map((e) => e.id));
+		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => yt(this.hass, e) && !this._snoozedIds.has(e.id)).map((e) => e.id));
+	}
+	async _loadSnoozeData() {
+		if (this.hass?.callWS) try {
+			let e = await this.hass.callWS({
+				type: "frontend/get_user_data",
+				key: "checklist_card_snooze_v1"
+			});
+			if (e?.value && typeof e.value == "object") {
+				let t = Date.now(), n = {};
+				for (let [r, i] of Object.entries(e.value)) i > t && (n[r] = i);
+				this._snoozeData = n;
+			}
+		} catch (e) {
+			console.warn("[checklist-card] Could not load snooze data:", e);
+		}
+	}
+	async _saveSnoozeData() {
+		if (this.hass?.callWS) try {
+			await this.hass.callWS({
+				type: "frontend/set_user_data",
+				key: "checklist_card_snooze_v1",
+				value: this._snoozeData
+			});
+		} catch (e) {
+			console.warn("[checklist-card] Could not save snooze data:", e);
+		}
+	}
+	async _snoozeItem(e, t) {
+		let n = Date.now() + t * 36e5;
+		this._snoozeData = {
+			...this._snoozeData,
+			[e.id]: n
+		}, this._snoozeDialogRule = null, this._customSnoozeHours = "", await this._saveSnoozeData();
+	}
+	async _unsnoozeItem(e) {
+		let t = { ...this._snoozeData };
+		delete t[e], this._snoozeData = t, await this._saveSnoozeData();
+	}
+	_formatSnoozeExpiry(e) {
+		let t = new Date(e), n = /* @__PURE__ */ new Date(), r = this.hass?.language ?? "en", i = t.toDateString() === n.toDateString() ? {
+			hour: "2-digit",
+			minute: "2-digit"
+		} : {
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit"
+		};
+		return t.toLocaleString(r, i);
 	}
 	async _fixCondition(e, t) {
 		let n = e.split(".")[0], r = { entity_id: e };
@@ -2659,10 +3233,24 @@ var $ = class extends V {
 		let t = this._config.checks.find((t) => t.id === e.detail.ruleId);
 		t && this._fixIssue(t);
 	}
+	_handleSnoozeRequested(e) {
+		let t = this._config.checks.find((t) => t.id === e.detail.ruleId);
+		t && (this._snoozeDialogRule = t);
+	}
+	_handleUnsnoozeRequested(e) {
+		this._unsnoozeItem(e.detail.ruleId);
+	}
+	_handleCustomSnooze() {
+		let e = parseFloat(this._customSnoozeHours);
+		this._snoozeDialogRule && e > 0 && e <= 8760 && this._snoozeItem(this._snoozeDialogRule, e);
+	}
 	render() {
 		if (!this._config) return M``;
-		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), i = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id)), a = this._config.show_ok_section || "inline";
-		return e === 0 && a === "hidden" ? (this.style.display = "none", M``) : (this.style.display = "", M`
+		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._snoozedIds.size, i = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), a = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id) && !this._snoozedIds.has(e.id)), o = this._config.checks.filter((e) => e.entity && this._snoozedIds.has(e.id)), s = this._config.show_ok_section || "inline";
+		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", M``;
+		this.style.display = "";
+		let c = this._snoozeDialogRule, l = c ? c.name || this.hass?.states[c.entity]?.attributes?.friendly_name || c.entity : "";
+		return M`
       <ha-card dir=${n} role="region" aria-label=${this._config.title || J(this.hass, "title")}>
         ${this._errorBanner ? M`
           <ha-alert alert-type="error" dismissable @alert-dismissed-clicked=${() => this._errorBanner = null}>
@@ -2676,22 +3264,34 @@ var $ = class extends V {
               <ha-icon icon="${t ? "mdi:alert" : "mdi:check-circle"}"></ha-icon>
             </span>
             <div>
-              <div class="title">${this._config.title || J(this.hass, "title")}</div>
+              <div class="title"><span class="marquee-inner">${this._config.title || J(this.hass, "title")}</span></div>
               <div class="subtitle" aria-live="polite">
-                ${t ? J(this.hass, "problems_found", { count: e }) : J(this.hass, "all_good")}
+                <span class="marquee-inner">${t ? J(this.hass, "problems_found", { count: e }) : J(this.hass, "all_good")}${r > 0 ? M`
+                  <span class="snooze-count-badge">
+                    <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
+                    ${r}
+                  </span>
+                ` : ""}</span>
               </div>
             </div>
           </div>
 
           <div class="header-actions">
-            ${a === "collapsed" && i.length > 0 ? M`
+            ${s === "collapsed" && a.length > 0 ? M`
               <button class="ok-toggle-btn" @click=${() => this._showOkExpanded = !this._showOkExpanded}>
                 <ha-icon icon="mdi:check-circle"></ha-icon>
-                ${this._showOkExpanded ? J(this.hass, "hide_ok_items_btn", { count: i.length }) : J(this.hass, "show_ok_items_btn", { count: i.length })}
+                ${this._showOkExpanded ? J(this.hass, "hide_ok_items_btn", { count: a.length }) : J(this.hass, "show_ok_items_btn", { count: a.length })}
               </button>
             ` : ""}
 
-            ${r.length > 0 ? M`
+            ${o.length > 0 ? M`
+              <button class="ok-toggle-btn" @click=${() => this._showSnoozedExpanded = !this._showSnoozedExpanded}>
+                <ha-icon icon="mdi:alarm-snooze" style="color: #e59b2dff;"></ha-icon>
+                ${this._showSnoozedExpanded ? J(this.hass, "snoozed_section_hide", { count: o.length }) : J(this.hass, "snoozed_section_show", { count: o.length })}
+              </button>
+            ` : ""}
+
+            ${i.length > 0 ? M`
               <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${J(this.hass, "fix_all")}>
                 ${this._isFixingAll ? M`<div class="spinner"></div>` : J(this.hass, "fix_all")}
               </button>
@@ -2699,14 +3299,82 @@ var $ = class extends V {
           </div>
         </div>
 
-        <div class="check-list" style="${this._listStyle}" role="list" @fix-requested=${this._handleFixRequested}>
-          ${this._renderItems(a === "inline" ? this._checksToDisplay : r)}
-          ${a === "collapsed" && this._showOkExpanded ? this._renderItems(i) : ""}
+        <div
+          class="check-list"
+          style="${this._listStyle}"
+          role="list"
+          @fix-requested=${this._handleFixRequested}
+          @snooze-requested=${this._handleSnoozeRequested}
+          @unsnooze-requested=${this._handleUnsnoozeRequested}
+        >
+          ${this._renderItems(s === "inline" ? [...i, ...a] : i)}
+          ${s === "collapsed" && this._showOkExpanded ? this._renderItems(a) : ""}
+          ${this._showSnoozedExpanded ? this._renderSnoozedItems(o) : ""}
         </div>
       </ha-card>
-    `);
+
+      ${c ? M`
+        <ha-dialog
+          .open=${!0}
+          @closed=${() => {
+			this._snoozeDialogRule = null, this._customSnoozeHours = "";
+		}}
+          .heading=${J(this.hass, "snooze_dialog_title")}
+        >
+          <div class="snooze-dialog-content">
+            <div class="snooze-dialog-entity">${l}</div>
+            <p class="snooze-dialog-desc">${J(this.hass, "snooze_dialog_desc")}</p>
+            <div class="snooze-presets">
+              ${[
+			1,
+			2,
+			4,
+			8,
+			24,
+			72
+		].map((e, t) => M`
+                <button class="snooze-preset-btn" @click=${() => this._snoozeItem(c, e)}>
+                  ${J(this.hass, [
+			"snooze_1h",
+			"snooze_2h",
+			"snooze_4h",
+			"snooze_8h",
+			"snooze_24h",
+			"snooze_3d"
+		][t])}
+                </button>
+              `)}
+            </div>
+            <div class="snooze-custom-row">
+              <input
+                type="number"
+                class="snooze-custom-input"
+                min="1"
+                max="8760"
+                .value=${this._customSnoozeHours}
+                @input=${(e) => this._customSnoozeHours = e.target.value}
+                placeholder=${J(this.hass, "snooze_custom_placeholder")}
+              />
+              <button
+                class="snooze-preset-btn snooze-custom-confirm"
+                ?disabled=${!this._customSnoozeHours || parseFloat(this._customSnoozeHours) <= 0}
+                @click=${this._handleCustomSnooze}
+              >
+                ${J(this.hass, "snooze_confirm_btn")}
+              </button>
+            </div>
+          </div>
+          <mwc-button slot="secondaryAction" @click=${() => {
+			this._snoozeDialogRule = null, this._customSnoozeHours = "";
+		}}>
+            ${J(this.hass, "cancel")}
+          </mwc-button>
+        </ha-dialog>
+      ` : ""}
+    `;
 	}
 	_renderItems(e) {
+		let t = this._config?.text_mode === "scroll";
 		return at(e, (e) => e.id, (e) => M`
         <checklist-card-item
           .rule=${e}
@@ -2715,11 +3383,28 @@ var $ = class extends V {
           .isProblem=${this._problemIds.has(e.id)}
           .isFixing=${this._fixingItems.has(e.id)}
           .severity=${e.severity || "info"}
+          .marqueeEnabled=${t}
+        ></checklist-card-item>
+      `);
+	}
+	_renderSnoozedItems(e) {
+		let t = this._config?.text_mode === "scroll";
+		return at(e, (e) => e.id, (e) => M`
+        <checklist-card-item
+          .rule=${e}
+          .hass=${this.hass}
+          .stateObj=${this.hass.states[e.entity]}
+          .isProblem=${!1}
+          .isFixing=${!1}
+          .isSnoozed=${!0}
+          .snoozeUntil=${this._snoozeData[e.id] ?? null}
+          .severity=${e.severity || "info"}
+          .marqueeEnabled=${t}
         ></checklist-card-item>
       `);
 	}
 };
-X([W({ attribute: !1 })], $.prototype, "hass", void 0), X([G()], $.prototype, "_config", void 0), X([G()], $.prototype, "_isFixingAll", void 0), X([G()], $.prototype, "_fixingItems", void 0), X([G()], $.prototype, "_errorBanner", void 0), X([G()], $.prototype, "_showOkExpanded", void 0), $ = X([U("checklist-card")], $), Dt(), ft(), window.customCards = window.customCards || [], window.customCards.push({
+X([W({ attribute: !1 })], $.prototype, "hass", void 0), X([G()], $.prototype, "_config", void 0), X([G()], $.prototype, "_isFixingAll", void 0), X([G()], $.prototype, "_fixingItems", void 0), X([G()], $.prototype, "_errorBanner", void 0), X([G()], $.prototype, "_showOkExpanded", void 0), X([G()], $.prototype, "_showSnoozedExpanded", void 0), X([G()], $.prototype, "_snoozeData", void 0), X([G()], $.prototype, "_snoozeDialogRule", void 0), X([G()], $.prototype, "_customSnoozeHours", void 0), $ = X([U("checklist-card")], $), It(), ft(), window.customCards = window.customCards || [], window.customCards.push({
 	type: "checklist-card",
 	name: lt("card_name"),
 	description: lt("card_description"),

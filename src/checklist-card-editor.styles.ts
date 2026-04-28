@@ -1,3 +1,7 @@
+/**
+ * @file checklist-card-editor.styles.ts
+ * @description Lit CSS styles for the ChecklistCardEditor component.
+ */
 import { css } from 'lit';
 
 export const editorStyles = css`
@@ -22,12 +26,45 @@ export const editorStyles = css`
     color: var(--primary-text-color);
   }
 
-  /* Basic grid for sections with multiple controls */
-  .layout-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 24px;
-    align-items: center;
+  ha-form {
+    display: block;
+  }
+
+  ha-expansion-panel {
+    display: block;
+    border-radius: var(--ha-card-border-radius, 12px);
+    --expansion-panel-content-padding: 0;
+    --expansion-panel-summary-padding: 0 16px;
+    margin-bottom: 8px;
+  }
+
+  ha-expansion-panel[outlined] {
+    border: 1px solid var(--divider-color);
+  }
+
+  ha-expansion-panel .panel-content {
+    padding: 12px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  ha-expansion-panel h3 {
+    margin: 0;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+
+  ha-expansion-panel ha-svg-icon[slot="leading-icon"] {
+    color: var(--secondary-text-color);
+    margin-inline-end: 8px;
+  }
+
+  .panels {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .check-item {

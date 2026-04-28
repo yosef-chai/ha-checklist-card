@@ -52,6 +52,7 @@ export interface HomeAssistant {
     serviceData?: Record<string, unknown>,
     target?: { entity_id?: string | string[]; device_id?: string | string[]; area_id?: string | string[] }
   ): Promise<void>;
+  callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;
   connection: any;
   language: string;
   translationMetadata?: {
@@ -63,6 +64,10 @@ export interface HomeAssistant {
     is_admin?: boolean;
     is_owner?: boolean;
   };
+}
+
+export interface SnoozeData {
+  [ruleId: string]: number; // expiry timestamp in ms
 }
 
 export interface ConfirmationConfig {
@@ -140,4 +145,5 @@ export interface CardConfig {
   sort_direction?: 'asc' | 'desc';
   show_ok_section?: ShowOkSection;
   tap_action?: ActionConfig;
+  text_mode?: 'clip' | 'scroll';
 }

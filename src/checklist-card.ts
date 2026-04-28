@@ -6,10 +6,16 @@ import { cardStyles } from './checklist-card.styles';
 import { localize, localizeStatic } from './localize';
 import { ensureCheckId, getStandardServiceCall, ensureDefaults } from './utils';
 import { isRuleProblem, checkCondition, evaluateExpectedState } from './conditions';
-import type { HomeAssistant, CardConfig, CheckRule, StateCondition } from './types';
+import type { HomeAssistant, CardConfig, CheckRule, StateCondition, SnoozeData } from './types';
 import { DELAY_BETWEEN_SERVICES } from './types';
-import './checklist-card-item'; // Import the item component
+import './checklist-card-item';
 
+/**
+ * Lovelace card that monitors a list of entity state checks, highlights
+ * problems, and provides one-click service calls to resolve them.
+ *
+ * @element checklist-card
+ */
 @customElement('checklist-card')
 export class ChecklistCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -19,10 +25,17 @@ export class ChecklistCard extends LitElement {
   @state() private _fixingItems: Set<string> = new Set();
   @state() private _errorBanner: string | null = null;
   @state() private _showOkExpanded = false;
+  @state() private _showSnoozedExpanded = false;
+  @state() private _snoozeData: SnoozeData = {};
+  @state() private _snoozeDialogRule: CheckRule | null = null;
+  @state() private _customSnoozeHours = '';
   private _problemIds: Set<string> = new Set();
+  private _snoozedIds: Set<string> = new Set();
   private _checksToDisplay: CheckRule[] = [];
   private _listStyle = 'display: flex; flex-direction: column; gap: 12px;';
   private _watchedEntityIds: string[] = [];
+  private _snoozeTimer: number | null = null;
+  private _snoozeDataLoaded = false;
 
   static styles = cardStyles;
 
@@ -96,10 +109,63 @@ export class ChecklistCard extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
+    this._snoozeTimer = window.setInterval(() => {
+      // Re-derive snooze state so expired snoozes are cleared from the UI
+      this._snoozedIds = this._calculateSnoozedIds();
+      this._problemIds = this._calculateProblemIds();
+      this.requestUpdate();
+    }, 60_000);
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
+    if (this._snoozeTimer !== null) {
+      clearInterval(this._snoozeTimer);
+      this._snoozeTimer = null;
+    }
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has('hass') && this.hass && !this._snoozeDataLoaded) {
+      this._snoozeDataLoaded = true;
+      this._loadSnoozeData();
+    }
+    const dir = this.hass?.translationMetadata?.dir ?? (this.hass?.language === 'he' ? 'rtl' : 'ltr');
+    this.setAttribute('dir', dir);
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
+    this.classList.toggle('marquee-enabled', marqueeEnabled);
+    this._checkHeaderOverflow();
+  }
+
+  private _checkHeaderOverflow() {
+    const root = this.shadowRoot;
+    if (!root) return;
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
+    const elements = root.querySelectorAll('.title, .subtitle');
+    elements.forEach(el => {
+      const htmlEl = el as HTMLElement;
+      const inners = htmlEl.querySelectorAll('.marquee-inner');
+      if (inners.length > 1) {
+        for (let i = 1; i < inners.length; i++) inners[i].remove();
+      }
+      const firstInner = htmlEl.querySelector('.marquee-inner') as HTMLElement;
+      if (firstInner) delete firstInner.dataset.duplicated;
+      htmlEl.classList.remove('overflowing');
+
+      void htmlEl.offsetWidth;
+      const isOverflowing = htmlEl.scrollWidth > htmlEl.clientWidth;
+
+      if (isOverflowing && marqueeEnabled) {
+        htmlEl.classList.add('overflowing');
+        if (firstInner && !firstInner.dataset.duplicated) {
+          firstInner.dataset.duplicated = 'true';
+          const clone = firstInner.cloneNode(true) as HTMLElement;
+          clone.removeAttribute('data-duplicated');
+          htmlEl.appendChild(clone);
+        }
+      }
+    });
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -124,9 +190,9 @@ export class ChecklistCard extends LitElement {
       this._listStyle = this._computeListStyle();
     }
 
-    // Recompute derived state whenever config or a watched entity changed.
-    // (shouldUpdate has already filtered out irrelevant hass updates.)
-    if (changedProps.has('_config') || changedProps.has('hass')) {
+    // Recompute derived state whenever config, hass, or snooze data changed.
+    if (changedProps.has('_config') || changedProps.has('hass') || changedProps.has('_snoozeData')) {
+      this._snoozedIds = this._calculateSnoozedIds();
       this._problemIds = this._calculateProblemIds();
       this._checksToDisplay = this._computeChecksToDisplay();
     }
@@ -215,11 +281,83 @@ export class ChecklistCard extends LitElement {
     return sorted;
   }
 
+  private _calculateSnoozedIds(): Set<string> {
+    if (!this._config?.checks) return new Set();
+    const now = Date.now();
+    return new Set(
+      this._config.checks
+        .filter(rule => rule.entity && this._snoozeData[rule.id] && this._snoozeData[rule.id] > now)
+        .map(rule => rule.id)
+    );
+  }
+
   private _calculateProblemIds(): Set<string> {
     if (!this.hass || !this._config?.checks) return new Set();
     return new Set(
-      this._config.checks.filter(rule => isRuleProblem(this.hass, rule)).map(rule => rule.id)
+      this._config.checks
+        .filter(rule => isRuleProblem(this.hass, rule) && !this._snoozedIds.has(rule.id))
+        .map(rule => rule.id)
     );
+  }
+
+  private async _loadSnoozeData() {
+    if (!this.hass?.callWS) return;
+    try {
+      const result = await this.hass.callWS<{ value: SnoozeData | null }>({
+        type: 'frontend/get_user_data',
+        key: 'checklist_card_snooze_v1',
+      });
+      if (result?.value && typeof result.value === 'object') {
+        // Prune already-expired entries on load
+        const now = Date.now();
+        const pruned: SnoozeData = {};
+        for (const [id, expiry] of Object.entries(result.value)) {
+          if (expiry > now) pruned[id] = expiry;
+        }
+        this._snoozeData = pruned;
+      }
+    } catch (e) {
+      console.warn('[checklist-card] Could not load snooze data:', e);
+    }
+  }
+
+  private async _saveSnoozeData() {
+    if (!this.hass?.callWS) return;
+    try {
+      await this.hass.callWS({
+        type: 'frontend/set_user_data',
+        key: 'checklist_card_snooze_v1',
+        value: this._snoozeData,
+      });
+    } catch (e) {
+      console.warn('[checklist-card] Could not save snooze data:', e);
+    }
+  }
+
+  private async _snoozeItem(rule: CheckRule, hours: number) {
+    const expiry = Date.now() + hours * 3_600_000;
+    this._snoozeData = { ...this._snoozeData, [rule.id]: expiry };
+    this._snoozeDialogRule = null;
+    this._customSnoozeHours = '';
+    await this._saveSnoozeData();
+  }
+
+  private async _unsnoozeItem(ruleId: string) {
+    const updated = { ...this._snoozeData };
+    delete updated[ruleId];
+    this._snoozeData = updated;
+    await this._saveSnoozeData();
+  }
+
+  private _formatSnoozeExpiry(expiry: number): string {
+    const d = new Date(expiry);
+    const now = new Date();
+    const lang = this.hass?.language ?? 'en';
+    const opts: Intl.DateTimeFormatOptions =
+      d.toDateString() === now.toDateString()
+        ? { hour: '2-digit', minute: '2-digit' }
+        : { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return d.toLocaleString(lang, opts);
   }
 
   private async _fixCondition(entityId: string, condition: StateCondition) {
@@ -270,8 +408,8 @@ export class ChecklistCard extends LitElement {
     try {
       await this.hass.callService(callDetails.domain || domain, callDetails.service, { ...baseServiceData, ...callDetails.serviceData });
     } catch (e) {
-       console.error("Service call failed", e);
-       this._errorBanner = localize(this.hass, 'fix_process_error') + ' - ' + String(e);
+      console.error("Service call failed", e);
+      this._errorBanner = localize(this.hass, 'fix_process_error') + ' - ' + String(e);
     }
   }
 
@@ -311,12 +449,12 @@ export class ChecklistCard extends LitElement {
   private async _fixAll() {
     this._isFixingAll = true;
     this._errorBanner = null;
-    
+
     const sevWeight = { 'critical': 0, 'warning': 1, 'info': 2 };
     const problems = this._config.checks
       .filter(rule => rule.entity && this._problemIds.has(rule.id))
       .sort((a, b) => sevWeight[a.severity || 'info'] - sevWeight[b.severity || 'info']);
-      
+
     for (const rule of problems) {
       await this._fixIssue(rule);
       await new Promise(r => setTimeout(r, DELAY_BETWEEN_SERVICES));
@@ -329,7 +467,21 @@ export class ChecklistCard extends LitElement {
     if (rule) this._fixIssue(rule);
   }
 
+  private _handleSnoozeRequested(e: CustomEvent) {
+    const rule = this._config.checks.find(r => r.id === e.detail.ruleId);
+    if (rule) this._snoozeDialogRule = rule;
+  }
 
+  private _handleUnsnoozeRequested(e: CustomEvent) {
+    this._unsnoozeItem(e.detail.ruleId);
+  }
+
+  private _handleCustomSnooze() {
+    const hours = parseFloat(this._customSnoozeHours);
+    if (this._snoozeDialogRule && hours > 0 && hours <= 8760) {
+      this._snoozeItem(this._snoozeDialogRule, hours);
+    }
+  }
 
   render() {
     if (!this._config) return html``;
@@ -337,18 +489,25 @@ export class ChecklistCard extends LitElement {
     const problemCount = this._problemIds.size;
     const hasProblems = problemCount > 0;
     const dir = this.hass?.translationMetadata?.dir ?? (this.hass?.language === 'he' ? 'rtl' : 'ltr');
+    const snoozedCount = this._snoozedIds.size;
 
     const problems = this._checksToDisplay.filter(c => this._problemIds.has(c.id));
-    const oks = this._checksToDisplay.filter(c => !this._problemIds.has(c.id));
-    
+    const oks = this._checksToDisplay.filter(c => !this._problemIds.has(c.id) && !this._snoozedIds.has(c.id));
+    const snoozed = this._config.checks.filter(c => c.entity && this._snoozedIds.has(c.id));
+
     const showOkMode = this._config.show_ok_section || 'inline';
 
-    if (problemCount === 0 && showOkMode === 'hidden') {
+    if (problemCount === 0 && snoozedCount === 0 && showOkMode === 'hidden') {
       this.style.display = 'none';
       return html``;
     } else {
       this.style.display = '';
     }
+
+    const dialogRule = this._snoozeDialogRule;
+    const dialogName = dialogRule
+      ? (dialogRule.name || this.hass?.states[dialogRule.entity]?.attributes?.friendly_name || dialogRule.entity)
+      : '';
 
     return html`
       <ha-card dir=${dir} role="region" aria-label=${this._config.title || localize(this.hass, 'title')}>
@@ -364,11 +523,16 @@ export class ChecklistCard extends LitElement {
               <ha-icon icon="${hasProblems ? 'mdi:alert' : 'mdi:check-circle'}"></ha-icon>
             </span>
             <div>
-              <div class="title">${this._config.title || localize(this.hass, 'title')}</div>
+              <div class="title"><span class="marquee-inner">${this._config.title || localize(this.hass, 'title')}</span></div>
               <div class="subtitle" aria-live="polite">
-                ${hasProblems
-                  ? localize(this.hass, 'problems_found', { count: problemCount })
-                  : localize(this.hass, 'all_good')}
+                <span class="marquee-inner">${hasProblems
+        ? localize(this.hass, 'problems_found', { count: problemCount })
+        : localize(this.hass, 'all_good')}${snoozedCount > 0 ? html`
+                  <span class="snooze-count-badge">
+                    <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
+                    ${snoozedCount}
+                  </span>
+                ` : ''}</span>
               </div>
             </div>
           </div>
@@ -381,6 +545,15 @@ export class ChecklistCard extends LitElement {
               </button>
             ` : ''}
 
+            ${snoozed.length > 0 ? html`
+              <button class="ok-toggle-btn" @click=${() => this._showSnoozedExpanded = !this._showSnoozedExpanded}>
+                <ha-icon icon="mdi:alarm-snooze" style="color: #e59b2dff;"></ha-icon>
+                ${this._showSnoozedExpanded
+          ? localize(this.hass, 'snoozed_section_hide', { count: snoozed.length })
+          : localize(this.hass, 'snoozed_section_show', { count: snoozed.length })}
+              </button>
+            ` : ''}
+
             ${problems.length > 0 ? html`
               <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${localize(this.hass, 'fix_all')}>
                 ${this._isFixingAll ? html`<div class="spinner"></div>` : localize(this.hass, 'fix_all')}
@@ -389,15 +562,65 @@ export class ChecklistCard extends LitElement {
           </div>
         </div>
 
-        <div class="check-list" style="${this._listStyle}" role="list" @fix-requested=${this._handleFixRequested}>
-          ${this._renderItems(showOkMode === 'inline' ? this._checksToDisplay : problems)}
+        <div
+          class="check-list"
+          style="${this._listStyle}"
+          role="list"
+          @fix-requested=${this._handleFixRequested}
+          @snooze-requested=${this._handleSnoozeRequested}
+          @unsnooze-requested=${this._handleUnsnoozeRequested}
+        >
+          ${this._renderItems(showOkMode === 'inline' ? [...problems, ...oks] : problems)}
           ${showOkMode === 'collapsed' && this._showOkExpanded ? this._renderItems(oks) : ''}
+          ${this._showSnoozedExpanded ? this._renderSnoozedItems(snoozed) : ''}
         </div>
       </ha-card>
+
+      ${dialogRule ? html`
+        <ha-dialog
+          .open=${true}
+          @closed=${() => { this._snoozeDialogRule = null; this._customSnoozeHours = ''; }}
+          .heading=${localize(this.hass, 'snooze_dialog_title')}
+        >
+          <div class="snooze-dialog-content">
+            <div class="snooze-dialog-entity">${dialogName}</div>
+            <p class="snooze-dialog-desc">${localize(this.hass, 'snooze_dialog_desc')}</p>
+            <div class="snooze-presets">
+              ${([1, 2, 4, 8, 24, 72] as const).map((h, i) => html`
+                <button class="snooze-preset-btn" @click=${() => this._snoozeItem(dialogRule, h)}>
+                  ${localize(this.hass, (['snooze_1h', 'snooze_2h', 'snooze_4h', 'snooze_8h', 'snooze_24h', 'snooze_3d'] as const)[i])}
+                </button>
+              `)}
+            </div>
+            <div class="snooze-custom-row">
+              <input
+                type="number"
+                class="snooze-custom-input"
+                min="1"
+                max="8760"
+                .value=${this._customSnoozeHours}
+                @input=${(e: Event) => this._customSnoozeHours = (e.target as HTMLInputElement).value}
+                placeholder=${localize(this.hass, 'snooze_custom_placeholder')}
+              />
+              <button
+                class="snooze-preset-btn snooze-custom-confirm"
+                ?disabled=${!this._customSnoozeHours || parseFloat(this._customSnoozeHours) <= 0}
+                @click=${this._handleCustomSnooze}
+              >
+                ${localize(this.hass, 'snooze_confirm_btn')}
+              </button>
+            </div>
+          </div>
+          <mwc-button slot="secondaryAction" @click=${() => { this._snoozeDialogRule = null; this._customSnoozeHours = ''; }}>
+            ${localize(this.hass, 'cancel')}
+          </mwc-button>
+        </ha-dialog>
+      ` : ''}
     `;
   }
 
   private _renderItems(items: CheckRule[]) {
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
     return repeat(
       items,
       c => c.id,
@@ -409,6 +632,28 @@ export class ChecklistCard extends LitElement {
           .isProblem=${this._problemIds.has(c.id)}
           .isFixing=${this._fixingItems.has(c.id)}
           .severity=${c.severity || 'info'}
+          .marqueeEnabled=${marqueeEnabled}
+        ></checklist-card-item>
+      `
+    );
+  }
+
+  private _renderSnoozedItems(items: CheckRule[]) {
+    const marqueeEnabled = this._config?.text_mode === 'scroll';
+    return repeat(
+      items,
+      c => c.id,
+      c => html`
+        <checklist-card-item
+          .rule=${c}
+          .hass=${this.hass}
+          .stateObj=${this.hass.states[c.entity]}
+          .isProblem=${false}
+          .isFixing=${false}
+          .isSnoozed=${true}
+          .snoozeUntil=${this._snoozeData[c.id] ?? null}
+          .severity=${c.severity || 'info'}
+          .marqueeEnabled=${marqueeEnabled}
         ></checklist-card-item>
       `
     );

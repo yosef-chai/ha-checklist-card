@@ -1,12 +1,21 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
+import memoizeOne from 'memoize-one';
+import { mdiPalette, mdiSort, mdiEyeOutline } from '@mdi/js';
 
 import { editorStyles } from './checklist-card-editor.styles';
 import { localize } from './localize';
 import { ensureCheckId, makeEmptyCondition } from './utils';
 import type { HomeAssistant, CardConfig, CheckRule, StateCondition, LayoutConfig } from './types';
 
+/**
+ * Visual configuration editor for {@link ChecklistCard}, rendered inside the
+ * Home Assistant card editor panel.
+ *
+ * @element checklist-card-editor
+ * @fires config-changed - Dispatched with the updated {@link CardConfig} on every field change.
+ */
 @customElement('checklist-card-editor')
 export class ChecklistCardEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
@@ -199,6 +208,190 @@ export class ChecklistCardEditor extends LitElement {
     this._updateConfig({ layout: { ...current, ...updates } });
   }
 
+  // ---- Layout / Sorting / Display panels (HA ha-form schemas) ----
+  //
+  // Schema field names are flat (`layout_mode`, `layout_count`) rather than
+  // nested under `layout.*`. This keeps `computeLabel`/`computeHelper` simple:
+  // each name maps unambiguously to a localize key, and conditional labels
+  // (e.g. `count_helper_col` vs `count_helper_row`) read the *current*
+  // `_config.layout.mode` from the live config rather than from the schema —
+  // see `_computeLabel`/`_computeHelper` below.
+
+  private _appearanceData() {
+    const layout = this._config.layout || { mode: 'columns', count: 1 };
+    return {
+      layout_mode: layout.mode === 'rows' ? 'rows' : 'columns',
+      layout_count: layout.count || 1,
+      text_mode: this._config.text_mode || 'clip',
+    };
+  }
+
+  private _sortingData() {
+    return {
+      sort: this._config.sort || 'manual',
+      sort_direction: this._config.sort_direction || 'asc',
+    };
+  }
+
+  private _displayData() {
+    return {
+      show_ok_section: this._config.show_ok_section || 'inline',
+    };
+  }
+
+  // Schemas memoized on the inputs that actually change them (language for
+  // localized option labels; `sort` for conditional sort_direction field).
+  private _appearanceSchema = memoizeOne((_lang: string) => [
+    {
+      name: '',
+      type: 'grid',
+      schema: [
+        {
+          name: 'layout_mode',
+          selector: {
+            select: {
+              mode: 'list',
+              options: [
+                { value: 'columns', label: localize(this.hass, 'layout_col') },
+                { value: 'rows', label: localize(this.hass, 'layout_row') },
+              ],
+            },
+          },
+        },
+        {
+          name: 'layout_count',
+          selector: { number: { min: 1, max: 12, step: 1, mode: 'box' } },
+        },
+      ],
+    },
+    {
+      name: 'text_mode',
+      selector: {
+        select: {
+          mode: 'box',
+          options: [
+            { value: 'clip', label: localize(this.hass, 'text_mode_clip') },
+            { value: 'scroll', label: localize(this.hass, 'text_mode_scroll') },
+          ],
+        },
+      },
+    },
+  ]);
+
+  private _sortingSchema = memoizeOne((sort: string, _lang: string) => {
+    const sortField = {
+      name: 'sort',
+      selector: {
+        select: {
+          mode: 'dropdown',
+          options: [
+            { value: 'manual', label: localize(this.hass, 'sort_manual') },
+            { value: 'status', label: localize(this.hass, 'sort_status') },
+            { value: 'alphabetical', label: localize(this.hass, 'sort_alphabetical') },
+            { value: 'domain', label: localize(this.hass, 'sort_domain') },
+            { value: 'severity', label: localize(this.hass, 'sort_severity') },
+            { value: 'last_changed', label: localize(this.hass, 'sort_last_changed') },
+          ],
+        },
+      },
+    };
+    if (sort === 'manual') return [sortField];
+    return [
+      sortField,
+      {
+        name: 'sort_direction',
+        selector: {
+          select: {
+            mode: 'list',
+            options: [
+              { value: 'asc', label: localize(this.hass, 'sort_asc') },
+              { value: 'desc', label: localize(this.hass, 'sort_desc') },
+            ],
+          },
+        },
+      },
+    ];
+  });
+
+  private _displaySchema = memoizeOne((_lang: string) => [
+    {
+      name: 'show_ok_section',
+      selector: {
+        select: {
+          mode: 'list',
+          options: [
+            { value: 'inline', label: localize(this.hass, 'show_ok_inline') },
+            { value: 'collapsed', label: localize(this.hass, 'show_ok_collapsed') },
+            { value: 'hidden', label: localize(this.hass, 'show_ok_hidden') },
+          ],
+        },
+      },
+    },
+  ]);
+
+  // computeLabel/Helper read live config (not just schema.name) so that
+  // labels like "Number of columns" vs "Items per column" track the current
+  // `layout.mode` even though the schema field name is the same.
+  private _computeLabel = (schema: { name: string }): string => {
+    const layout = this._config?.layout || { mode: 'columns', count: 1 };
+    const map: Record<string, string> = {
+      layout_mode: 'layout_dir',
+      layout_count: layout.mode === 'rows' ? 'max_items_row' : 'max_items_col',
+      text_mode: 'text_mode_label',
+      sort: 'sort_mode',
+      sort_direction: 'sort_direction',
+      show_ok_section: 'show_ok_section',
+    };
+    const key = map[schema.name];
+    return key ? localize(this.hass, key) : schema.name;
+  };
+
+  private _computeHelper = (schema: { name: string }): string | undefined => {
+    const layout = this._config?.layout || { mode: 'columns', count: 1 };
+    const map: Record<string, string> = {
+      layout_mode: 'layout_dir_helper',
+      layout_count: layout.mode === 'rows' ? 'count_helper_row' : 'count_helper_col',
+      text_mode: 'text_mode_helper',
+      show_ok_section: 'show_ok_helper',
+    };
+    const key = map[schema.name];
+    return key ? localize(this.hass, key) : undefined;
+  };
+
+  private _appearanceChanged = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    const v = ev.detail.value || {};
+    const layout = this._config.layout || { mode: 'columns', count: 1 };
+    const updates: Partial<CardConfig> = {};
+    const newCount = Math.max(1, Math.min(12, Number(v.layout_count) || 1));
+    if (v.layout_mode !== layout.mode || newCount !== layout.count) {
+      updates.layout = { mode: v.layout_mode === 'rows' ? 'rows' : 'columns', count: newCount };
+    }
+    if (v.text_mode && v.text_mode !== (this._config.text_mode || 'clip')) {
+      updates.text_mode = v.text_mode;
+    }
+    if (Object.keys(updates).length) this._updateConfig(updates);
+  };
+
+  private _sortingChanged = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    const v = ev.detail.value || {};
+    const updates: Partial<CardConfig> = {};
+    if (v.sort && v.sort !== (this._config.sort || 'manual')) updates.sort = v.sort;
+    if (v.sort_direction && v.sort_direction !== (this._config.sort_direction || 'asc')) {
+      updates.sort_direction = v.sort_direction;
+    }
+    if (Object.keys(updates).length) this._updateConfig(updates);
+  };
+
+  private _displayChanged = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    const v = ev.detail.value || {};
+    if (v.show_ok_section && v.show_ok_section !== (this._config.show_ok_section || 'inline')) {
+      this._updateConfig({ show_ok_section: v.show_ok_section });
+    }
+  };
+
   private _getPossibleStates(entityId: string): string[] {
     if (!entityId || !this.hass?.states[entityId]) {
       return ['on', 'off', 'unavailable', 'unknown'];
@@ -324,9 +517,6 @@ export class ChecklistCardEditor extends LitElement {
     }
 
     const checks = this._config.checks || [];
-    const layout = this._config.layout || { mode: 'columns', count: 1 };
-    
-    const showOkMode = this._config.show_ok_section || 'inline';
 
     return html`
       <div class="config-container" dir=${this.hass?.translationMetadata?.dir || (this.hass?.language === 'he' ? 'rtl' : 'ltr')}>
@@ -336,66 +526,51 @@ export class ChecklistCardEditor extends LitElement {
           @input=${(e: Event) => this._updateConfig({ title: (e.target as HTMLInputElement).value })}
         ></ha-textfield>
 
-        <div class="divider"></div>
-        <h3 class="section-title">${localize(this.hass, 'layout_section')}</h3>
-
-        <div class="layout-grid">
-          <div class="select-wrapper">
-            <label>${localize(this.hass, 'show_ok_section')}</label>
-            <select
-              .value=${showOkMode}
-              @change=${(e: Event) => this._updateConfig({ show_ok_section: (e.target as HTMLSelectElement).value as any })}
-            >
-              <option value="inline" ?selected=${showOkMode === 'inline'}>${localize(this.hass, 'show_ok_inline')}</option>
-              <option value="collapsed" ?selected=${showOkMode === 'collapsed'}>${localize(this.hass, 'show_ok_collapsed')}</option>
-              <option value="hidden" ?selected=${showOkMode === 'hidden'}>${localize(this.hass, 'show_ok_hidden')}</option>
-            </select>
-          </div>
-
-          <div class="select-wrapper">
-            <label>${localize(this.hass, 'sort_mode')}</label>
-            <select
-              .value=${this._config.sort || 'manual'}
-              @change=${(e: Event) => this._updateConfig({ sort: (e.target as HTMLSelectElement).value as any })}
-            >
-              <option value="manual" ?selected=${this._config.sort === 'manual'}>${localize(this.hass, 'sort_manual')}</option>
-              <option value="status" ?selected=${this._config.sort === 'status'}>${localize(this.hass, 'sort_status')}</option>
-              <option value="alphabetical" ?selected=${this._config.sort === 'alphabetical'}>${localize(this.hass, 'sort_alphabetical')}</option>
-              <option value="domain" ?selected=${this._config.sort === 'domain'}>${localize(this.hass, 'sort_domain')}</option>
-              <option value="severity" ?selected=${this._config.sort === 'severity'}>${localize(this.hass, 'sort_severity')}</option>
-              <option value="last_changed" ?selected=${this._config.sort === 'last_changed'}>${localize(this.hass, 'sort_last_changed')}</option>
-            </select>
-          </div>
-
-
-
-          <div class="select-wrapper">
-            <label>${localize(this.hass, 'layout_dir')}</label>
-            <select
-              .value=${layout.mode === 'rows' ? 'rows' : 'columns'}
-              @change=${(e: Event) => this._updateLayout({ mode: (e.target as HTMLSelectElement).value as 'columns' | 'rows' })}
-            >
-              <option value="columns" ?selected=${layout.mode === 'columns'}>${localize(this.hass, 'layout_col')}</option>
-              <option value="rows" ?selected=${layout.mode === 'rows'}>${localize(this.hass, 'layout_row')}</option>
-            </select>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.05); padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.1);">
-            <label style="font-weight: 500; font-size: 14px; color: var(--primary-text-color);">
-              ${localize(this.hass, layout.mode === 'columns' ? 'max_items_col' : 'max_items_row')}
-            </label>
-            <div style="display: flex; align-items: center; gap: 8px;">
-              <ha-icon-button
-                .path=${'M19,13H5V11H19V13Z'}
-                @click=${() => this._updateLayout({ count: Math.max(1, (layout.count || 1) - 1) })}
-              ></ha-icon-button>
-              <span style="font-size: 16px; font-weight: bold; width: 24px; text-align: center; color: var(--primary-text-color);">${layout.count || 1}</span>
-              <ha-icon-button
-                .path=${'M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z'}
-                @click=${() => this._updateLayout({ count: (layout.count || 1) + 1 })}
-              ></ha-icon-button>
+        <div class="panels">
+          <ha-expansion-panel outlined expanded>
+            <ha-svg-icon slot="leading-icon" .path=${mdiPalette}></ha-svg-icon>
+            <h3 slot="header">${localize(this.hass, 'appearance_section')}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._appearanceData()}
+                .schema=${this._appearanceSchema(this.hass?.language || 'en')}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._appearanceChanged}
+              ></ha-form>
             </div>
-          </div>
+          </ha-expansion-panel>
+
+          <ha-expansion-panel outlined>
+            <ha-svg-icon slot="leading-icon" .path=${mdiSort}></ha-svg-icon>
+            <h3 slot="header">${localize(this.hass, 'sorting_section')}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._sortingData()}
+                .schema=${this._sortingSchema(this._config.sort || 'manual', this.hass?.language || 'en')}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._sortingChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
+
+          <ha-expansion-panel outlined>
+            <ha-svg-icon slot="leading-icon" .path=${mdiEyeOutline}></ha-svg-icon>
+            <h3 slot="header">${localize(this.hass, 'display_section')}</h3>
+            <div class="panel-content">
+              <ha-form
+                .hass=${this.hass}
+                .data=${this._displayData()}
+                .schema=${this._displaySchema(this.hass?.language || 'en')}
+                .computeLabel=${this._computeLabel}
+                .computeHelper=${this._computeHelper}
+                @value-changed=${this._displayChanged}
+              ></ha-form>
+            </div>
+          </ha-expansion-panel>
         </div>
 
         <div class="divider"></div>

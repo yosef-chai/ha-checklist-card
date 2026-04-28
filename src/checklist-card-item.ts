@@ -1,4 +1,4 @@
-import { LitElement, html, css, PropertyValues } from 'lit';
+import { LitElement, html, css, PropertyValues, nothing } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { actionHandler } from './action-handler';
@@ -6,6 +6,15 @@ import { localize } from './localize';
 import { evaluateExpectedState, checkCondition } from './conditions';
 import type { CheckRule, HomeAssistant, StateCondition } from './types';
 
+/**
+ * Single row component that renders one {@link CheckRule} inside a checklist card.
+ * Dispatches bubbling events for fix, snooze, and unsnooze actions.
+ *
+ * @element checklist-card-item
+ * @fires fix-requested - Requests the parent card to execute the fix service for this rule.
+ * @fires snooze-requested - Requests the parent card to open the snooze dialog for this rule.
+ * @fires unsnooze-requested - Requests the parent card to cancel the active snooze for this rule.
+ */
 @customElement('checklist-card-item')
 export class ChecklistCardItem extends LitElement {
   @property({ attribute: false }) public stateObj!: HassEntity | undefined;
@@ -14,6 +23,9 @@ export class ChecklistCardItem extends LitElement {
   @property({ type: Boolean }) public isProblem = false;
   @property({ type: Boolean }) public isFixing = false;
   @property({ type: String }) public severity: 'info' | 'warning' | 'critical' = 'info';
+  @property({ type: Boolean }) public isSnoozed = false;
+  @property({ type: Number }) public snoozeUntil: number | null = null;
+  @property({ type: Boolean }) public marqueeEnabled = false;
 
   static styles = css`
     :host {
@@ -36,6 +48,9 @@ export class ChecklistCardItem extends LitElement {
     }
     .check-item:hover {
       background-color: rgba(128, 128, 128, 0.1);
+    }
+    .check-item.is-snoozed {
+      opacity: 0.75;
     }
     .check-item:focus-visible {
       background-color: rgba(128, 128, 128, 0.1);
@@ -69,6 +84,10 @@ export class ChecklistCardItem extends LitElement {
       background-color: rgba(76, 175, 80, 0.2);
       color: #4caf50;
     }
+    .icon-wrapper.snoozed {
+      background-color: rgba(229, 155, 45, 0.18);
+      color: #e59b2dff;
+    }
 
     .check-text {
       display: flex;
@@ -84,6 +103,7 @@ export class ChecklistCardItem extends LitElement {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      position: relative;
     }
 
     .entity-state {
@@ -93,12 +113,37 @@ export class ChecklistCardItem extends LitElement {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+      position: relative;
     }
 
+    .entity-name.overflowing .marquee-inner,
+    .entity-state.overflowing .marquee-inner {
+      display: inline-block;
+      padding-inline-end: 2em;
+    }
 
+    :host(.marquee-enabled) .entity-name.overflowing .marquee-inner,
+    :host(.marquee-enabled) .entity-state.overflowing .marquee-inner {
+      animation: marquee-scroll 8s linear infinite;
+    }
+
+    :host(.marquee-enabled[dir="rtl"]) .entity-name.overflowing .marquee-inner,
+    :host(.marquee-enabled[dir="rtl"]) .entity-state.overflowing .marquee-inner {
+      animation: marquee-scroll-rtl 8s linear infinite;
+    }
+
+    @keyframes marquee-scroll {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+
+    @keyframes marquee-scroll-rtl {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(50%); }
+    }
 
     .fix-btn {
-      background-color: #f8aa35;
+      background-color: #e59b2dff;
       color: #ffffff;
       border: none;
       border-radius: 20px;
@@ -140,6 +185,42 @@ export class ChecklistCardItem extends LitElement {
       font-weight: 500;
     }
 
+    .snooze-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      margin-inline-start: 12px;
+      flex-shrink: 0;
+    }
+
+    .snooze-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      color: #e59b2dff;
+      font-size: 12px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .snooze-badge ha-icon {
+      --mdc-icon-size: 14px;
+      color: #e59b2dff;
+    }
+
+    .unsnooze-btn {
+      background-color: transparent;
+      color: var(--secondary-text-color);
+      border: 1px solid var(--divider-color, rgba(0,0,0,0.12));
+      border-radius: 12px;
+      padding: 4px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .unsnooze-btn:hover {
+      background-color: var(--secondary-background-color);
+    }
 
   `;
 
@@ -176,21 +257,42 @@ export class ChecklistCardItem extends LitElement {
       }
     }
 
-    // Language or user identity change (affects localize output / confirmation exemptions).
+    // Language, direction, or user identity change (affects localize output / confirmation exemptions / marquee direction).
     if (oldHass.language !== this.hass.language) return true;
     if (oldHass.user?.id !== this.hass.user?.id) return true;
+    const oldDir = oldHass.translationMetadata?.dir ?? (oldHass.language === 'he' ? 'rtl' : 'ltr');
+    const newDir = this.hass.translationMetadata?.dir ?? (this.hass.language === 'he' ? 'rtl' : 'ltr');
+    if (oldDir !== newDir) return true;
 
     return false;
   }
 
   private _handleAction(ev: CustomEvent) {
     const action = ev.detail.action;
-    if (action === 'fix') return; // internal action
+    if (action === 'fix') return;
+
+    // Hold / double-tap open the snooze dialog when no custom action is configured.
+    if (action === 'hold' && !this.rule.hold_action) {
+      this.dispatchEvent(new CustomEvent('snooze-requested', {
+        detail: { ruleId: this.rule.id },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
+    if (action === 'double_tap' && this.isProblem && !this.isSnoozed && !this.rule.double_tap_action) {
+      this.dispatchEvent(new CustomEvent('snooze-requested', {
+        detail: { ruleId: this.rule.id },
+        bubbles: true,
+        composed: true,
+      }));
+      return;
+    }
 
     const config = {
       entity: this.rule.entity,
       tap_action: this.rule.tap_action || { action: 'more-info' },
-      hold_action: this.rule.hold_action || { action: 'more-info' },
+      hold_action: this.rule.hold_action || { action: 'none' },
       double_tap_action: this.rule.double_tap_action || { action: 'none' },
     };
 
@@ -204,16 +306,35 @@ export class ChecklistCardItem extends LitElement {
 
 
 
+  private _handleUnsnoozeClick(e: Event) {
+    e.stopPropagation();
+    this.dispatchEvent(new CustomEvent('unsnooze-requested', {
+      detail: { ruleId: this.rule.id },
+      bubbles: true,
+      composed: true,
+    }));
+  }
+
+  private _formatSnoozeTime(): string {
+    if (!this.snoozeUntil) return '';
+    const d = new Date(this.snoozeUntil);
+    const now = new Date();
+    const opts: Intl.DateTimeFormatOptions =
+      d.toDateString() === now.toDateString()
+        ? { hour: '2-digit', minute: '2-digit' }
+        : { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return d.toLocaleString(this.hass?.language ?? 'en', opts);
+  }
+
   private _handleFixClick(e: Event) {
     e.stopPropagation();
     if (this.isFixing) return;
 
-    // Check confirmation
     if (this.rule.confirmation) {
       let text = localize(this.hass, 'confirm_fix', { name: this.rule.name || this.rule.entity });
       if (typeof this.rule.confirmation === 'object') {
         if (this.rule.confirmation.exemptions?.some(ex => ex.user === this.hass.user?.id)) {
-          // Exempted
+          // user is in exemption list — skip the confirmation dialog
         } else {
           text = this.rule.confirmation.text || text;
           if (!window.confirm(text)) return;
@@ -250,16 +371,8 @@ export class ChecklistCardItem extends LitElement {
 
     return html`
       <span class="entity-state">
-        ${localize(this.hass, 'current_state')}: ${currentState}
-        (${localize(this.hass, 'required')}: ${expectedState})
+        <span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} (${localize(this.hass, 'required')}: ${expectedState})${hasAttr ? html` · ${localize(this.hass, 'attribute')} ${condition.attribute}: ${this.stateObj?.attributes?.[condition.attribute!] ?? localize(this.hass, 'not_exists')} (${localize(this.hass, 'required')}: ${expectedAttrValue})` : ''}</span>
       </span>
-      ${hasAttr ? html`
-        <span class="entity-state">
-          ${localize(this.hass, 'attribute')} <strong>${condition.attribute}</strong>:
-          <strong>${this.stateObj?.attributes?.[condition.attribute!] ?? localize(this.hass, 'not_exists')}</strong>
-          (${localize(this.hass, 'required')}: ${expectedAttrValue})
-        </span>
-      ` : ''}
     `;
   }
 
@@ -272,23 +385,63 @@ export class ChecklistCardItem extends LitElement {
         this.rule.conditions[defaultIdx]?.state ?? this.rule.conditions[0]?.state
       );
       return html`
-        <span class="entity-state">${localize(this.hass, 'current_state')}: <strong>${currentState}</strong></span>
-        <span class="entity-state">${localize(this.hass, 'accepted_one_of')}: ${stateList}</span>
-        <span class="entity-state">${localize(this.hass, 'fix_target')}: <strong>${fixTarget}</strong></span>
+        <span class="entity-state"><span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'accepted_one_of')}: ${stateList} · ${localize(this.hass, 'fix_target')}: ${fixTarget}</span></span>
       `;
     }
 
     const failingConditions = this.stateObj
       ? this.rule.conditions.filter(c => !checkCondition(this.hass, this.stateObj!, c))
       : this.rule.conditions;
+    const failInfo = failingConditions.map(c => {
+      const s = evaluateExpectedState(this.hass, c.state);
+      const attrPart = c.attribute?.trim() ? ` | ${c.attribute}=${evaluateExpectedState(this.hass, c.attribute_value || c.state)}` : '';
+      return `${localize(this.hass, 'status')}=${s}${attrPart}`;
+    }).join(' · ');
     return html`
-      <span class="entity-state">${localize(this.hass, 'current_state')}: ${currentState}</span>
-      ${failingConditions.map(c => html`
-        <span class="entity-state">
-          ${localize(this.hass, 'required')}: ${localize(this.hass, 'status')}=${evaluateExpectedState(this.hass, c.state)}${c.attribute?.trim() ? html` | ${c.attribute}=${evaluateExpectedState(this.hass, c.attribute_value || c.state)}` : ''}
-        </span>
-      `)}
+      <span class="entity-state"><span class="marquee-inner">${localize(this.hass, 'current_state')}: ${currentState} · ${localize(this.hass, 'required')}: ${failInfo}</span></span>
     `;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    const dir = this.hass?.translationMetadata?.dir ?? (this.hass?.language === 'he' ? 'rtl' : 'ltr');
+    this.setAttribute('dir', dir);
+    this.classList.toggle('marquee-enabled', this.marqueeEnabled);
+    this._checkOverflow();
+  }
+
+  private _checkOverflow() {
+    const root = this.shadowRoot;
+    if (!root) return;
+    const elements = root.querySelectorAll('.entity-name, .entity-state');
+    elements.forEach(el => {
+      const htmlEl = el as HTMLElement;
+
+      // 1. Clean up: remove duplicate spans and overflowing state
+      const inners = htmlEl.querySelectorAll('.marquee-inner');
+      if (inners.length > 1) {
+        for (let i = 1; i < inners.length; i++) inners[i].remove();
+      }
+      const firstInner = htmlEl.querySelector('.marquee-inner') as HTMLElement;
+      if (firstInner) delete firstInner.dataset.duplicated;
+      htmlEl.classList.remove('overflowing');
+
+      // 2. Force synchronous reflow so scrollWidth reflects the cleaned-up DOM
+      void htmlEl.offsetWidth;
+
+      // 3. Now measure accurately
+      const isOverflowing = htmlEl.scrollWidth > htmlEl.clientWidth;
+
+      if (isOverflowing && this.marqueeEnabled) {
+        htmlEl.classList.add('overflowing');
+        if (firstInner && !firstInner.dataset.duplicated) {
+          firstInner.dataset.duplicated = 'true';
+          const clone = firstInner.cloneNode(true) as HTMLElement;
+          clone.removeAttribute('data-duplicated');
+          htmlEl.appendChild(clone);
+        }
+      }
+    });
   }
 
   render() {
@@ -303,7 +456,7 @@ export class ChecklistCardItem extends LitElement {
 
     return html`
       <div
-        class="check-item"
+        class="check-item${this.isSnoozed ? ' is-snoozed' : ''}"
         role=${role}
         aria-label=${ariaLabel}
         @action=${this._handleAction}
@@ -315,44 +468,51 @@ export class ChecklistCardItem extends LitElement {
       >
         <ha-ripple></ha-ripple>
         <div class="entity-info-container">
-          <div class="icon-wrapper ${this.isProblem ? 'problem' : 'ok'}">
+          <div class="icon-wrapper ${this.isSnoozed ? 'snoozed' : this.isProblem ? 'problem' : 'ok'}">
             ${icon
         ? html`<ha-icon .icon=${icon}></ha-icon>`
         : html`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`
       }
           </div>
           <div class="check-text">
-            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : ''}>
-              ${displayName}
-              ${this.rule.show_last_changed && this.stateObj ? html`
+            <span class="entity-name" style=${this.rule.color ? `color: ${this.rule.color}` : nothing}>
+              <span class="marquee-inner">${displayName}${this.rule.show_last_changed && this.stateObj ? html`
                 <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
                   <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
                 </span>
-              ` : ''}
+              ` : ''}</span>
             </span>
-            ${this.isProblem
+            ${this.isProblem || this.isSnoozed
         ? isMulti
           ? this._renderMultiConditionStatus(currentState)
           : this._renderSingleConditionStatus(this.rule.conditions[0], currentState)
         : html`<span class="entity-state">
-                  ${localize(this.hass, 'status')}: ${currentState}
+                  <span class="marquee-inner">${localize(this.hass, 'status')}: ${currentState}</span>
                 </span>`
       }
           </div>
         </div>
-        ${this.isProblem ? html`
-          <button 
-            class="fix-btn" 
-            @click=${this._handleFixClick} 
+        ${this.isSnoozed ? html`
+          <div class="snooze-actions">
+            <span class="snooze-badge">
+              <ha-icon icon="mdi:alarm-snooze"></ha-icon>
+              ${this.snoozeUntil ? localize(this.hass, 'snoozed_until', { time: this._formatSnoozeTime() }) : localize(this.hass, 'snooze')}
+            </span>
+            <button class="unsnooze-btn" @click=${this._handleUnsnoozeClick}>
+              ${localize(this.hass, 'unsnooze')}
+            </button>
+          </div>
+        ` : this.isProblem ? html`
+          <button
+            class="fix-btn"
+            @click=${this._handleFixClick}
             ?disabled=${this.isFixing}
             aria-label=${localize(this.hass, 'fix')}
             aria-busy=${this.isFixing}
           >
             ${this.isFixing
           ? html`<div class="spinner"></div>`
-          : html`
-                  ${localize(this.hass, 'fix')}
-                `
+          : html`${localize(this.hass, 'fix')}`
         }
           </button>
         ` : html`
