@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://raw.githubusercontent.com/yosef-chai/ha-checklist-card/master/logo.png" alt="Checklist Card logo" width="128" height="128" />
+</p>
+
 # Checklist Card for Home Assistant
 
 [![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
@@ -9,7 +13,7 @@
 
 A Lovelace custom card that monitors a list of entity states against expected values and surfaces any problems - with a single **Fix** or **Fix All** button to call the correct Home Assistant service automatically.
 
-![Checklist Card preview](demo.png)
+![Checklist Card preview](https://raw.githubusercontent.com/yosef-chai/ha-checklist-card/master/demo.png)
 
 ---
 
