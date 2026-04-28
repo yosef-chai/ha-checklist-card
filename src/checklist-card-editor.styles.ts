@@ -68,26 +68,27 @@ export const editorStyles = css`
   }
 
   .check-item {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-    border: 1px solid var(--divider-color);
+    display: block;
     border-radius: var(--ha-card-border-radius, 12px);
-    background: var(--card-background-color);
-    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    transition: box-shadow 0.2s ease-in-out;
   }
 
-  .check-item.dragging {
+  .check-item ha-expansion-panel {
+    margin-bottom: 0;
+  }
+
+  .check-item.dragging ha-expansion-panel {
     opacity: 0.5;
-    border: 2px dashed var(--primary-color);
-    background: var(--secondary-background-color);
+    border-color: var(--primary-color);
   }
 
   .check-item.drop-target {
+    position: relative;
+  }
+
+  .check-item.drop-target ha-expansion-panel {
     border: 2px dashed var(--primary-color) !important;
     background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05) !important;
-    position: relative;
   }
 
   .check-item.drop-target::before {
@@ -107,39 +108,63 @@ export const editorStyles = css`
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
-  .check-header {
+  .check-panel-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
   }
 
-  .check-header-left {
+  .check-panel-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .check-panel-subtitle {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .check-panel-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
+  }
+
+  .check-panel-actions ha-icon-button {
+    --mdc-icon-button-size: 36px;
+    --mdc-icon-size: 20px;
+    color: var(--secondary-text-color);
+  }
+
+  .check-panel-actions ha-icon-button.remove-btn {
+    color: var(--error-color);
   }
 
   .drag-handle {
     cursor: grab;
     color: var(--secondary-text-color);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 4px;
+    margin-inline-end: 4px;
   }
 
   .drag-handle:active {
     cursor: grabbing;
   }
 
-  .drag-handle ha-icon {
-    --mdc-icon-size: 24px;
-  }
-
-  .check-header strong {
-    font-size: 16px;
-    font-weight: 500;
-    margin-left: 8px;
+  .drag-handle ha-svg-icon {
+    --mdc-icon-size: 22px;
   }
 
   .add-btn {

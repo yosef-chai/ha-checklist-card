@@ -2,7 +2,15 @@ import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 import memoizeOne from 'memoize-one';
-import { mdiPalette, mdiSort, mdiEyeOutline } from '@mdi/js';
+import {
+  mdiPalette,
+  mdiSort,
+  mdiEyeOutline,
+  mdiDrag,
+  mdiArrowUp,
+  mdiArrowDown,
+  mdiDelete,
+} from '@mdi/js';
 
 import { editorStyles } from './checklist-card-editor.styles';
 import { localize } from './localize';
@@ -149,11 +157,13 @@ export class ChecklistCardEditor extends LitElement {
     this._updateConfig({ checks });
   }
 
-  private _toggleCollapse(id: string) {
-    this._collapsed = {
-      ...this._collapsed,
-      [id]: !(this._collapsed[id] ?? false),
-    };
+  private _expansionChanged(id: string, ev: CustomEvent) {
+    ev.stopPropagation();
+    const expanded = (ev.detail as { expanded?: boolean })?.expanded;
+    if (typeof expanded !== 'boolean') return;
+    const isCollapsed = !expanded;
+    if ((this._collapsed[id] ?? false) === isCollapsed) return;
+    this._collapsed = { ...this._collapsed, [id]: isCollapsed };
   }
 
   private _moveCheck(index: number, direction: 'up' | 'down') {
@@ -574,6 +584,14 @@ export class ChecklistCardEditor extends LitElement {
           const isCollapsed = this._collapsed[check.id] ?? false;
           const conditions = check.conditions || [];
           const isMulti = conditions.length > 1;
+          const headerLabel = check.name
+            ? check.name
+            : check.entity
+              ? (this.hass.states[check.entity]?.attributes?.friendly_name || check.entity)
+              : `${localize(this.hass, 'check_num')}${index + 1}`;
+          const headerSubtitle = check.entity
+            ? `${localize(this.hass, 'check_num')}${index + 1} · ${check.entity}`
+            : `${localize(this.hass, 'check_num')}${index + 1} · ${localize(this.hass, 'not_selected')}`;
 
           return html`
             <div class="check-item ${this._draggedIndex === index ? 'dragging' : ''} ${this._dropTargetIndex === index ? 'drop-target' : ''}"
@@ -582,30 +600,48 @@ export class ChecklistCardEditor extends LitElement {
                  @drop=${(e: DragEvent) => this._drop(e, index)}
                  @dragend=${this._dragEnd}>
 
-              <div class="check-header">
-                <div class="check-header-left">
-                  <span class="drag-handle" draggable="true"
-                        @dragstart=${(e: DragEvent) => this._dragStart(e, index)}>
-                    <ha-icon icon="mdi:drag"></ha-icon>
-                  </span>
-                  <ha-icon-button .disabled=${index === 0} @click=${() => this._moveCheck(index, 'up')}>
-                    <ha-icon icon="mdi:arrow-up"></ha-icon>
-                  </ha-icon-button>
-                  <ha-icon-button .disabled=${index === checks.length - 1} @click=${() => this._moveCheck(index, 'down')}>
-                    <ha-icon icon="mdi:arrow-down"></ha-icon>
-                  </ha-icon-button>
-                  <ha-icon-button @click=${() => this._toggleCollapse(check.id)}>
-                    <ha-icon icon="${isCollapsed ? 'mdi:chevron-down' : 'mdi:chevron-up'}"></ha-icon>
-                  </ha-icon-button>
-                  <strong>${localize(this.hass, 'check_num')}${index + 1}</strong>
+              <ha-expansion-panel
+                outlined
+                .expanded=${!isCollapsed}
+                @expanded-changed=${(e: CustomEvent) => this._expansionChanged(check.id, e)}
+              >
+                <span
+                  slot="leading-icon"
+                  class="drag-handle"
+                  draggable="true"
+                  title=${localize(this.hass, 'drag_here')}
+                  @dragstart=${(e: DragEvent) => this._dragStart(e, index)}
+                  @click=${(e: Event) => e.stopPropagation()}
+                >
+                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
+                </span>
+                <div slot="header" class="check-panel-header">
+                  <span class="check-panel-title">${headerLabel}</span>
+                  <span class="check-panel-subtitle">${headerSubtitle}</span>
                 </div>
-                <ha-button class="remove-btn" @click=${() => this._removeCheck(index)} style="--mdc-theme-primary: var(--error-color);">
-                  ${localize(this.hass, 'remove')}
-                </ha-button>
-              </div>
+                <div slot="icons" class="check-panel-actions" @click=${(e: Event) => e.stopPropagation()}>
+                  <ha-icon-button
+                    .label=${localize(this.hass, 'check_num') + (index + 1) + ' ↑'}
+                    .path=${mdiArrowUp}
+                    .disabled=${index === 0}
+                    @click=${(e: Event) => { e.stopPropagation(); this._moveCheck(index, 'up'); }}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    .label=${localize(this.hass, 'check_num') + (index + 1) + ' ↓'}
+                    .path=${mdiArrowDown}
+                    .disabled=${index === checks.length - 1}
+                    @click=${(e: Event) => { e.stopPropagation(); this._moveCheck(index, 'down'); }}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    class="remove-btn"
+                    .label=${localize(this.hass, 'remove')}
+                    .path=${mdiDelete}
+                    @click=${(e: Event) => { e.stopPropagation(); this._removeCheck(index); }}
+                  ></ha-icon-button>
+                </div>
 
-              ${!isCollapsed ? html`
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 8px;">
+                <div class="panel-content">
+                  <div style="display: flex; flex-direction: column; gap: 16px;">
                   <ha-entity-picker
                     label=${localize(this.hass, 'select_entity')}
                     .hass=${this.hass}
@@ -805,15 +841,9 @@ export class ChecklistCardEditor extends LitElement {
                       ${localize(this.hass, 'add_state')}
                     </ha-button>
                   </div>
+                  </div>
                 </div>
-              ` : html`
-                <div style="font-size:13px; color:var(--secondary-text-color); margin-top: 8px;">
-                  ${localize(this.hass, 'entity')}: ${check.entity || localize(this.hass, 'not_selected')} |
-                  ${isMulti
-                    ? html`${check.conditions_mode === 'all' ? localize(this.hass, 'every') : localize(this.hass, 'one_of')}: ${conditions.map(c => c.state).join(', ')}`
-                    : html`${localize(this.hass, 'status')}: ${conditions[0]?.state || '—'}${conditions[0]?.attribute ? html` | ${conditions[0].attribute}=${conditions[0].attribute_value || '—'}` : ''}`}
-                </div>
-              `}
+              </ha-expansion-panel>
             </div>
           `;
         })}

@@ -21,9 +21,14 @@ A Lovelace custom card that monitors a list of entity states against expected va
 - **Custom fix services** - override auto-fix with any service call and arbitrary service data
 - **Multi-condition checks** - combine conditions with AND / OR logic per entity
 - **Prerequisite guards** - skip a check automatically when a prerequisite entity is not in the expected state
-- **Flexible layout** - vertical columns or horizontal rows, configurable count; supports the Lovelace Sections (grid) view
-- **Hide OK items** - keep the card compact by showing only entities with problems
-- **Visual UI editor** - configure everything from the dashboard without writing YAML
+- **Snooze problems** - long-press (or double-tap a problem) to silence an item for 1h / 2h / 4h / 8h / 24h / 3d / a custom duration; snoozes persist across reloads via HA's user data, and the badge shows the snoozed count and remaining time
+- **Sort & order** - manual ordering (drag-and-drop in the editor), or sort by status, name, domain, severity, or last-changed; ascending or descending
+- **Flexible layout** - vertical columns or horizontal rows, configurable count (1–12); supports the Lovelace Sections (grid) view
+- **Long text handling** - clip overflowing names with an ellipsis or scroll them as a marquee (`text_mode`)
+- **Per-row tap / hold / double-tap actions** - reuse Home Assistant's standard action config to navigate, call services, run scripts, or open more-info
+- **Hide OK items** - keep the card compact by showing only entities with problems, or fold them behind a toggle
+- **Visual UI editor** - configure everything from the dashboard without writing YAML, with native HA expansion panels and drag-to-reorder for entities
+- **RTL & translations** - full right-to-left support; ships with English and Hebrew, easy to add more
 
 ---
 
@@ -85,9 +90,10 @@ title: Checklist                                    # Card title
 show_ok_section: inline                             # 'inline' | 'collapsed' | 'hidden'
 sort: status                                        # See "Card options" below
 sort_direction: asc                                 # 'asc' | 'desc'
+text_mode: clip                                     # 'clip' (ellipsis) | 'scroll' (marquee for overflow)
 layout:                                             # Card layout configuration
   mode: columns                                     # Display layout: 'columns' or 'rows'
-  count: 1                                          # Number of columns/rows (Range: 1-10)
+  count: 1                                          # Number of columns/rows (Range: 1-12)
 checks:                                             # [Required] Array of entities and checks
   - entity: climate.home                            # [Required] Entity identifier (entity_id)
     name: Air conditioner                           # Alternative display name for the card
@@ -119,8 +125,9 @@ checks:                                             # [Required] Array of entiti
 | `title` | string | `"Checklist"` | Heading shown at the top of the card |
 | `checks` | list | **required** | Ordered list of [check rules](#check-rule-options) |
 | `show_ok_section` | `inline` \| `collapsed` \| `hidden` | `inline` | How to show OK entities: mixed with problems, behind a toggle, or hide them entirely |
-| `sort` | `manual` \| `status` \| `alphabetical` \| `domain` \| `severity` \| `last_changed` | `manual` | Order of the items inside the card |
+| `sort` | `manual` \| `status` \| `alphabetical` \| `domain` \| `severity` \| `last_changed` | `manual` | Order of the items inside the card. `manual` follows the order set in the visual editor (or in YAML); the other modes always float problems to the top |
 | `sort_direction` | `asc` \| `desc` | `asc` | Sort direction for every mode (including `manual`, which just reverses the list) |
+| `text_mode` | `clip` \| `scroll` | `clip` | How to handle long titles / entity names: `clip` truncates with an ellipsis; `scroll` runs a marquee animation when the text overflows |
 | `layout` | object | - | [Layout configuration](#layout-options) |
 
 ### Check rule options
@@ -162,7 +169,21 @@ checks:                                             # [Required] Array of entiti
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `mode` | `columns` \| `rows` | `columns` | `columns` - vertical scrolling grid; `rows` - horizontal scrolling grid |
-| `count` | number | `1` | Number of columns (in `columns` mode) or rows (in `rows` mode). Range: 1–10 |
+| `count` | number | `1` | Number of columns (in `columns` mode) or rows (in `rows` mode). Range: 1–12 |
+
+---
+
+## Snoozing problems
+
+Sometimes you want a known issue to stop nagging you for a few hours. Each row supports an interactive snooze:
+
+- **Long-press** any row (no `hold_action` configured) → opens the snooze dialog.
+- **Double-tap** a row that is currently a problem (no `double_tap_action` configured) → opens the snooze dialog.
+- The dialog offers presets (1h, 2h, 4h, 8h, 24h, 3d) plus a custom hours field (up to 8760h / 1 year).
+- Snoozed items are removed from the problem count and listed under a separate "Snoozed" toggle in the header. Tap the unsnooze icon on the snoozed row to wake it up early.
+- Snooze state is stored per-user via Home Assistant's `frontend/set_user_data` API, so it persists across reloads and survives device changes (within the same HA user).
+
+If you configure your own `hold_action` or `double_tap_action` on a row, that takes precedence and the gesture no longer opens the snooze dialog.
 
 ---
 

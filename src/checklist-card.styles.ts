@@ -26,14 +26,28 @@ export const cardStyles = css`
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    flex-wrap: wrap;
     gap: 12px;
+    /* No flex-wrap here: we want children to *shrink* (with ellipsis on the
+       title) before the actions get bumped to a new line. The container query
+       at the bottom of this file stacks them vertically only when there
+       genuinely isn't enough width. */
   }
 
   .header-content {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1 1 auto;
+    /* Allow flex children to shrink below their intrinsic width so the title
+       ellipsizes instead of pushing the actions to a new row. */
+    min-width: 0;
+  }
+
+  /* Title + subtitle stack — also needs min-width: 0 so the nowrap text
+     inside actually clamps to its container instead of growing it. */
+  .header-text {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .status-icon {
@@ -45,6 +59,8 @@ export const cardStyles = css`
     border-radius: 50%;
     background-color: var(--secondary-background-color);
     transition: background-color 0.3s ease;
+    /* Stay perfectly round — never let flex squish it. */
+    flex-shrink: 0;
   }
   .status-icon ha-icon { --mdc-icon-size: 24px; }
 
@@ -170,6 +186,11 @@ export const cardStyles = css`
     align-items: center;
     gap: 8px;
     margin-inline-start: auto;
+    /* Actions keep their natural width and never shrink — the title (with
+       ellipsis) absorbs any width pressure first. */
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .ok-toggle-btn {
@@ -218,9 +239,40 @@ export const cardStyles = css`
     100% { transform: rotate(360deg); }
   }
 
-  @container (max-width: 450px) {
-    .header { flex-direction: column; align-items: flex-start; }
-    .fix-all-btn { width: 100%; margin-top: 8px; }
+  /* Narrow card: stack the header so title and actions each get a full row.
+     Below this width even an ellipsized title leaves no useful room next to
+     the action buttons. */
+  @container (max-width: 380px) {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+    .header-content { width: 100%; }
+    .header-actions {
+      width: 100%;
+      margin-inline-start: 0;
+      justify-content: flex-start;
+    }
+    .fix-all-btn,
+    .ok-toggle-btn {
+      flex: 1 1 auto;
+    }
+  }
+
+  /* Tighter padding and smaller status circle on very narrow cards. */
+  @container (max-width: 280px) {
+    ha-card { padding: 12px; }
+    .header { margin-bottom: 12px; }
+    .status-icon { width: 32px; height: 32px; }
+    .status-icon ha-icon { --mdc-icon-size: 18px; }
+    .title { font-size: 16px; }
+    .subtitle { font-size: 12px; }
+    .fix-all-btn,
+    .ok-toggle-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
   }
 
   /* Snooze count badge in subtitle */
@@ -238,7 +290,9 @@ export const cardStyles = css`
     flex-direction: column;
     gap: 12px;
     padding: 0 4px;
-    min-width: 260px;
+    min-width: min(260px, 100%);
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .snooze-dialog-entity {

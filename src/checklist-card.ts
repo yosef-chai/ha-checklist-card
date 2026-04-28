@@ -511,6 +511,17 @@ export class ChecklistCard extends LitElement {
 
     const showOkMode = this._config.show_ok_section || 'inline';
 
+    // In manual sort + inline mode, respect the user's exact ordering instead of
+    // floating problems to the top. For non-manual sorts, problems-first is the
+    // intended behaviour (the sort_status mode would otherwise be redundant).
+    const useManualInlineOrder =
+      (this._config.sort || 'manual') === 'manual' && showOkMode === 'inline';
+    const inlineItems = showOkMode === 'inline'
+      ? (useManualInlineOrder
+          ? this._checksToDisplay.filter(c => !this._snoozedIds.has(c.id))
+          : [...problems, ...oks])
+      : problems;
+
     if (problemCount === 0 && snoozedCount === 0 && showOkMode === 'hidden') {
       this.style.display = 'none';
       return html``;
@@ -536,7 +547,7 @@ export class ChecklistCard extends LitElement {
             <span class="status-icon ${hasProblems ? 'error' : 'success'}">
               <ha-icon icon="${hasProblems ? 'mdi:alert' : 'mdi:check-circle'}"></ha-icon>
             </span>
-            <div>
+            <div class="header-text">
               ${this._renderHeaderTitle()}
               ${this._renderHeaderSubtitle(hasProblems, problemCount, snoozedCount)}
             </div>
@@ -575,7 +586,7 @@ export class ChecklistCard extends LitElement {
           @snooze-requested=${this._handleSnoozeRequested}
           @unsnooze-requested=${this._handleUnsnoozeRequested}
         >
-          ${this._renderItems(showOkMode === 'inline' ? [...problems, ...oks] : problems)}
+          ${this._renderItems(inlineItems)}
           ${showOkMode === 'collapsed' && this._showOkExpanded ? this._renderItems(oks) : ''}
           ${this._showSnoozedExpanded ? this._renderSnoozedItems(snoozed) : ''}
         </div>

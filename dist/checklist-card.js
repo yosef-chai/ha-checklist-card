@@ -263,26 +263,26 @@ var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n =
 //#endregion
 //#region node_modules/lit-html/lit-html.js
 function le(e, t) {
-	if (!D(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
-	return fe === void 0 ? t : fe.createHTML(t);
+	if (!O(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	return de === void 0 ? t : de.createHTML(t);
 }
 function b(e, t, n = e, r) {
 	if (t === M) return t;
-	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = E(t) ? void 0 : t._$litDirective$;
+	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = D(t) ? void 0 : t._$litDirective$;
 	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = b(e, i._$AS(e, t.values), i, r)), t;
 }
-var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A, j, M, N, Se, P, Ce, F, we, I, L, Te, Ee, De, Oe, ke, Ae, je, R = t((() => {
-	ue = globalThis, de = (e) => e, x = ue.trustedTypes, fe = x ? x.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, pe = "$lit$", S = `lit$${Math.random().toFixed(9).slice(2)}$`, C = "?" + S, me = `<${C}>`, w = document, T = () => w.createComment(""), E = (e) => e === null || typeof e != "object" && typeof e != "function", D = Array.isArray, he = (e) => D(e) || typeof e?.[Symbol.iterator] == "function", ge = "[ 	\n\f\r]", O = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, _e = /-->/g, ve = />/g, k = RegExp(`>|${ge}(?:([^\\s"'>=/]+)(${ge}*=${ge}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ye = /'/g, be = /"/g, xe = /^(?:script|style|textarea|title)$/i, A = (e) => (t, ...n) => ({
+var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe, j, M, N, Se, P, Ce, F, we, I, L, Te, Ee, De, Oe, ke, Ae, je, R = t((() => {
+	x = globalThis, ue = (e) => e, S = x.trustedTypes, de = S ? S.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, C = "$lit$", w = `lit$${Math.random().toFixed(9).slice(2)}$`, fe = "?" + w, pe = `<${fe}>`, T = document, E = () => T.createComment(""), D = (e) => e === null || typeof e != "object" && typeof e != "function", O = Array.isArray, me = (e) => O(e) || typeof e?.[Symbol.iterator] == "function", he = "[ 	\n\f\r]", k = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, _e = />/g, A = RegExp(`>|${he}(?:([^\\s"'>=/]+)(${he}*=${he}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ve = /'/g, ye = /"/g, be = /^(?:script|style|textarea|title)$/i, xe = (e) => (t, ...n) => ({
 		_$litType$: e,
 		strings: t,
 		values: n
-	}), j = A(1), A(2), A(3), M = Symbol.for("lit-noChange"), N = Symbol.for("lit-nothing"), Se = /* @__PURE__ */ new WeakMap(), P = w.createTreeWalker(w, 129), Ce = (e, t) => {
-		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = O;
+	}), j = xe(1), xe(2), xe(3), M = Symbol.for("lit-noChange"), N = Symbol.for("lit-nothing"), Se = /* @__PURE__ */ new WeakMap(), P = T.createTreeWalker(T, 129), Ce = (e, t) => {
+		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = k;
 		for (let t = 0; t < n; t++) {
 			let n = e[t], s, c, l = -1, u = 0;
-			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === O ? c[1] === "!--" ? o = _e : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = k) : (xe.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = k) : o = ve : o === k ? c[0] === ">" ? (o = i ?? O, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? k : c[3] === "\"" ? be : ye) : o === be || o === ye ? o = k : o === _e || o === ve ? o = O : (o = k, i = void 0);
-			let d = o === k && e[t + 1].startsWith("/>") ? " " : "";
-			a += o === O ? n + me : l >= 0 ? (r.push(s), n.slice(0, l) + pe + n.slice(l) + S + d) : n + S + (l === -2 ? t : d);
+			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === k ? c[1] === "!--" ? o = ge : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = A) : (be.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = A) : o = _e : o === A ? c[0] === ">" ? (o = i ?? k, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? A : c[3] === "\"" ? ye : ve) : o === ye || o === ve ? o = A : o === ge || o === _e ? o = k : (o = A, i = void 0);
+			let d = o === A && e[t + 1].startsWith("/>") ? " " : "";
+			a += o === k ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + C + n.slice(l) + w + d) : n + w + (l === -2 ? t : d);
 		}
 		return [le(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
 	}, F = class e {
@@ -296,8 +296,8 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			}
 			for (; (i = P.nextNode()) !== null && c.length < s;) {
 				if (i.nodeType === 1) {
-					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(pe)) {
-						let t = u[o++], n = i.getAttribute(e).split(S), r = /([.?@])?(.*)/.exec(t);
+					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(C)) {
+						let t = u[o++], n = i.getAttribute(e).split(w), r = /([.?@])?(.*)/.exec(t);
 						c.push({
 							type: 1,
 							index: a,
@@ -305,37 +305,37 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 							strings: n,
 							ctor: r[1] === "." ? Te : r[1] === "?" ? Ee : r[1] === "@" ? De : L
 						}), i.removeAttribute(e);
-					} else e.startsWith(S) && (c.push({
+					} else e.startsWith(w) && (c.push({
 						type: 6,
 						index: a
 					}), i.removeAttribute(e));
-					if (xe.test(i.tagName)) {
-						let e = i.textContent.split(S), t = e.length - 1;
+					if (be.test(i.tagName)) {
+						let e = i.textContent.split(w), t = e.length - 1;
 						if (t > 0) {
-							i.textContent = x ? x.emptyScript : "";
-							for (let n = 0; n < t; n++) i.append(e[n], T()), P.nextNode(), c.push({
+							i.textContent = S ? S.emptyScript : "";
+							for (let n = 0; n < t; n++) i.append(e[n], E()), P.nextNode(), c.push({
 								type: 2,
 								index: ++a
 							});
-							i.append(e[t], T());
+							i.append(e[t], E());
 						}
 					}
-				} else if (i.nodeType === 8) if (i.data === C) c.push({
+				} else if (i.nodeType === 8) if (i.data === fe) c.push({
 					type: 2,
 					index: a
 				});
 				else {
 					let e = -1;
-					for (; (e = i.data.indexOf(S, e + 1)) !== -1;) c.push({
+					for (; (e = i.data.indexOf(w, e + 1)) !== -1;) c.push({
 						type: 7,
 						index: a
-					}), e += S.length - 1;
+					}), e += w.length - 1;
 				}
 				a++;
 			}
 		}
 		static createElement(e, t) {
-			let n = w.createElement("template");
+			let n = T.createElement("template");
 			return n.innerHTML = e, n;
 		}
 	}, we = class {
@@ -349,7 +349,7 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			return this._$AM._$AU;
 		}
 		u(e) {
-			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? w).importNode(t, !0);
+			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? T).importNode(t, !0);
 			P.currentNode = r;
 			let i = P.nextNode(), a = 0, o = 0, s = n[0];
 			for (; s !== void 0;) {
@@ -359,7 +359,7 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 				}
 				a !== s?.index && (i = P.nextNode(), a++);
 			}
-			return P.currentNode = w, r;
+			return P.currentNode = T, r;
 		}
 		p(e) {
 			let t = 0;
@@ -383,7 +383,7 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			return this._$AB;
 		}
 		_$AI(e, t = this) {
-			e = b(this, e, t), E(e) ? e === N || e == null || e === "" ? (this._$AH !== N && this._$AR(), this._$AH = N) : e !== this._$AH && e !== M && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? he(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+			e = b(this, e, t), D(e) ? e === N || e == null || e === "" ? (this._$AH !== N && this._$AR(), this._$AH = N) : e !== this._$AH && e !== M && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? me(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 		}
 		O(e) {
 			return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -392,7 +392,7 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			this._$AH !== e && (this._$AR(), this._$AH = this.O(e));
 		}
 		_(e) {
-			this._$AH !== N && E(this._$AH) ? this._$AA.nextSibling.data = e : this.T(w.createTextNode(e)), this._$AH = e;
+			this._$AH !== N && D(this._$AH) ? this._$AA.nextSibling.data = e : this.T(T.createTextNode(e)), this._$AH = e;
 		}
 		$(e) {
 			let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = F.createElement(le(n.h, n.h[0]), this.options)), n);
@@ -407,15 +407,15 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			return t === void 0 && Se.set(e.strings, t = new F(e)), t;
 		}
 		k(t) {
-			D(this._$AH) || (this._$AH = [], this._$AR());
+			O(this._$AH) || (this._$AH = [], this._$AR());
 			let n = this._$AH, r, i = 0;
-			for (let a of t) i === n.length ? n.push(r = new e(this.O(T()), this.O(T()), this, this.options)) : r = n[i], r._$AI(a), i++;
+			for (let a of t) i === n.length ? n.push(r = new e(this.O(E()), this.O(E()), this, this.options)) : r = n[i], r._$AI(a), i++;
 			i < n.length && (this._$AR(r && r._$AB.nextSibling, i), n.length = i);
 		}
 		_$AR(e = this._$AA.nextSibling, t) {
 			for (this._$AP?.(!1, !0, t); e !== this._$AB;) {
-				let t = de(e).nextSibling;
-				de(e).remove(), e = t;
+				let t = ue(e).nextSibling;
+				ue(e).remove(), e = t;
 			}
 		}
 		setConnected(e) {
@@ -433,10 +433,10 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 		}
 		_$AI(e, t = this, n, r) {
 			let i = this.strings, a = !1;
-			if (i === void 0) e = b(this, e, t, 0), a = !E(e) || e !== this._$AH && e !== M, a && (this._$AH = e);
+			if (i === void 0) e = b(this, e, t, 0), a = !D(e) || e !== this._$AH && e !== M, a && (this._$AH = e);
 			else {
 				let r = e, o, s;
-				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === M && (s = this._$AH[o]), a ||= !E(s) || s !== this._$AH[o], s === N ? e = N : e !== N && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
+				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === M && (s = this._$AH[o]), a ||= !D(s) || s !== this._$AH[o], s === N ? e = N : e !== N && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
 			}
 			a && !r && this.j(e);
 		}
@@ -480,13 +480,13 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 			b(this, e);
 		}
 	}, ke = {
-		M: pe,
-		P: S,
-		A: C,
+		M: C,
+		P: w,
+		A: fe,
 		C: 1,
 		L: Ce,
 		R: we,
-		D: he,
+		D: me,
 		V: b,
 		I,
 		H: L,
@@ -494,11 +494,11 @@ var ue, de, x, fe, pe, S, C, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, A
 		U: De,
 		B: Te,
 		F: Oe
-	}, Ae = ue.litHtmlPolyfillSupport, Ae?.(F, I), (ue.litHtmlVersions ??= []).push("3.3.2"), je = (e, t, n) => {
+	}, Ae = x.litHtmlPolyfillSupport, Ae?.(F, I), (x.litHtmlVersions ??= []).push("3.3.2"), je = (e, t, n) => {
 		let r = n?.renderBefore ?? t, i = r._$litPart$;
 		if (i === void 0) {
 			let e = n?.renderBefore ?? null;
-			r._$litPart$ = i = new I(t.insertBefore(T(), e), e, void 0, n ?? {});
+			r._$litPart$ = i = new I(t.insertBefore(E(), e), e, void 0, n ?? {});
 		}
 		return i._$AI(e), i;
 	};
@@ -711,14 +711,28 @@ var lt = l`
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
-    flex-wrap: wrap;
     gap: 12px;
+    /* No flex-wrap here: we want children to *shrink* (with ellipsis on the
+       title) before the actions get bumped to a new line. The container query
+       at the bottom of this file stacks them vertically only when there
+       genuinely isn't enough width. */
   }
 
   .header-content {
     display: flex;
     align-items: center;
     gap: 12px;
+    flex: 1 1 auto;
+    /* Allow flex children to shrink below their intrinsic width so the title
+       ellipsizes instead of pushing the actions to a new row. */
+    min-width: 0;
+  }
+
+  /* Title + subtitle stack — also needs min-width: 0 so the nowrap text
+     inside actually clamps to its container instead of growing it. */
+  .header-text {
+    min-width: 0;
+    flex: 1 1 auto;
   }
 
   .status-icon {
@@ -730,6 +744,8 @@ var lt = l`
     border-radius: 50%;
     background-color: var(--secondary-background-color);
     transition: background-color 0.3s ease;
+    /* Stay perfectly round — never let flex squish it. */
+    flex-shrink: 0;
   }
   .status-icon ha-icon { --mdc-icon-size: 24px; }
 
@@ -855,6 +871,11 @@ var lt = l`
     align-items: center;
     gap: 8px;
     margin-inline-start: auto;
+    /* Actions keep their natural width and never shrink — the title (with
+       ellipsis) absorbs any width pressure first. */
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    justify-content: flex-end;
   }
 
   .ok-toggle-btn {
@@ -903,9 +924,40 @@ var lt = l`
     100% { transform: rotate(360deg); }
   }
 
-  @container (max-width: 450px) {
-    .header { flex-direction: column; align-items: flex-start; }
-    .fix-all-btn { width: 100%; margin-top: 8px; }
+  /* Narrow card: stack the header so title and actions each get a full row.
+     Below this width even an ellipsized title leaves no useful room next to
+     the action buttons. */
+  @container (max-width: 380px) {
+    .header {
+      flex-direction: column;
+      align-items: stretch;
+      margin-bottom: 16px;
+    }
+    .header-content { width: 100%; }
+    .header-actions {
+      width: 100%;
+      margin-inline-start: 0;
+      justify-content: flex-start;
+    }
+    .fix-all-btn,
+    .ok-toggle-btn {
+      flex: 1 1 auto;
+    }
+  }
+
+  /* Tighter padding and smaller status circle on very narrow cards. */
+  @container (max-width: 280px) {
+    ha-card { padding: 12px; }
+    .header { margin-bottom: 12px; }
+    .status-icon { width: 32px; height: 32px; }
+    .status-icon ha-icon { --mdc-icon-size: 18px; }
+    .title { font-size: 16px; }
+    .subtitle { font-size: 12px; }
+    .fix-all-btn,
+    .ok-toggle-btn {
+      padding: 6px 12px;
+      font-size: 13px;
+    }
   }
 
   /* Snooze count badge in subtitle */
@@ -923,7 +975,9 @@ var lt = l`
     flex-direction: column;
     gap: 12px;
     padding: 0 4px;
-    min-width: 260px;
+    min-width: min(260px, 100%);
+    max-width: 100%;
+    box-sizing: border-box;
   }
 
   .snooze-dialog-entity {
@@ -2087,10 +2141,10 @@ var Ht, Ut = t((() => {
 	Ht = Number.isNaN || function(e) {
 		return typeof e == "number" && e !== e;
 	};
-})), Wt, Gt, Kt, qt = t((() => {
-	Wt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", Gt = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", Kt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
-})), Jt, Yt = t((() => {
-	V(), Jt = l`
+})), Wt, Gt, Kt, qt, Jt, Yt, Xt, Zt = t((() => {
+	Wt = "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z", Gt = "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z", Kt = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", qt = "M7,19V17H9V19H7M11,19V17H13V19H11M15,19V17H17V19H15M7,15V13H9V15H7M11,15V13H13V15H11M15,15V13H17V15H15M7,11V9H9V11H7M11,11V9H13V11H11M15,11V9H17V11H15M7,7V5H9V7H7M11,7V5H13V7H11M15,7V5H17V7H15Z", Jt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", Yt = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", Xt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
+})), Qt, $t = t((() => {
+	V(), Qt = l`
   .config-container {
     display: flex;
     flex-direction: column;
@@ -2154,26 +2208,27 @@ var Ht, Ut = t((() => {
   }
 
   .check-item {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding: 16px;
-    border: 1px solid var(--divider-color);
+    display: block;
     border-radius: var(--ha-card-border-radius, 12px);
-    background: var(--card-background-color);
-    transition: box-shadow 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    transition: box-shadow 0.2s ease-in-out;
   }
 
-  .check-item.dragging {
+  .check-item ha-expansion-panel {
+    margin-bottom: 0;
+  }
+
+  .check-item.dragging ha-expansion-panel {
     opacity: 0.5;
-    border: 2px dashed var(--primary-color);
-    background: var(--secondary-background-color);
+    border-color: var(--primary-color);
   }
 
   .check-item.drop-target {
+    position: relative;
+  }
+
+  .check-item.drop-target ha-expansion-panel {
     border: 2px dashed var(--primary-color) !important;
     background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05) !important;
-    position: relative;
   }
 
   .check-item.drop-target::before {
@@ -2193,39 +2248,63 @@ var Ht, Ut = t((() => {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
   }
 
-  .check-header {
+  .check-panel-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
   }
 
-  .check-header-left {
+  .check-panel-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--primary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .check-panel-subtitle {
+    font-size: 12px;
+    color: var(--secondary-text-color);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .check-panel-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 0;
+  }
+
+  .check-panel-actions ha-icon-button {
+    --mdc-icon-button-size: 36px;
+    --mdc-icon-size: 20px;
+    color: var(--secondary-text-color);
+  }
+
+  .check-panel-actions ha-icon-button.remove-btn {
+    color: var(--error-color);
   }
 
   .drag-handle {
     cursor: grab;
     color: var(--secondary-text-color);
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     padding: 4px;
+    margin-inline-end: 4px;
   }
 
   .drag-handle:active {
     cursor: grabbing;
   }
 
-  .drag-handle ha-icon {
-    --mdc-icon-size: 24px;
-  }
-
-  .check-header strong {
-    font-size: 16px;
-    font-weight: 500;
-    margin-left: 8px;
+  .drag-handle ha-svg-icon {
+    --mdc-icon-size: 22px;
   }
 
   .add-btn {
@@ -2319,8 +2398,8 @@ var Ht, Ut = t((() => {
     margin-top: 4px;
   }
 `;
-})), Xt = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, Zt = t((() => {
-	V(), Ke(), Ut(), qt(), Yt(), pt(), Rt(), Q = class extends B {
+})), en = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, tn = t((() => {
+	V(), Ke(), Ut(), Zt(), $t(), pt(), Rt(), Q = class extends B {
 		constructor(...e) {
 			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1, this._appearanceSchema = Vt((e) => [{
 				name: "",
@@ -2468,7 +2547,7 @@ var Ht, Ut = t((() => {
 			};
 		}
 		static {
-			this.styles = Jt;
+			this.styles = Qt;
 		}
 		setConfig(e) {
 			this._config = {
@@ -2581,11 +2660,15 @@ var Ht, Ut = t((() => {
 			let t = this._config.checks.filter((t, n) => n !== e);
 			this._updateConfig({ checks: t });
 		}
-		_toggleCollapse(e) {
-			this._collapsed = {
+		_expansionChanged(e, t) {
+			t.stopPropagation();
+			let n = t.detail?.expanded;
+			if (typeof n != "boolean") return;
+			let r = !n;
+			(this._collapsed[e] ?? !1) !== r && (this._collapsed = {
 				...this._collapsed,
-				[e]: !(this._collapsed[e] ?? !1)
-			};
+				[e]: r
+			});
 		}
 		_moveCheck(e, t) {
 			if (t === "up" && e === 0 || t === "down" && e === (this._config.checks?.length || 0) - 1) return;
@@ -2820,7 +2903,7 @@ var Ht, Ut = t((() => {
 
         <div class="panels">
           <ha-expansion-panel outlined expanded>
-            <ha-svg-icon slot="leading-icon" .path=${Gt}></ha-svg-icon>
+            <ha-svg-icon slot="leading-icon" .path=${Yt}></ha-svg-icon>
             <h3 slot="header">${q(this.hass, "appearance_section")}</h3>
             <div class="panel-content">
               <ha-form
@@ -2835,7 +2918,7 @@ var Ht, Ut = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${Kt}></ha-svg-icon>
+            <ha-svg-icon slot="leading-icon" .path=${Xt}></ha-svg-icon>
             <h3 slot="header">${q(this.hass, "sorting_section")}</h3>
             <div class="panel-content">
               <ha-form
@@ -2850,7 +2933,7 @@ var Ht, Ut = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${Wt}></ha-svg-icon>
+            <ha-svg-icon slot="leading-icon" .path=${Jt}></ha-svg-icon>
             <h3 slot="header">${q(this.hass, "display_section")}</h3>
             <div class="panel-content">
               <ha-form
@@ -2869,7 +2952,7 @@ var Ht, Ut = t((() => {
         <h3 class="section-title">${q(this.hass, "entities_section")}</h3>
 
         ${ot(e, (e) => e.id, (t, n) => {
-				let r = this._collapsed[t.id] ?? !1, i = t.conditions || [], a = i.length > 1;
+				let r = this._collapsed[t.id] ?? !1, i = t.conditions || [], a = i.length > 1, o = t.name ? t.name : t.entity ? this.hass.states[t.entity]?.attributes?.friendly_name || t.entity : `${q(this.hass, "check_num")}${n + 1}`, s = t.entity ? `${q(this.hass, "check_num")}${n + 1} · ${t.entity}` : `${q(this.hass, "check_num")}${n + 1} · ${q(this.hass, "not_selected")}`;
 				return j`
             <div class="check-item ${this._draggedIndex === n ? "dragging" : ""} ${this._dropTargetIndex === n ? "drop-target" : ""}"
                  data-drop-text=${q(this.hass, "drag_here")}
@@ -2877,35 +2960,54 @@ var Ht, Ut = t((() => {
                  @drop=${(e) => this._drop(e, n)}
                  @dragend=${this._dragEnd}>
 
-              <div class="check-header">
-                <div class="check-header-left">
-                  <span class="drag-handle" draggable="true"
-                        @dragstart=${(e) => this._dragStart(e, n)}>
-                    <ha-icon icon="mdi:drag"></ha-icon>
-                  </span>
-                  <ha-icon-button .disabled=${n === 0} @click=${() => this._moveCheck(n, "up")}>
-                    <ha-icon icon="mdi:arrow-up"></ha-icon>
-                  </ha-icon-button>
-                  <ha-icon-button .disabled=${n === e.length - 1} @click=${() => this._moveCheck(n, "down")}>
-                    <ha-icon icon="mdi:arrow-down"></ha-icon>
-                  </ha-icon-button>
-                  <ha-icon-button @click=${() => this._toggleCollapse(t.id)}>
-                    <ha-icon icon="${r ? "mdi:chevron-down" : "mdi:chevron-up"}"></ha-icon>
-                  </ha-icon-button>
-                  <strong>${q(this.hass, "check_num")}${n + 1}</strong>
+              <ha-expansion-panel
+                outlined
+                .expanded=${!r}
+                @expanded-changed=${(e) => this._expansionChanged(t.id, e)}
+              >
+                <span
+                  slot="leading-icon"
+                  class="drag-handle"
+                  draggable="true"
+                  title=${q(this.hass, "drag_here")}
+                  @dragstart=${(e) => this._dragStart(e, n)}
+                  @click=${(e) => e.stopPropagation()}
+                >
+                  <ha-svg-icon .path=${qt}></ha-svg-icon>
+                </span>
+                <div slot="header" class="check-panel-header">
+                  <span class="check-panel-title">${o}</span>
+                  <span class="check-panel-subtitle">${s}</span>
                 </div>
-                <ha-button class="remove-btn" @click=${() => this._removeCheck(n)} style="--mdc-theme-primary: var(--error-color);">
-                  ${q(this.hass, "remove")}
-                </ha-button>
-              </div>
+                <div slot="icons" class="check-panel-actions" @click=${(e) => e.stopPropagation()}>
+                  <ha-icon-button
+                    .label=${q(this.hass, "check_num") + (n + 1) + " ↑"}
+                    .path=${Gt}
+                    .disabled=${n === 0}
+                    @click=${(e) => {
+					e.stopPropagation(), this._moveCheck(n, "up");
+				}}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    .label=${q(this.hass, "check_num") + (n + 1) + " ↓"}
+                    .path=${Wt}
+                    .disabled=${n === e.length - 1}
+                    @click=${(e) => {
+					e.stopPropagation(), this._moveCheck(n, "down");
+				}}
+                  ></ha-icon-button>
+                  <ha-icon-button
+                    class="remove-btn"
+                    .label=${q(this.hass, "remove")}
+                    .path=${Kt}
+                    @click=${(e) => {
+					e.stopPropagation(), this._removeCheck(n);
+				}}
+                  ></ha-icon-button>
+                </div>
 
-              ${r ? j`
-                <div style="font-size:13px; color:var(--secondary-text-color); margin-top: 8px;">
-                  ${q(this.hass, "entity")}: ${t.entity || q(this.hass, "not_selected")} |
-                  ${a ? j`${t.conditions_mode === "all" ? q(this.hass, "every") : q(this.hass, "one_of")}: ${i.map((e) => e.state).join(", ")}` : j`${q(this.hass, "status")}: ${i[0]?.state || "—"}${i[0]?.attribute ? j` | ${i[0].attribute}=${i[0].attribute_value || "—"}` : ""}`}
-                </div>
-              ` : j`
-                <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 8px;">
+                <div class="panel-content">
+                  <div style="display: flex; flex-direction: column; gap: 16px;">
                   <ha-entity-picker
                     label=${q(this.hass, "select_entity")}
                     .hass=${this.hass}
@@ -3093,8 +3195,9 @@ var Ht, Ut = t((() => {
                       ${q(this.hass, "add_state")}
                     </ha-button>
                   </div>
+                  </div>
                 </div>
-              `}
+              </ha-expansion-panel>
             </div>
           `;
 			})}
@@ -3127,7 +3230,7 @@ var $ = class extends B {
 		this.styles = lt;
 	}
 	static async getConfigElement() {
-		return await Promise.all([Promise.resolve().then(() => (Zt(), Xt)), Mt()]), document.createElement("checklist-card-editor");
+		return await Promise.all([Promise.resolve().then(() => (tn(), en)), Mt()]), document.createElement("checklist-card-editor");
 	}
 	getCardSize() {
 		let e = this._config?.checks?.length ?? 1, t = this._layoutCols(), n = Math.ceil(e / t);
@@ -3412,10 +3515,10 @@ var $ = class extends B {
 	}
 	render() {
 		if (!this._config) return j``;
-		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._snoozedIds.size, i = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), a = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id) && !this._snoozedIds.has(e.id)), o = this._config.checks.filter((e) => e.entity && this._snoozedIds.has(e.id)), s = this._config.show_ok_section || "inline";
+		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._snoozedIds.size, i = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), a = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id) && !this._snoozedIds.has(e.id)), o = this._config.checks.filter((e) => e.entity && this._snoozedIds.has(e.id)), s = this._config.show_ok_section || "inline", c = (this._config.sort || "manual") === "manual" && s === "inline", l = s === "inline" ? c ? this._checksToDisplay.filter((e) => !this._snoozedIds.has(e.id)) : [...i, ...a] : i;
 		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", j``;
 		this.style.display = "";
-		let c = this._snoozeDialogRule, l = c ? c.name || this.hass?.states[c.entity]?.attributes?.friendly_name || c.entity : "";
+		let u = this._snoozeDialogRule, d = u ? u.name || this.hass?.states[u.entity]?.attributes?.friendly_name || u.entity : "";
 		return j`
       <ha-card dir=${n} role="region" aria-label=${this._config.title || q(this.hass, "title")}>
         ${this._errorBanner ? j`
@@ -3429,7 +3532,7 @@ var $ = class extends B {
             <span class="status-icon ${t ? "error" : "success"}">
               <ha-icon icon="${t ? "mdi:alert" : "mdi:check-circle"}"></ha-icon>
             </span>
-            <div>
+            <div class="header-text">
               ${this._renderHeaderTitle()}
               ${this._renderHeaderSubtitle(t, e, r)}
             </div>
@@ -3466,13 +3569,13 @@ var $ = class extends B {
           @snooze-requested=${this._handleSnoozeRequested}
           @unsnooze-requested=${this._handleUnsnoozeRequested}
         >
-          ${this._renderItems(s === "inline" ? [...i, ...a] : i)}
+          ${this._renderItems(l)}
           ${s === "collapsed" && this._showOkExpanded ? this._renderItems(a) : ""}
           ${this._showSnoozedExpanded ? this._renderSnoozedItems(o) : ""}
         </div>
       </ha-card>
 
-      ${c ? j`
+      ${u ? j`
         <ha-dialog
           .open=${!0}
           @closed=${() => {
@@ -3481,7 +3584,7 @@ var $ = class extends B {
           .heading=${q(this.hass, "snooze_dialog_title")}
         >
           <div class="snooze-dialog-content">
-            <div class="snooze-dialog-entity">${l}</div>
+            <div class="snooze-dialog-entity">${d}</div>
             <p class="snooze-dialog-desc">${q(this.hass, "snooze_dialog_desc")}</p>
             <div class="snooze-presets">
               ${[
@@ -3492,7 +3595,7 @@ var $ = class extends B {
 			24,
 			72
 		].map((e, t) => j`
-                <button class="snooze-preset-btn" @click=${() => this._snoozeItem(c, e)}>
+                <button class="snooze-preset-btn" @click=${() => this._snoozeItem(u, e)}>
                   ${q(this.hass, [
 			"snooze_1h",
 			"snooze_2h",
@@ -3584,7 +3687,7 @@ var $ = class extends B {
       `);
 	}
 };
-X([U({ attribute: !1 })], $.prototype, "hass", void 0), X([W()], $.prototype, "_config", void 0), X([W()], $.prototype, "_isFixingAll", void 0), X([W()], $.prototype, "_fixingItems", void 0), X([W()], $.prototype, "_errorBanner", void 0), X([W()], $.prototype, "_showOkExpanded", void 0), X([W()], $.prototype, "_showSnoozedExpanded", void 0), X([W()], $.prototype, "_snoozeData", void 0), X([W()], $.prototype, "_snoozeDialogRule", void 0), X([W()], $.prototype, "_customSnoozeHours", void 0), X([W()], $.prototype, "_isTitleOverflowing", void 0), X([W()], $.prototype, "_isSubtitleOverflowing", void 0), $ = X([H("checklist-card")], $), Zt(), pt(), window.customCards = window.customCards || [], window.customCards.push({
+X([U({ attribute: !1 })], $.prototype, "hass", void 0), X([W()], $.prototype, "_config", void 0), X([W()], $.prototype, "_isFixingAll", void 0), X([W()], $.prototype, "_fixingItems", void 0), X([W()], $.prototype, "_errorBanner", void 0), X([W()], $.prototype, "_showOkExpanded", void 0), X([W()], $.prototype, "_showSnoozedExpanded", void 0), X([W()], $.prototype, "_snoozeData", void 0), X([W()], $.prototype, "_snoozeDialogRule", void 0), X([W()], $.prototype, "_customSnoozeHours", void 0), X([W()], $.prototype, "_isTitleOverflowing", void 0), X([W()], $.prototype, "_isSubtitleOverflowing", void 0), $ = X([H("checklist-card")], $), tn(), pt(), window.customCards = window.customCards || [], window.customCards.push({
 	type: "checklist-card",
 	name: ut("card_name"),
 	description: ut("card_description"),
