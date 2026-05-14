@@ -1,15 +1,16 @@
 import { LitElement, html } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { repeat } from 'lit/directives/repeat.js';
 import memoizeOne from 'memoize-one';
 import {
   mdiPalette,
   mdiSort,
   mdiEyeOutline,
-  mdiDrag,
-  mdiArrowUp,
-  mdiArrowDown,
   mdiDelete,
+  mdiPlus,
+  mdiContentCopy,
+  mdiContentCut,
+  mdiCodeBraces,
+  mdiListBoxOutline,
 } from '@mdi/js';
 
 import { editorStyles } from './checklist-card-editor.styles';
@@ -29,11 +30,61 @@ import type { HomeAssistant, CardConfig, CheckRule, StateCondition, LayoutConfig
 export class ChecklistCardEditor extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
   @state() private _config!: CardConfig;
-  @state() private _draggedIndex: number | null = null;
-  @state() private _dropTargetIndex: number | null = null;
-  @state() private _collapsed: Record<string, boolean> = {};
+  @state() private _selectedCheck = 0;
+  @state() private _useHaTabs = false;
+  @state() private _useHaYamlEditor = false;
   @state() private _pickersReady = false;
+  @state() private _yamlMode = false;
+  @state() private _hasClipboard = false;
+  @state() private _yamlError: string | null = null;
   private _pickerLoadStarted = false;
+  private _yamlDebounceTimer: number | null = null;
+  private _onStorageEvent = (ev: StorageEvent) => {
+    if (ev.key === ChecklistCardEditor.CLIPBOARD_KEY) {
+      this._hasClipboard = !!this._readClipboard();
+    }
+  };
+
+  private static readonly CLIPBOARD_KEY = 'checklistCardCheckClipboard';
+
+  protected firstUpdated() {
+    this._useHaTabs =
+      !!customElements.get('ha-tab-group') &&
+      !!customElements.get('ha-tab-group-tab');
+    this._useHaYamlEditor = !!customElements.get('ha-yaml-editor');
+    this._hasClipboard = !!this._readClipboard();
+  }
+
+  connectedCallback(): void {
+    super.connectedCallback();
+    window.addEventListener('storage', this._onStorageEvent);
+  }
+
+  disconnectedCallback(): void {
+    window.removeEventListener('storage', this._onStorageEvent);
+    if (this._yamlDebounceTimer !== null) {
+      window.clearTimeout(this._yamlDebounceTimer);
+      this._yamlDebounceTimer = null;
+    }
+    super.disconnectedCallback();
+  }
+
+  private _readClipboard(): CheckRule | null {
+    try {
+      const raw = sessionStorage.getItem(ChecklistCardEditor.CLIPBOARD_KEY);
+      return raw ? JSON.parse(raw) as CheckRule : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private _writeClipboard(check: CheckRule | null) {
+    try {
+      if (check === null) sessionStorage.removeItem(ChecklistCardEditor.CLIPBOARD_KEY);
+      else sessionStorage.setItem(ChecklistCardEditor.CLIPBOARD_KEY, JSON.stringify(check));
+    } catch { /* ignore quota / disabled storage */ }
+    this._hasClipboard = !!check;
+  }
 
   static styles = editorStyles;
 
@@ -42,6 +93,14 @@ export class ChecklistCardEditor extends LitElement {
       ...config,
       checks: config.checks ? config.checks.map(ensureCheckId) : [],
     };
+    // Clamp selection to a valid range when an external YAML edit reduces or
+    // empties the checks list. Avoids the editor pointing at a removed check.
+    const total = this._config.checks.length;
+    if (total === 0) {
+      this._selectedCheck = 0;
+    } else if (this._selectedCheck >= total) {
+      this._selectedCheck = total - 1;
+    }
   }
 
   private _updateConfig(updates: Partial<CardConfig>) {
@@ -157,61 +216,131 @@ export class ChecklistCardEditor extends LitElement {
     this._updateConfig({ checks });
   }
 
-  private _expansionChanged(id: string, ev: CustomEvent) {
-    ev.stopPropagation();
-    const expanded = (ev.detail as { expanded?: boolean })?.expanded;
-    if (typeof expanded !== 'boolean') return;
-    const isCollapsed = !expanded;
-    if ((this._collapsed[id] ?? false) === isCollapsed) return;
-    this._collapsed = { ...this._collapsed, [id]: isCollapsed };
-  }
-
-  private _moveCheck(index: number, direction: 'up' | 'down') {
-    if (direction === 'up' && index === 0) return;
-    if (direction === 'down' && index === (this._config.checks?.length || 0) - 1) return;
-
-    const checks = [...(this._config.checks || [])];
-    const newIndex = direction === 'up' ? index - 1 : index + 1;
-    const temp = checks[index];
-    checks[index] = checks[newIndex];
-    checks[newIndex] = temp;
-
-    this._updateConfig({ checks });
-  }
-
-  private _dragStart(e: DragEvent, index: number) {
-    this._draggedIndex = index;
-    this._dropTargetIndex = null;
-    if (e.dataTransfer) {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('text/plain', index.toString());
+  private _handleSelectedCheck = (ev: CustomEvent) => {
+    const detail = ev.detail as { name?: string | number; index?: number } | undefined;
+    const raw = detail?.name !== undefined ? detail.name : detail?.index;
+    const idx = typeof raw === 'string' ? parseInt(raw, 10) : raw;
+    if (typeof idx === 'number' && Number.isFinite(idx)) {
+      this._selectedCheck = idx;
     }
-  }
+  };
 
-  private _handleDragOver(e: DragEvent, index: number) {
-    e.preventDefault();
-    if (e.dataTransfer) e.dataTransfer.dropEffect = 'move';
-    this._dropTargetIndex = index;
-  }
-
-  private _drop(e: DragEvent, dropIndex: number) {
-    e.preventDefault();
-    if (this._draggedIndex === null || this._draggedIndex === dropIndex) {
-      this._draggedIndex = null;
-      this._dropTargetIndex = null;
+  private _handleAddCheck = () => {
+    const clip = this._readClipboard();
+    if (clip) {
+      const pasted: CheckRule = {
+        ...JSON.parse(JSON.stringify(clip)),
+        id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+      };
+      const checks = [...(this._config.checks || []), pasted];
+      this._writeClipboard(null);
+      this._selectedCheck = checks.length - 1;
+      this._updateConfig({ checks });
       return;
     }
-    const checks = [...(this._config.checks || [])];
-    const item = checks.splice(this._draggedIndex, 1)[0];
-    checks.splice(dropIndex, 0, item);
-    this._draggedIndex = null;
-    this._dropTargetIndex = null;
+    this._addCheck();
+    this._selectedCheck = (this._config.checks?.length || 1) - 1;
+  };
+
+  private _handleDeleteSelectedCheck = () => {
+    const total = this._config.checks?.length || 0;
+    if (total === 0) return;
+    this._removeCheck(this._selectedCheck);
+    this._selectedCheck = Math.max(0, Math.min(this._selectedCheck, total - 2));
+  };
+
+  private _handleCutCheck = () => {
+    const source = this._config.checks?.[this._selectedCheck];
+    if (!source) return;
+    this._writeClipboard(source);
+    this._handleDeleteSelectedCheck();
+  };
+
+  private _toggleYamlMode = () => {
+    this._yamlMode = !this._yamlMode;
+    this._yamlError = null;
+  };
+
+  private _applyParsedCheck(parsed: unknown, index: number): string | null {
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      return 'Object expected';
+    }
+    const current = this._config.checks[index];
+    if (!current) return 'Check no longer exists';
+    const obj = parsed as Partial<CheckRule>;
+    if (!Array.isArray(obj.conditions) || obj.conditions.length === 0) {
+      return '`conditions` must be a non-empty array';
+    }
+    const next: CheckRule = {
+      ...(obj as CheckRule),
+      id: obj.id || current.id,
+    };
+    const checks = [...this._config.checks];
+    checks[index] = next;
     this._updateConfig({ checks });
+    return null;
   }
 
-  private _dragEnd() {
-    this._draggedIndex = null;
-    this._dropTargetIndex = null;
+  private _handleYamlInput = (ev: Event, index: number) => {
+    const value = (ev.target as HTMLTextAreaElement).value;
+    if (this._yamlDebounceTimer !== null) {
+      window.clearTimeout(this._yamlDebounceTimer);
+    }
+    this._yamlDebounceTimer = window.setTimeout(() => {
+      this._yamlDebounceTimer = null;
+      try {
+        const parsed = JSON.parse(value);
+        const err = this._applyParsedCheck(parsed, index);
+        this._yamlError = err;
+      } catch (err) {
+        this._yamlError = (err as Error).message;
+      }
+    }, 250);
+  };
+
+  private _handleHaYamlChange = (ev: CustomEvent) => {
+    ev.stopPropagation();
+    const detail = ev.detail as { value: unknown; isValid: boolean };
+    if (!detail.isValid) {
+      this._yamlError = 'Invalid YAML';
+      return;
+    }
+    const err = this._applyParsedCheck(detail.value, this._selectedCheck);
+    this._yamlError = err;
+  };
+
+  private _handleMoveCheck = (ev: Event) => {
+    const move = (ev.currentTarget as HTMLElement & { move?: number }).move;
+    if (move !== -1 && move !== 1) return;
+    const source = this._selectedCheck;
+    const target = source + move;
+    const checks = [...(this._config.checks || [])];
+    if (target < 0 || target >= checks.length) return;
+    const [item] = checks.splice(source, 1);
+    checks.splice(target, 0, item);
+    this._selectedCheck = target;
+    this._updateConfig({ checks });
+  };
+
+  private _handleDuplicateCheck = () => {
+    const source = this._config.checks?.[this._selectedCheck];
+    if (!source) return;
+    const copy: CheckRule = {
+      ...JSON.parse(JSON.stringify(source)),
+      id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    };
+    const target = this._selectedCheck + 1;
+    const checks = [...this._config.checks];
+    checks.splice(target, 0, copy);
+    this._selectedCheck = target;
+    this._updateConfig({ checks });
+  };
+
+  private _isCheckValid(check: CheckRule | undefined): boolean {
+    if (!check) return false;
+    if (!check.entity || !check.entity.trim()) return false;
+    if (!Array.isArray(check.conditions) || check.conditions.length === 0) return false;
+    return true;
   }
 
   private _updateLayout(updates: Partial<LayoutConfig>) {
@@ -580,278 +709,335 @@ export class ChecklistCardEditor extends LitElement {
         <div class="divider"></div>
         <h3 class="section-title">${localize(this.hass, 'entities_section')}</h3>
 
-        ${repeat(checks, (check) => check.id, (check, index) => {
-          const isCollapsed = this._collapsed[check.id] ?? false;
-          const conditions = check.conditions || [];
-          const isMulti = conditions.length > 1;
-          const headerLabel = check.name
-            ? check.name
-            : check.entity
-              ? (this.hass.states[check.entity]?.attributes?.friendly_name || check.entity)
-              : `${localize(this.hass, 'check_num')}${index + 1}`;
-          const headerSubtitle = check.entity
-            ? `${localize(this.hass, 'check_num')}${index + 1} · ${check.entity}`
-            : `${localize(this.hass, 'check_num')}${index + 1} · ${localize(this.hass, 'not_selected')}`;
+        ${this._renderChecksSection(checks)}
+      </div>
+    `;
+  }
 
-          return html`
-            <div class="check-item ${this._draggedIndex === index ? 'dragging' : ''} ${this._dropTargetIndex === index ? 'drop-target' : ''}"
-                 data-drop-text=${localize(this.hass, 'drag_here')}
-                 @dragover=${(e: DragEvent) => this._handleDragOver(e, index)}
-                 @drop=${(e: DragEvent) => this._drop(e, index)}
-                 @dragend=${this._dragEnd}>
-
-              <ha-expansion-panel
-                outlined
-                .expanded=${!isCollapsed}
-                @expanded-changed=${(e: CustomEvent) => this._expansionChanged(check.id, e)}
-              >
-                <span
-                  slot="leading-icon"
-                  class="drag-handle"
-                  draggable="true"
-                  title=${localize(this.hass, 'drag_here')}
-                  @dragstart=${(e: DragEvent) => this._dragStart(e, index)}
-                  @click=${(e: Event) => e.stopPropagation()}
-                >
-                  <ha-svg-icon .path=${mdiDrag}></ha-svg-icon>
-                </span>
-                <div slot="header" class="check-panel-header">
-                  <span class="check-panel-title">${headerLabel}</span>
-                  <span class="check-panel-subtitle">${headerSubtitle}</span>
-                </div>
-                <div slot="icons" class="check-panel-actions" @click=${(e: Event) => e.stopPropagation()}>
-                  <ha-icon-button
-                    .label=${localize(this.hass, 'check_num') + (index + 1) + ' ↑'}
-                    .path=${mdiArrowUp}
-                    .disabled=${index === 0}
-                    @click=${(e: Event) => { e.stopPropagation(); this._moveCheck(index, 'up'); }}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    .label=${localize(this.hass, 'check_num') + (index + 1) + ' ↓'}
-                    .path=${mdiArrowDown}
-                    .disabled=${index === checks.length - 1}
-                    @click=${(e: Event) => { e.stopPropagation(); this._moveCheck(index, 'down'); }}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    class="remove-btn"
-                    .label=${localize(this.hass, 'remove')}
-                    .path=${mdiDelete}
-                    @click=${(e: Event) => { e.stopPropagation(); this._removeCheck(index); }}
-                  ></ha-icon-button>
-                </div>
-
-                <div class="panel-content">
-                  <div style="display: flex; flex-direction: column; gap: 16px;">
-                  <ha-entity-picker
-                    label=${localize(this.hass, 'select_entity')}
-                    .hass=${this.hass}
-                    .value=${check.entity}
-                    allow-custom-entity
-                    @value-changed=${(e: CustomEvent) => this._entityChanged(index, e.detail.value)}
-                  ></ha-entity-picker>
-
-                  <ha-textfield
-                    label=${localize(this.hass, 'display_name')}
-                    .value=${check.name || ''}
-                    @input=${(e: Event) => this._updateCheck(index, 'name', (e.target as HTMLInputElement).value)}
-                  ></ha-textfield>
-                  
-
-                  <details style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--divider-color);">
-                    <summary style="cursor: pointer; font-weight: 500;">${localize(this.hass, 'advanced_settings')}</summary>
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
-                      <div class="select-wrapper">
-                        <label>${localize(this.hass, 'severity')}</label>
-                        <select
-                          .value=${check.severity || 'info'}
-                          @change=${(e: Event) => this._updateCheck(index, 'severity', (e.target as HTMLSelectElement).value)}
-                        >
-                          <option value="info" ?selected=${check.severity === 'info' || !check.severity}>${localize(this.hass, 'severity_info')}</option>
-                          <option value="warning" ?selected=${check.severity === 'warning'}>${localize(this.hass, 'severity_warning')}</option>
-                          <option value="critical" ?selected=${check.severity === 'critical'}>${localize(this.hass, 'severity_critical')}</option>
-                        </select>
-                      </div>
-                      <ha-icon-picker
-                        .hass=${this.hass}
-                        .label=${localize(this.hass, 'icon_override')}
-                        .value=${check.icon || ''}
-                        @value-changed=${(e: CustomEvent) => this._updateCheck(index, 'icon', e.detail.value)}
-                      ></ha-icon-picker>
-                      <ha-textfield
-                        label=${localize(this.hass, 'color_override')}
-                        .value=${check.color || ''}
-                        @input=${(e: Event) => this._updateCheck(index, 'color', (e.target as HTMLInputElement).value)}
-                      ></ha-textfield>
-                    </div>
-                  </details>
-
-                  ${isMulti ? html`
-                    <div class="select-wrapper">
-                      <label>${localize(this.hass, 'check_condition')}</label>
-                      <select
-                        .value=${check.conditions_mode === 'all' ? 'all' : 'any'}
-                        @change=${(e: Event) => this._setConditionsMode(index, (e.target as HTMLSelectElement).value as 'any' | 'all')}
-                      >
-                        <option value="any" ?selected=${check.conditions_mode !== 'all'}>${localize(this.hass, 'cond_any')}</option>
-                        <option value="all" ?selected=${check.conditions_mode === 'all'}>${localize(this.hass, 'cond_all')}</option>
-                      </select>
-                    </div>
-                  ` : ''}
-
-                  <div class="conditions-section">
-                    ${conditions.map((condition, condIdx) => html`
-                      <div class="condition-item">
-                        <div class="condition-header">
-                          <span class="condition-title">
-                            ${isMulti ? `${localize(this.hass, 'ok_state')} ${condIdx + 1}` : localize(this.hass, 'ok_state')}
-                          </span>
-                          <div class="condition-actions">
-                            ${isMulti && check.conditions_mode !== 'all' ? html`
-                              <ha-formfield label=${check.default_condition_index === condIdx ? localize(this.hass, 'default_fix_star') : localize(this.hass, 'default_fix')}>
-                                <ha-radio
-                                  name="default_${check.id}"
-                                  .checked=${check.default_condition_index === condIdx}
-                                  @change=${() => this._setDefaultCondition(index, condIdx)}
-                                ></ha-radio>
-                              </ha-formfield>
-                            ` : ''}
-                            ${isMulti ? html`
-                              <ha-button @click=${() => this._removeCondition(index, condIdx)} style="--mdc-theme-primary: var(--error-color);">
-                                ${localize(this.hass, 'remove_state')}
-                              </ha-button>
-                            ` : ''}
-                          </div>
-                        </div>
-
-                        <div class="select-wrapper">
-                          <label>${localize(this.hass, 'attr_check')}</label>
-                          <select
-                            .value=${condition.attribute || ''}
-                            @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute', (e.target as HTMLSelectElement).value, e.target)}
-                          >
-                            <option value="" ?selected=${!condition.attribute}>${localize(this.hass, 'no_attr')}</option>
-                            ${this._getPossibleAttributes(check.entity).map(attr => html`
-                              <option value=${attr} ?selected=${condition.attribute === attr}>${attr}</option>
-                            `)}
-                          </select>
-                        </div>
-
-                        ${condition.attribute && condition.attribute.trim() !== '' ? html`
-                          <div class="select-wrapper">
-                            <label>${localize(this.hass, 'attr_val')}</label>
-                            <select
-                              .value=${condition.attribute_value || ''}
-                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute_value', (e.target as HTMLSelectElement).value, e.target)}
-                            >
-                              ${[...new Set([
-                                ...(condition.attribute_value ? [condition.attribute_value] : []),
-                                ...this._getPossibleAttributeValues(check.entity, condition.attribute),
-                              ])].map(val => html`
-                                <option value=${val} ?selected=${condition.attribute_value === val}>${val}</option>
-                              `)}
-                            </select>
-                          </div>
-                        ` : html`
-                          <div class="select-wrapper">
-                            <label>${localize(this.hass, 'ok_state')}</label>
-                            <select
-                              .value=${condition.state || 'on'}
-                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'state', (e.target as HTMLSelectElement).value, e.target)}
-                            >
-                              ${[...new Set([
-                                ...(condition.state ? [condition.state] : []),
-                                ...this._getPossibleStates(check.entity),
-                              ])].map(s => html`
-                                <option value=${s} ?selected=${condition.state === s}>${s}</option>
-                              `)}
-                            </select>
-                          </div>
-                        `}
-
-                        <ha-textfield
-                          label=${localize(this.hass, 'custom_fix')}
-                          .value=${condition.fix_service || ''}
-                          @input=${(e: Event) => this._updateCondition(index, condIdx, 'fix_service', (e.target as HTMLInputElement).value)}
-                        ></ha-textfield>
-                        <div class="json-hint">${localize(this.hass, 'custom_fix_hint')}</div>
-
-                        <div class="divider"></div>
-                        <div class="prereq-title">${localize(this.hass, 'prereq_entity')}</div>
-
-                        <ha-entity-picker
-                          .hass=${this.hass}
-                          .value=${condition.prerequisite_entity || ''}
-                          allow-custom-entity
-                          @value-changed=${(e: CustomEvent) => this._updateCondition(index, condIdx, 'prerequisite_entity', e.detail.value)}
-                        ></ha-entity-picker>
-
-                        ${condition.prerequisite_entity && condition.prerequisite_entity.trim() !== '' ? html`
-                          <div class="select-wrapper">
-                            <label>${localize(this.hass, 'attr_check')}</label>
-                            <select
-                              .value=${condition.prerequisite_attribute || ''}
-                              @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_attribute', (e.target as HTMLSelectElement).value, e.target)}
-                            >
-                              <option value="" ?selected=${!condition.prerequisite_attribute}>${localize(this.hass, 'no_attr')}</option>
-                              ${this._getPossibleAttributes(condition.prerequisite_entity).map(attr => html`
-                                <option value=${attr} ?selected=${condition.prerequisite_attribute === attr}>${attr}</option>
-                              `)}
-                            </select>
-                          </div>
-
-                          ${condition.prerequisite_attribute && condition.prerequisite_attribute.trim() !== '' ? html`
-                            <div class="select-wrapper">
-                              <label>${localize(this.hass, 'attr_val')}</label>
-                              <select
-                                .value=${condition.prerequisite_attribute_value || ''}
-                                @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_attribute_value', (e.target as HTMLSelectElement).value, e.target)}
-                              >
-                                ${[...new Set([
-                                  ...(condition.prerequisite_attribute_value ? [condition.prerequisite_attribute_value] : []),
-                                  ...this._getPossibleAttributeValues(condition.prerequisite_entity, condition.prerequisite_attribute),
-                                ])].map(val => html`
-                                  <option value=${val} ?selected=${condition.prerequisite_attribute_value === val}>${val}</option>
-                                `)}
-                              </select>
-                            </div>
-                            <div class="json-hint">${localize(this.hass, 'prereq_hint')}</div>
-                          ` : html`
-                            <div class="select-wrapper">
-                              <label>${localize(this.hass, 'prereq_state')}</label>
-                              <select
-                                .value=${condition.prerequisite_state || 'on'}
-                                @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_state', (e.target as HTMLSelectElement).value, e.target)}
-                              >
-                                ${[...new Set([
-                                  ...(condition.prerequisite_state ? [condition.prerequisite_state] : []),
-                                  ...this._getPossibleStates(condition.prerequisite_entity),
-                                ])].map(s => html`
-                                  <option value=${s} ?selected=${(condition.prerequisite_state || 'on') === s}>${s}</option>
-                                `)}
-                              </select>
-                            </div>
-                            <div class="json-hint">${localize(this.hass, 'prereq_hint')}</div>
-                          `}
-                        ` : ''}
-                      </div>
-                    `)}
-
-                    <ha-button outlined @click=${() => this._addCondition(index)}>
-                      <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
-                      ${localize(this.hass, 'add_state')}
-                    </ha-button>
-                  </div>
-                  </div>
-                </div>
-              </ha-expansion-panel>
-            </div>
-          `;
-        })}
-
-        <ha-button class="add-btn" outlined @click=${this._addCheck}>
+  private _renderChecksSection(checks: CheckRule[]) {
+    if (checks.length === 0) {
+      return html`
+        <div class="empty-state">${localize(this.hass, 'no_checks_yet')}</div>
+        <ha-button class="add-btn" outlined @click=${this._handleAddCheck}>
           <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
           ${localize(this.hass, 'add_check')}
         </ha-button>
+      `;
+    }
+
+    // Clamp _selectedCheck defensively (e.g. after external config replace).
+    const selected = Math.min(this._selectedCheck, checks.length - 1);
+    const current = checks[selected];
+
+    return html`
+      <div class="check-toolbar">
+        ${this._useHaTabs
+          ? html`
+              <ha-tab-group @wa-tab-show=${this._handleSelectedCheck}>
+                ${checks.map(
+                  (c, i) => html`
+                    <ha-tab-group-tab
+                      slot="nav"
+                      .panel=${i}
+                      .active=${i === selected}
+                      class=${this._isCheckValid(c) ? '' : 'invalid'}
+                    >${i + 1}</ha-tab-group-tab>
+                  `,
+                )}
+              </ha-tab-group>
+            `
+          : html`
+              <mwc-tab-bar
+                .activeIndex=${selected}
+                @MDCTabBar:activated=${this._handleSelectedCheck}
+              >
+                ${checks.map(
+                  (c, i) => html`
+                    <mwc-tab
+                      .label=${String(i + 1)}
+                      class=${this._isCheckValid(c) ? '' : 'invalid'}
+                    ></mwc-tab>
+                  `,
+                )}
+              </mwc-tab-bar>
+            `}
+        <ha-icon-button
+          .label=${this._hasClipboard
+            ? localize(this.hass, 'paste_check')
+            : localize(this.hass, 'add_check')}
+          .path=${mdiPlus}
+          @click=${this._handleAddCheck}
+        ></ha-icon-button>
+      </div>
+
+      <div class="check-editor">
+        <div class="check-options">
+          <ha-icon-button
+            class="gui-mode-button"
+            .label=${localize(this.hass, this._yamlMode ? 'show_visual_editor' : 'show_code_editor')}
+            .path=${this._yamlMode ? mdiListBoxOutline : mdiCodeBraces}
+            @click=${this._toggleYamlMode}
+          ></ha-icon-button>
+          <ha-icon-button-arrow-prev
+            .disabled=${selected === 0}
+            .label=${localize(this.hass, 'move_before')}
+            .move=${-1}
+            @click=${this._handleMoveCheck}
+          ></ha-icon-button-arrow-prev>
+          <ha-icon-button-arrow-next
+            .disabled=${selected === checks.length - 1}
+            .label=${localize(this.hass, 'move_after')}
+            .move=${1}
+            @click=${this._handleMoveCheck}
+          ></ha-icon-button-arrow-next>
+          <ha-icon-button
+            .label=${localize(this.hass, 'duplicate')}
+            .path=${mdiContentCopy}
+            @click=${this._handleDuplicateCheck}
+          ></ha-icon-button>
+          <ha-icon-button
+            .label=${localize(this.hass, 'cut_check')}
+            .path=${mdiContentCut}
+            @click=${this._handleCutCheck}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="delete-btn"
+            .label=${localize(this.hass, 'remove')}
+            .path=${mdiDelete}
+            @click=${this._handleDeleteSelectedCheck}
+          ></ha-icon-button>
+        </div>
+        ${this._yamlMode
+          ? html`
+              <div class="yaml-editor">
+                ${this._useHaYamlEditor
+                  ? html`
+                      <ha-yaml-editor
+                        .hass=${this.hass}
+                        .defaultValue=${current}
+                        @value-changed=${this._handleHaYamlChange}
+                      ></ha-yaml-editor>
+                    `
+                  : html`
+                      <textarea
+                        spellcheck="false"
+                        .value=${JSON.stringify(current, null, 2)}
+                        @input=${(e: Event) => this._handleYamlInput(e, selected)}
+                      ></textarea>
+                      <div class="yaml-hint">${localize(this.hass, 'yaml_hint_json')}</div>
+                    `}
+                ${this._yamlError ? html`<div class="yaml-error">${this._yamlError}</div>` : ''}
+              </div>
+            `
+          : this._renderCheckEditor(current, selected)}
+      </div>
+    `;
+  }
+
+  private _renderCheckEditor(check: CheckRule, index: number) {
+    const conditions = check.conditions || [];
+    const isMulti = conditions.length > 1;
+
+    return html`
+      <div class="check-editor-content">
+        <ha-entity-picker
+          label=${localize(this.hass, 'select_entity')}
+          .hass=${this.hass}
+          .value=${check.entity}
+          allow-custom-entity
+          @value-changed=${(e: CustomEvent) => this._entityChanged(index, e.detail.value)}
+        ></ha-entity-picker>
+
+        <ha-textfield
+          label=${localize(this.hass, 'display_name')}
+          .value=${check.name || ''}
+          @input=${(e: Event) => this._updateCheck(index, 'name', (e.target as HTMLInputElement).value)}
+        ></ha-textfield>
+
+        <details class="advanced-block">
+          <summary class="advanced-summary">${localize(this.hass, 'advanced_settings')}</summary>
+          <div class="advanced-content">
+            <div class="select-wrapper">
+              <label>${localize(this.hass, 'severity')}</label>
+              <select
+                .value=${check.severity || 'info'}
+                @change=${(e: Event) => this._updateCheck(index, 'severity', (e.target as HTMLSelectElement).value)}
+              >
+                <option value="info" ?selected=${check.severity === 'info' || !check.severity}>${localize(this.hass, 'severity_info')}</option>
+                <option value="warning" ?selected=${check.severity === 'warning'}>${localize(this.hass, 'severity_warning')}</option>
+                <option value="critical" ?selected=${check.severity === 'critical'}>${localize(this.hass, 'severity_critical')}</option>
+              </select>
+            </div>
+            <ha-icon-picker
+              .hass=${this.hass}
+              .label=${localize(this.hass, 'icon_override')}
+              .value=${check.icon || ''}
+              @value-changed=${(e: CustomEvent) => this._updateCheck(index, 'icon', e.detail.value)}
+            ></ha-icon-picker>
+            <ha-textfield
+              label=${localize(this.hass, 'color_override')}
+              .value=${check.color || ''}
+              @input=${(e: Event) => this._updateCheck(index, 'color', (e.target as HTMLInputElement).value)}
+            ></ha-textfield>
+          </div>
+        </details>
+
+        ${isMulti ? html`
+          <div class="select-wrapper">
+            <label>${localize(this.hass, 'check_condition')}</label>
+            <select
+              .value=${check.conditions_mode === 'all' ? 'all' : 'any'}
+              @change=${(e: Event) => this._setConditionsMode(index, (e.target as HTMLSelectElement).value as 'any' | 'all')}
+            >
+              <option value="any" ?selected=${check.conditions_mode !== 'all'}>${localize(this.hass, 'cond_any')}</option>
+              <option value="all" ?selected=${check.conditions_mode === 'all'}>${localize(this.hass, 'cond_all')}</option>
+            </select>
+          </div>
+        ` : ''}
+
+        <div class="conditions-section">
+          ${conditions.map((condition, condIdx) => html`
+            <div class="condition-item">
+              <div class="condition-header">
+                <span class="condition-title">
+                  ${isMulti ? `${localize(this.hass, 'ok_state')} ${condIdx + 1}` : localize(this.hass, 'ok_state')}
+                </span>
+                <div class="condition-actions">
+                  ${isMulti && check.conditions_mode !== 'all' ? html`
+                    <ha-formfield label=${check.default_condition_index === condIdx ? localize(this.hass, 'default_fix_star') : localize(this.hass, 'default_fix')}>
+                      <ha-radio
+                        name="default_${check.id}"
+                        .checked=${check.default_condition_index === condIdx}
+                        @change=${() => this._setDefaultCondition(index, condIdx)}
+                      ></ha-radio>
+                    </ha-formfield>
+                  ` : ''}
+                  ${isMulti ? html`
+                    <ha-button @click=${() => this._removeCondition(index, condIdx)} style="--mdc-theme-primary: var(--error-color);">
+                      ${localize(this.hass, 'remove_state')}
+                    </ha-button>
+                  ` : ''}
+                </div>
+              </div>
+
+              <div class="select-wrapper">
+                <label>${localize(this.hass, 'attr_check')}</label>
+                <select
+                  .value=${condition.attribute || ''}
+                  @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute', (e.target as HTMLSelectElement).value, e.target)}
+                >
+                  <option value="" ?selected=${!condition.attribute}>${localize(this.hass, 'no_attr')}</option>
+                  ${this._getPossibleAttributes(check.entity).map(attr => html`
+                    <option value=${attr} ?selected=${condition.attribute === attr}>${attr}</option>
+                  `)}
+                </select>
+              </div>
+
+              ${condition.attribute && condition.attribute.trim() !== '' ? html`
+                <div class="select-wrapper">
+                  <label>${localize(this.hass, 'attr_val')}</label>
+                  <select
+                    .value=${condition.attribute_value || ''}
+                    @change=${(e: Event) => this._updateCondition(index, condIdx, 'attribute_value', (e.target as HTMLSelectElement).value, e.target)}
+                  >
+                    ${[...new Set([
+                      ...(condition.attribute_value ? [condition.attribute_value] : []),
+                      ...this._getPossibleAttributeValues(check.entity, condition.attribute),
+                    ])].map(val => html`
+                      <option value=${val} ?selected=${condition.attribute_value === val}>${val}</option>
+                    `)}
+                  </select>
+                </div>
+              ` : html`
+                <div class="select-wrapper">
+                  <label>${localize(this.hass, 'ok_state')}</label>
+                  <select
+                    .value=${condition.state || 'on'}
+                    @change=${(e: Event) => this._updateCondition(index, condIdx, 'state', (e.target as HTMLSelectElement).value, e.target)}
+                  >
+                    ${[...new Set([
+                      ...(condition.state ? [condition.state] : []),
+                      ...this._getPossibleStates(check.entity),
+                    ])].map(s => html`
+                      <option value=${s} ?selected=${condition.state === s}>${s}</option>
+                    `)}
+                  </select>
+                </div>
+              `}
+
+              <ha-textfield
+                label=${localize(this.hass, 'custom_fix')}
+                .value=${condition.fix_service || ''}
+                @input=${(e: Event) => this._updateCondition(index, condIdx, 'fix_service', (e.target as HTMLInputElement).value)}
+              ></ha-textfield>
+              <div class="json-hint">${localize(this.hass, 'custom_fix_hint')}</div>
+
+              <div class="divider"></div>
+              <div class="prereq-title">${localize(this.hass, 'prereq_entity')}</div>
+
+              <ha-entity-picker
+                .hass=${this.hass}
+                .value=${condition.prerequisite_entity || ''}
+                allow-custom-entity
+                @value-changed=${(e: CustomEvent) => this._updateCondition(index, condIdx, 'prerequisite_entity', e.detail.value)}
+              ></ha-entity-picker>
+
+              ${condition.prerequisite_entity && condition.prerequisite_entity.trim() !== '' ? html`
+                <div class="select-wrapper">
+                  <label>${localize(this.hass, 'attr_check')}</label>
+                  <select
+                    .value=${condition.prerequisite_attribute || ''}
+                    @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_attribute', (e.target as HTMLSelectElement).value, e.target)}
+                  >
+                    <option value="" ?selected=${!condition.prerequisite_attribute}>${localize(this.hass, 'no_attr')}</option>
+                    ${this._getPossibleAttributes(condition.prerequisite_entity).map(attr => html`
+                      <option value=${attr} ?selected=${condition.prerequisite_attribute === attr}>${attr}</option>
+                    `)}
+                  </select>
+                </div>
+
+                ${condition.prerequisite_attribute && condition.prerequisite_attribute.trim() !== '' ? html`
+                  <div class="select-wrapper">
+                    <label>${localize(this.hass, 'attr_val')}</label>
+                    <select
+                      .value=${condition.prerequisite_attribute_value || ''}
+                      @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_attribute_value', (e.target as HTMLSelectElement).value, e.target)}
+                    >
+                      ${[...new Set([
+                        ...(condition.prerequisite_attribute_value ? [condition.prerequisite_attribute_value] : []),
+                        ...this._getPossibleAttributeValues(condition.prerequisite_entity, condition.prerequisite_attribute),
+                      ])].map(val => html`
+                        <option value=${val} ?selected=${condition.prerequisite_attribute_value === val}>${val}</option>
+                      `)}
+                    </select>
+                  </div>
+                  <div class="json-hint">${localize(this.hass, 'prereq_hint')}</div>
+                ` : html`
+                  <div class="select-wrapper">
+                    <label>${localize(this.hass, 'prereq_state')}</label>
+                    <select
+                      .value=${condition.prerequisite_state || 'on'}
+                      @change=${(e: Event) => this._updateCondition(index, condIdx, 'prerequisite_state', (e.target as HTMLSelectElement).value, e.target)}
+                    >
+                      ${[...new Set([
+                        ...(condition.prerequisite_state ? [condition.prerequisite_state] : []),
+                        ...this._getPossibleStates(condition.prerequisite_entity),
+                      ])].map(s => html`
+                        <option value=${s} ?selected=${(condition.prerequisite_state || 'on') === s}>${s}</option>
+                      `)}
+                    </select>
+                  </div>
+                  <div class="json-hint">${localize(this.hass, 'prereq_hint')}</div>
+                `}
+              ` : ''}
+            </div>
+          `)}
+
+          <ha-button outlined @click=${() => this._addCondition(index)}>
+            <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
+            ${localize(this.hass, 'add_state')}
+          </ha-button>
+        </div>
       </div>
     `;
   }
