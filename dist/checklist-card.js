@@ -263,82 +263,82 @@ var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n =
 //#endregion
 //#region node_modules/lit-html/lit-html.js
 function le(e, t) {
-	if (!O(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
-	return de === void 0 ? t : de.createHTML(t);
+	if (!D(e) || !e.hasOwnProperty("raw")) throw Error("invalid template strings array");
+	return fe === void 0 ? t : fe.createHTML(t);
 }
 function b(e, t, n = e, r) {
-	if (t === M) return t;
-	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = D(t) ? void 0 : t._$litDirective$;
+	if (t === j) return t;
+	let i = r === void 0 ? n._$Cl : n._$Co?.[r], a = E(t) ? void 0 : t._$litDirective$;
 	return i?.constructor !== a && (i?._$AO?.(!1), a === void 0 ? i = void 0 : (i = new a(e), i._$AT(e, n, r)), r === void 0 ? n._$Cl = i : (n._$Co ??= [])[r] = i), i !== void 0 && (t = b(e, i._$AS(e, t.values), i, r)), t;
 }
-var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe, j, M, N, Se, P, Ce, F, we, I, L, Te, Ee, De, Oe, ke, Ae, je, R = t((() => {
-	x = globalThis, ue = (e) => e, S = x.trustedTypes, de = S ? S.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, C = "$lit$", w = `lit$${Math.random().toFixed(9).slice(2)}$`, fe = "?" + w, pe = `<${fe}>`, T = document, E = () => T.createComment(""), D = (e) => e === null || typeof e != "object" && typeof e != "function", O = Array.isArray, me = (e) => O(e) || typeof e?.[Symbol.iterator] == "function", he = "[ 	\n\f\r]", k = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, ge = /-->/g, _e = />/g, A = RegExp(`>|${he}(?:([^\\s"'>=/]+)(${he}*=${he}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ve = /'/g, ye = /"/g, be = /^(?:script|style|textarea|title)$/i, xe = (e) => (t, ...n) => ({
+var ue, de, x, fe, S, C, pe, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, Se, A, j, M, Ce, N, we, P, Te, F, I, Ee, De, Oe, ke, Ae, je, Me, L = t((() => {
+	ue = globalThis, de = (e) => e, x = ue.trustedTypes, fe = x ? x.createPolicy("lit-html", { createHTML: (e) => e }) : void 0, S = "$lit$", C = `lit$${Math.random().toFixed(9).slice(2)}$`, pe = "?" + C, me = `<${pe}>`, w = document, T = () => w.createComment(""), E = (e) => e === null || typeof e != "object" && typeof e != "function", D = Array.isArray, he = (e) => D(e) || typeof e?.[Symbol.iterator] == "function", ge = "[ 	\n\f\r]", O = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, _e = /-->/g, ve = />/g, k = RegExp(`>|${ge}(?:([^\\s"'>=/]+)(${ge}*=${ge}*(?:[^ \t\n\f\r"'\`<>=]|("|')|))|$)`, "g"), ye = /'/g, be = /"/g, xe = /^(?:script|style|textarea|title)$/i, Se = (e) => (t, ...n) => ({
 		_$litType$: e,
 		strings: t,
 		values: n
-	}), j = xe(1), xe(2), xe(3), M = Symbol.for("lit-noChange"), N = Symbol.for("lit-nothing"), Se = /* @__PURE__ */ new WeakMap(), P = T.createTreeWalker(T, 129), Ce = (e, t) => {
-		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = k;
+	}), A = Se(1), Se(2), Se(3), j = Symbol.for("lit-noChange"), M = Symbol.for("lit-nothing"), Ce = /* @__PURE__ */ new WeakMap(), N = w.createTreeWalker(w, 129), we = (e, t) => {
+		let n = e.length - 1, r = [], i, a = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", o = O;
 		for (let t = 0; t < n; t++) {
 			let n = e[t], s, c, l = -1, u = 0;
-			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === k ? c[1] === "!--" ? o = ge : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = A) : (be.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = A) : o = _e : o === A ? c[0] === ">" ? (o = i ?? k, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? A : c[3] === "\"" ? ye : ve) : o === ye || o === ve ? o = A : o === ge || o === _e ? o = k : (o = A, i = void 0);
-			let d = o === A && e[t + 1].startsWith("/>") ? " " : "";
-			a += o === k ? n + pe : l >= 0 ? (r.push(s), n.slice(0, l) + C + n.slice(l) + w + d) : n + w + (l === -2 ? t : d);
+			for (; u < n.length && (o.lastIndex = u, c = o.exec(n), c !== null);) u = o.lastIndex, o === O ? c[1] === "!--" ? o = _e : c[1] === void 0 ? c[2] === void 0 ? c[3] !== void 0 && (o = k) : (xe.test(c[2]) && (i = RegExp("</" + c[2], "g")), o = k) : o = ve : o === k ? c[0] === ">" ? (o = i ?? O, l = -1) : c[1] === void 0 ? l = -2 : (l = o.lastIndex - c[2].length, s = c[1], o = c[3] === void 0 ? k : c[3] === "\"" ? be : ye) : o === be || o === ye ? o = k : o === _e || o === ve ? o = O : (o = k, i = void 0);
+			let d = o === k && e[t + 1].startsWith("/>") ? " " : "";
+			a += o === O ? n + me : l >= 0 ? (r.push(s), n.slice(0, l) + S + n.slice(l) + C + d) : n + C + (l === -2 ? t : d);
 		}
 		return [le(e, a + (e[n] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
-	}, F = class e {
+	}, P = class e {
 		constructor({ strings: t, _$litType$: n }, r) {
 			let i;
 			this.parts = [];
-			let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = Ce(t, n);
-			if (this.el = e.createElement(l, r), P.currentNode = this.el.content, n === 2 || n === 3) {
+			let a = 0, o = 0, s = t.length - 1, c = this.parts, [l, u] = we(t, n);
+			if (this.el = e.createElement(l, r), N.currentNode = this.el.content, n === 2 || n === 3) {
 				let e = this.el.content.firstChild;
 				e.replaceWith(...e.childNodes);
 			}
-			for (; (i = P.nextNode()) !== null && c.length < s;) {
+			for (; (i = N.nextNode()) !== null && c.length < s;) {
 				if (i.nodeType === 1) {
-					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(C)) {
-						let t = u[o++], n = i.getAttribute(e).split(w), r = /([.?@])?(.*)/.exec(t);
+					if (i.hasAttributes()) for (let e of i.getAttributeNames()) if (e.endsWith(S)) {
+						let t = u[o++], n = i.getAttribute(e).split(C), r = /([.?@])?(.*)/.exec(t);
 						c.push({
 							type: 1,
 							index: a,
 							name: r[2],
 							strings: n,
-							ctor: r[1] === "." ? Te : r[1] === "?" ? Ee : r[1] === "@" ? De : L
+							ctor: r[1] === "." ? Ee : r[1] === "?" ? De : r[1] === "@" ? Oe : I
 						}), i.removeAttribute(e);
-					} else e.startsWith(w) && (c.push({
+					} else e.startsWith(C) && (c.push({
 						type: 6,
 						index: a
 					}), i.removeAttribute(e));
-					if (be.test(i.tagName)) {
-						let e = i.textContent.split(w), t = e.length - 1;
+					if (xe.test(i.tagName)) {
+						let e = i.textContent.split(C), t = e.length - 1;
 						if (t > 0) {
-							i.textContent = S ? S.emptyScript : "";
-							for (let n = 0; n < t; n++) i.append(e[n], E()), P.nextNode(), c.push({
+							i.textContent = x ? x.emptyScript : "";
+							for (let n = 0; n < t; n++) i.append(e[n], T()), N.nextNode(), c.push({
 								type: 2,
 								index: ++a
 							});
-							i.append(e[t], E());
+							i.append(e[t], T());
 						}
 					}
-				} else if (i.nodeType === 8) if (i.data === fe) c.push({
+				} else if (i.nodeType === 8) if (i.data === pe) c.push({
 					type: 2,
 					index: a
 				});
 				else {
 					let e = -1;
-					for (; (e = i.data.indexOf(w, e + 1)) !== -1;) c.push({
+					for (; (e = i.data.indexOf(C, e + 1)) !== -1;) c.push({
 						type: 7,
 						index: a
-					}), e += w.length - 1;
+					}), e += C.length - 1;
 				}
 				a++;
 			}
 		}
 		static createElement(e, t) {
-			let n = T.createElement("template");
+			let n = w.createElement("template");
 			return n.innerHTML = e, n;
 		}
-	}, we = class {
+	}, Te = class {
 		constructor(e, t) {
 			this._$AV = [], this._$AN = void 0, this._$AD = e, this._$AM = t;
 		}
@@ -349,28 +349,28 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 			return this._$AM._$AU;
 		}
 		u(e) {
-			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? T).importNode(t, !0);
-			P.currentNode = r;
-			let i = P.nextNode(), a = 0, o = 0, s = n[0];
+			let { el: { content: t }, parts: n } = this._$AD, r = (e?.creationScope ?? w).importNode(t, !0);
+			N.currentNode = r;
+			let i = N.nextNode(), a = 0, o = 0, s = n[0];
 			for (; s !== void 0;) {
 				if (a === s.index) {
 					let t;
-					s.type === 2 ? t = new I(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new Oe(i, this, e)), this._$AV.push(t), s = n[++o];
+					s.type === 2 ? t = new F(i, i.nextSibling, this, e) : s.type === 1 ? t = new s.ctor(i, s.name, s.strings, this, e) : s.type === 6 && (t = new ke(i, this, e)), this._$AV.push(t), s = n[++o];
 				}
-				a !== s?.index && (i = P.nextNode(), a++);
+				a !== s?.index && (i = N.nextNode(), a++);
 			}
-			return P.currentNode = T, r;
+			return N.currentNode = w, r;
 		}
 		p(e) {
 			let t = 0;
 			for (let n of this._$AV) n !== void 0 && (n.strings === void 0 ? n._$AI(e[t]) : (n._$AI(e, n, t), t += n.strings.length - 2)), t++;
 		}
-	}, I = class e {
+	}, F = class e {
 		get _$AU() {
 			return this._$AM?._$AU ?? this._$Cv;
 		}
 		constructor(e, t, n, r) {
-			this.type = 2, this._$AH = N, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
+			this.type = 2, this._$AH = M, this._$AN = void 0, this._$AA = e, this._$AB = t, this._$AM = n, this.options = r, this._$Cv = r?.isConnected ?? !0;
 		}
 		get parentNode() {
 			let e = this._$AA.parentNode, t = this._$AM;
@@ -383,7 +383,7 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 			return this._$AB;
 		}
 		_$AI(e, t = this) {
-			e = b(this, e, t), D(e) ? e === N || e == null || e === "" ? (this._$AH !== N && this._$AR(), this._$AH = N) : e !== this._$AH && e !== M && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? me(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
+			e = b(this, e, t), E(e) ? e === M || e == null || e === "" ? (this._$AH !== M && this._$AR(), this._$AH = M) : e !== this._$AH && e !== j && this._(e) : e._$litType$ === void 0 ? e.nodeType === void 0 ? he(e) ? this.k(e) : this._(e) : this.T(e) : this.$(e);
 		}
 		O(e) {
 			return this._$AA.parentNode.insertBefore(e, this._$AB);
@@ -392,36 +392,36 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 			this._$AH !== e && (this._$AR(), this._$AH = this.O(e));
 		}
 		_(e) {
-			this._$AH !== N && D(this._$AH) ? this._$AA.nextSibling.data = e : this.T(T.createTextNode(e)), this._$AH = e;
+			this._$AH !== M && E(this._$AH) ? this._$AA.nextSibling.data = e : this.T(w.createTextNode(e)), this._$AH = e;
 		}
 		$(e) {
-			let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = F.createElement(le(n.h, n.h[0]), this.options)), n);
+			let { values: t, _$litType$: n } = e, r = typeof n == "number" ? this._$AC(e) : (n.el === void 0 && (n.el = P.createElement(le(n.h, n.h[0]), this.options)), n);
 			if (this._$AH?._$AD === r) this._$AH.p(t);
 			else {
-				let e = new we(r, this), n = e.u(this.options);
+				let e = new Te(r, this), n = e.u(this.options);
 				e.p(t), this.T(n), this._$AH = e;
 			}
 		}
 		_$AC(e) {
-			let t = Se.get(e.strings);
-			return t === void 0 && Se.set(e.strings, t = new F(e)), t;
+			let t = Ce.get(e.strings);
+			return t === void 0 && Ce.set(e.strings, t = new P(e)), t;
 		}
 		k(t) {
-			O(this._$AH) || (this._$AH = [], this._$AR());
+			D(this._$AH) || (this._$AH = [], this._$AR());
 			let n = this._$AH, r, i = 0;
-			for (let a of t) i === n.length ? n.push(r = new e(this.O(E()), this.O(E()), this, this.options)) : r = n[i], r._$AI(a), i++;
+			for (let a of t) i === n.length ? n.push(r = new e(this.O(T()), this.O(T()), this, this.options)) : r = n[i], r._$AI(a), i++;
 			i < n.length && (this._$AR(r && r._$AB.nextSibling, i), n.length = i);
 		}
 		_$AR(e = this._$AA.nextSibling, t) {
 			for (this._$AP?.(!1, !0, t); e !== this._$AB;) {
-				let t = ue(e).nextSibling;
-				ue(e).remove(), e = t;
+				let t = de(e).nextSibling;
+				de(e).remove(), e = t;
 			}
 		}
 		setConnected(e) {
 			this._$AM === void 0 && (this._$Cv = e, this._$AP?.(e));
 		}
-	}, L = class {
+	}, I = class {
 		get tagName() {
 			return this.element.tagName;
 		}
@@ -429,47 +429,47 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 			return this._$AM._$AU;
 		}
 		constructor(e, t, n, r, i) {
-			this.type = 1, this._$AH = N, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = N;
+			this.type = 1, this._$AH = M, this._$AN = void 0, this.element = e, this.name = t, this._$AM = r, this.options = i, n.length > 2 || n[0] !== "" || n[1] !== "" ? (this._$AH = Array(n.length - 1).fill(/* @__PURE__ */ new String()), this.strings = n) : this._$AH = M;
 		}
 		_$AI(e, t = this, n, r) {
 			let i = this.strings, a = !1;
-			if (i === void 0) e = b(this, e, t, 0), a = !D(e) || e !== this._$AH && e !== M, a && (this._$AH = e);
+			if (i === void 0) e = b(this, e, t, 0), a = !E(e) || e !== this._$AH && e !== j, a && (this._$AH = e);
 			else {
 				let r = e, o, s;
-				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === M && (s = this._$AH[o]), a ||= !D(s) || s !== this._$AH[o], s === N ? e = N : e !== N && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
+				for (e = i[0], o = 0; o < i.length - 1; o++) s = b(this, r[n + o], t, o), s === j && (s = this._$AH[o]), a ||= !E(s) || s !== this._$AH[o], s === M ? e = M : e !== M && (e += (s ?? "") + i[o + 1]), this._$AH[o] = s;
 			}
 			a && !r && this.j(e);
 		}
 		j(e) {
-			e === N ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
+			e === M ? this.element.removeAttribute(this.name) : this.element.setAttribute(this.name, e ?? "");
 		}
-	}, Te = class extends L {
+	}, Ee = class extends I {
 		constructor() {
 			super(...arguments), this.type = 3;
 		}
 		j(e) {
-			this.element[this.name] = e === N ? void 0 : e;
+			this.element[this.name] = e === M ? void 0 : e;
 		}
-	}, Ee = class extends L {
+	}, De = class extends I {
 		constructor() {
 			super(...arguments), this.type = 4;
 		}
 		j(e) {
-			this.element.toggleAttribute(this.name, !!e && e !== N);
+			this.element.toggleAttribute(this.name, !!e && e !== M);
 		}
-	}, De = class extends L {
+	}, Oe = class extends I {
 		constructor(e, t, n, r, i) {
 			super(e, t, n, r, i), this.type = 5;
 		}
 		_$AI(e, t = this) {
-			if ((e = b(this, e, t, 0) ?? N) === M) return;
-			let n = this._$AH, r = e === N && n !== N || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== N && (n === N || r);
+			if ((e = b(this, e, t, 0) ?? M) === j) return;
+			let n = this._$AH, r = e === M && n !== M || e.capture !== n.capture || e.once !== n.once || e.passive !== n.passive, i = e !== M && (n === M || r);
 			r && this.element.removeEventListener(this.name, this, n), i && this.element.addEventListener(this.name, this, e), this._$AH = e;
 		}
 		handleEvent(e) {
 			typeof this._$AH == "function" ? this._$AH.call(this.options?.host ?? this.element, e) : this._$AH.handleEvent(e);
 		}
-	}, Oe = class {
+	}, ke = class {
 		constructor(e, t, n) {
 			this.element = e, this.type = 6, this._$AN = void 0, this._$AM = t, this.options = n;
 		}
@@ -479,31 +479,31 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 		_$AI(e) {
 			b(this, e);
 		}
-	}, ke = {
-		M: C,
-		P: w,
-		A: fe,
+	}, Ae = {
+		M: S,
+		P: C,
+		A: pe,
 		C: 1,
-		L: Ce,
-		R: we,
-		D: me,
+		L: we,
+		R: Te,
+		D: he,
 		V: b,
-		I,
-		H: L,
-		N: Ee,
-		U: De,
-		B: Te,
-		F: Oe
-	}, Ae = x.litHtmlPolyfillSupport, Ae?.(F, I), (x.litHtmlVersions ??= []).push("3.3.2"), je = (e, t, n) => {
+		I: F,
+		H: I,
+		N: De,
+		U: Oe,
+		B: Ee,
+		F: ke
+	}, je = ue.litHtmlPolyfillSupport, je?.(P, F), (ue.litHtmlVersions ??= []).push("3.3.2"), Me = (e, t, n) => {
 		let r = n?.renderBefore ?? t, i = r._$litPart$;
 		if (i === void 0) {
 			let e = n?.renderBefore ?? null;
-			r._$litPart$ = i = new I(t.insertBefore(E(), e), e, void 0, n ?? {});
+			r._$litPart$ = i = new F(t.insertBefore(T(), e), e, void 0, n ?? {});
 		}
 		return i._$AI(e), i;
 	};
-})), z, B, Me, Ne = t((() => {
-	ce(), ce(), R(), R(), z = globalThis, B = class extends y {
+})), R, z, Ne, Pe = t((() => {
+	ce(), ce(), L(), L(), R = globalThis, z = class extends y {
 		constructor() {
 			super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
 		}
@@ -513,7 +513,7 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 		}
 		update(e) {
 			let t = this.render();
-			this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = je(t, this.renderRoot, this.renderOptions);
+			this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(e), this._$Do = Me(t, this.renderRoot, this.renderOptions);
 		}
 		connectedCallback() {
 			super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -522,13 +522,13 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 			super.disconnectedCallback(), this._$Do?.setConnected(!1);
 		}
 		render() {
-			return M;
+			return j;
 		}
-	}, B._$litElement$ = !0, B.finalized = !0, z.litElementHydrateSupport?.({ LitElement: B }), Me = z.litElementPolyfillSupport, Me?.({ LitElement: B }), (z.litElementVersions ??= []).push("4.2.2");
-})), Pe = t((() => {})), V = t((() => {
-	ce(), R(), Ne(), Pe();
-})), H, Fe = t((() => {
-	H = (e) => (t, n) => {
+	}, z._$litElement$ = !0, z.finalized = !0, R.litElementHydrateSupport?.({ LitElement: z }), Ne = R.litElementPolyfillSupport, Ne?.({ LitElement: z }), (R.litElementVersions ??= []).push("4.2.2");
+})), Fe = t((() => {})), B = t((() => {
+	ce(), L(), Pe(), Fe();
+})), V, Ie = t((() => {
+	V = (e) => (t, n) => {
 		n === void 0 ? customElements.define(e, t) : n.addInitializer(() => {
 			customElements.define(e, t);
 		});
@@ -536,20 +536,20 @@ var x, ue, S, de, C, w, fe, pe, T, E, D, O, me, he, k, ge, _e, A, ve, ye, be, xe
 }));
 //#endregion
 //#region node_modules/@lit/reactive-element/decorators/property.js
-function U(e) {
-	return (t, n) => typeof n == "object" ? Le(e, t, n) : ((e, t, n) => {
+function H(e) {
+	return (t, n) => typeof n == "object" ? Re(e, t, n) : ((e, t, n) => {
 		let r = t.hasOwnProperty(n);
 		return t.constructor.createProperty(n, e), r ? Object.getOwnPropertyDescriptor(t, n) : void 0;
 	})(e, t, n);
 }
-var Ie, Le, Re = t((() => {
-	ce(), Ie = {
+var Le, Re, ze = t((() => {
+	ce(), Le = {
 		attribute: !0,
 		type: String,
 		converter: _,
 		reflect: !1,
 		hasChanged: v
-	}, Le = (e = Ie, t, n) => {
+	}, Re = (e = Le, t, n) => {
 		let { kind: r, metadata: i } = n, a = globalThis.litPropertyMetadata.get(i);
 		if (a === void 0 && globalThis.litPropertyMetadata.set(i, a = /* @__PURE__ */ new Map()), r === "setter" && ((e = Object.create(e)).wrapped = !0), a.set(n.name, e), r === "accessor") {
 			let { name: r } = n;
@@ -575,122 +575,122 @@ var Ie, Le, Re = t((() => {
 }));
 //#endregion
 //#region node_modules/@lit/reactive-element/decorators/state.js
-function W(e) {
-	return U({
+function U(e) {
+	return H({
 		...e,
 		state: !0,
 		attribute: !1
 	});
 }
-var ze = t((() => {
-	Re();
-})), Be = t((() => {})), Ve = t((() => {})), He = t((() => {})), Ue = t((() => {})), We = t((() => {})), Ge = t((() => {})), Ke = t((() => {
-	Fe(), Re(), ze(), Be(), Ve(), He(), Ue(), We(), Ge();
-})), qe, Je, Ye, Xe = t((() => {
-	qe = {
-		ATTRIBUTE: 1,
-		CHILD: 2,
-		PROPERTY: 3,
-		BOOLEAN_ATTRIBUTE: 4,
-		EVENT: 5,
-		ELEMENT: 6
-	}, Je = (e) => (...t) => ({
-		_$litDirective$: e,
-		values: t
-	}), Ye = class {
-		constructor(e) {}
-		get _$AU() {
-			return this._$AM._$AU;
-		}
-		_$AT(e, t, n) {
-			this._$Ct = e, this._$AM = t, this._$Ci = n;
-		}
-		_$AS(e, t) {
-			return this.update(e, t);
-		}
-		update(e, t) {
-			return this.render(...t);
-		}
-	};
-})), Ze, Qe, $e, G, K, et, tt, nt, rt, it = t((() => {
-	R(), {I: Ze} = ke, Qe = (e) => e, $e = () => document.createComment(""), G = (e, t, n) => {
-		let r = e._$AA.parentNode, i = t === void 0 ? e._$AB : t._$AA;
-		if (n === void 0) n = new Ze(r.insertBefore($e(), i), r.insertBefore($e(), i), e, e.options);
-		else {
-			let t = n._$AB.nextSibling, a = n._$AM, o = a !== e;
-			if (o) {
-				let t;
-				n._$AQ?.(e), n._$AM = e, n._$AP !== void 0 && (t = e._$AU) !== a._$AU && n._$AP(t);
-			}
-			if (t !== i || o) {
-				let e = n._$AA;
-				for (; e !== t;) {
-					let t = Qe(e).nextSibling;
-					Qe(r).insertBefore(e, i), e = t;
-				}
-			}
-		}
-		return n;
-	}, K = (e, t, n = e) => (e._$AI(t, n), e), et = {}, tt = (e, t = et) => e._$AH = t, nt = (e) => e._$AH, rt = (e) => {
-		e._$AR(), e._$AA.remove();
-	};
-})), at, ot, st = t((() => {
-	R(), Xe(), it(), at = (e, t, n) => {
-		let r = /* @__PURE__ */ new Map();
-		for (let i = t; i <= n; i++) r.set(e[i], i);
-		return r;
-	}, ot = Je(class extends Ye {
-		constructor(e) {
-			if (super(e), e.type !== qe.CHILD) throw Error("repeat() can only be used in text expressions");
-		}
-		dt(e, t, n) {
-			let r;
-			n === void 0 ? n = t : t !== void 0 && (r = t);
-			let i = [], a = [], o = 0;
-			for (let t of e) i[o] = r ? r(t, o) : o, a[o] = n(t, o), o++;
-			return {
-				values: a,
-				keys: i
-			};
-		}
-		render(e, t, n) {
-			return this.dt(e, t, n).values;
-		}
-		update(e, [t, n, r]) {
-			let i = nt(e), { values: a, keys: o } = this.dt(t, n, r);
-			if (!Array.isArray(i)) return this.ut = o, a;
-			let s = this.ut ??= [], c = [], l, u, d = 0, f = i.length - 1, p = 0, m = a.length - 1;
-			for (; d <= f && p <= m;) if (i[d] === null) d++;
-			else if (i[f] === null) f--;
-			else if (s[d] === o[p]) c[p] = K(i[d], a[p]), d++, p++;
-			else if (s[f] === o[m]) c[m] = K(i[f], a[m]), f--, m--;
-			else if (s[d] === o[m]) c[m] = K(i[d], a[m]), G(e, c[m + 1], i[d]), d++, m--;
-			else if (s[f] === o[p]) c[p] = K(i[f], a[p]), G(e, i[d], i[f]), f--, p++;
-			else if (l === void 0 && (l = at(o, p, m), u = at(s, d, f)), l.has(s[d])) if (l.has(s[f])) {
-				let t = u.get(o[p]), n = t === void 0 ? null : i[t];
-				if (n === null) {
-					let t = G(e, i[d]);
-					K(t, a[p]), c[p] = t;
-				} else c[p] = K(n, a[p]), G(e, i[d], n), i[t] = null;
-				p++;
-			} else rt(i[f]), f--;
-			else rt(i[d]), d++;
-			for (; p <= m;) {
-				let t = G(e, c[m + 1]);
-				K(t, a[p]), c[p++] = t;
-			}
-			for (; d <= f;) {
-				let e = i[d++];
-				e !== null && rt(e);
-			}
-			return this.ut = o, tt(e, c), M;
-		}
-	});
-})), ct = t((() => {
-	st();
+var Be = t((() => {
+	ze();
+})), Ve = t((() => {})), He = t((() => {})), Ue = t((() => {})), We = t((() => {})), Ge = t((() => {})), Ke = t((() => {})), qe = t((() => {
+	Ie(), ze(), Be(), Ve(), He(), Ue(), We(), Ge(), Ke();
 }));
-Ke(), ct(), V();
-var lt = l`
+B(), qe();
+var Je = {
+	ATTRIBUTE: 1,
+	CHILD: 2,
+	PROPERTY: 3,
+	BOOLEAN_ATTRIBUTE: 4,
+	EVENT: 5,
+	ELEMENT: 6
+}, Ye = (e) => (...t) => ({
+	_$litDirective$: e,
+	values: t
+}), Xe = class {
+	constructor(e) {}
+	get _$AU() {
+		return this._$AM._$AU;
+	}
+	_$AT(e, t, n) {
+		this._$Ct = e, this._$AM = t, this._$Ci = n;
+	}
+	_$AS(e, t) {
+		return this.update(e, t);
+	}
+	update(e, t) {
+		return this.render(...t);
+	}
+};
+//#endregion
+//#region node_modules/lit-html/directive-helpers.js
+L();
+var { I: Ze } = Ae, Qe = (e) => e, $e = () => document.createComment(""), W = (e, t, n) => {
+	let r = e._$AA.parentNode, i = t === void 0 ? e._$AB : t._$AA;
+	if (n === void 0) n = new Ze(r.insertBefore($e(), i), r.insertBefore($e(), i), e, e.options);
+	else {
+		let t = n._$AB.nextSibling, a = n._$AM, o = a !== e;
+		if (o) {
+			let t;
+			n._$AQ?.(e), n._$AM = e, n._$AP !== void 0 && (t = e._$AU) !== a._$AU && n._$AP(t);
+		}
+		if (t !== i || o) {
+			let e = n._$AA;
+			for (; e !== t;) {
+				let t = Qe(e).nextSibling;
+				Qe(r).insertBefore(e, i), e = t;
+			}
+		}
+	}
+	return n;
+}, G = (e, t, n = e) => (e._$AI(t, n), e), et = {}, tt = (e, t = et) => e._$AH = t, nt = (e) => e._$AH, rt = (e) => {
+	e._$AR(), e._$AA.remove();
+};
+//#endregion
+//#region node_modules/lit-html/directives/repeat.js
+L();
+var it = (e, t, n) => {
+	let r = /* @__PURE__ */ new Map();
+	for (let i = t; i <= n; i++) r.set(e[i], i);
+	return r;
+}, at = Ye(class extends Xe {
+	constructor(e) {
+		if (super(e), e.type !== Je.CHILD) throw Error("repeat() can only be used in text expressions");
+	}
+	dt(e, t, n) {
+		let r;
+		n === void 0 ? n = t : t !== void 0 && (r = t);
+		let i = [], a = [], o = 0;
+		for (let t of e) i[o] = r ? r(t, o) : o, a[o] = n(t, o), o++;
+		return {
+			values: a,
+			keys: i
+		};
+	}
+	render(e, t, n) {
+		return this.dt(e, t, n).values;
+	}
+	update(e, [t, n, r]) {
+		let i = nt(e), { values: a, keys: o } = this.dt(t, n, r);
+		if (!Array.isArray(i)) return this.ut = o, a;
+		let s = this.ut ??= [], c = [], l, u, d = 0, f = i.length - 1, p = 0, m = a.length - 1;
+		for (; d <= f && p <= m;) if (i[d] === null) d++;
+		else if (i[f] === null) f--;
+		else if (s[d] === o[p]) c[p] = G(i[d], a[p]), d++, p++;
+		else if (s[f] === o[m]) c[m] = G(i[f], a[m]), f--, m--;
+		else if (s[d] === o[m]) c[m] = G(i[d], a[m]), W(e, c[m + 1], i[d]), d++, m--;
+		else if (s[f] === o[p]) c[p] = G(i[f], a[p]), W(e, i[d], i[f]), f--, p++;
+		else if (l === void 0 && (l = it(o, p, m), u = it(s, d, f)), l.has(s[d])) if (l.has(s[f])) {
+			let t = u.get(o[p]), n = t === void 0 ? null : i[t];
+			if (n === null) {
+				let t = W(e, i[d]);
+				G(t, a[p]), c[p] = t;
+			} else c[p] = G(n, a[p]), W(e, i[d], n), i[t] = null;
+			p++;
+		} else rt(i[f]), f--;
+		else rt(i[d]), d++;
+		for (; p <= m;) {
+			let t = W(e, c[m + 1]);
+			G(t, a[p]), c[p++] = t;
+		}
+		for (; d <= f;) {
+			let e = i[d++];
+			e !== null && rt(e);
+		}
+		return this.ut = o, tt(e, c), j;
+	}
+}), ot = l`
   :host {
     display: block;
     container-type: inline-size;
@@ -1041,19 +1041,19 @@ var lt = l`
 `;
 //#endregion
 //#region src/localize.ts
-function q(e, t, n) {
-	return dt(e?.language ?? "en", t, n);
+function K(e, t, n) {
+	return ct(e?.language ?? "en", t, n);
 }
-function ut(e) {
-	return dt((typeof navigator < "u" ? navigator.language : "en").split("-")[0].toLowerCase(), e);
+function st(e) {
+	return ct((typeof navigator < "u" ? navigator.language : "en").split("-")[0].toLowerCase(), e);
 }
-function dt(e, t, n) {
-	let r = ft[e in ft ? e : "en"][t] ?? ft.en[t] ?? t;
+function ct(e, t, n) {
+	let r = lt[e in lt ? e : "en"][t] ?? lt.en[t] ?? t;
 	if (n) for (let [e, t] of Object.entries(n)) r = r.replace(`{${e}}`, String(t));
 	return r;
 }
-var ft, pt = t((() => {
-	ft = {
+var lt, ut = t((() => {
+	lt = {
 		en: {
 			card_name: "Checklist Card",
 			card_description: "Check entity states and quickly fix any issues.",
@@ -1126,8 +1126,17 @@ var ft, pt = t((() => {
 			add_check: "+ Add new check",
 			loading: "Loading Home Assistant editor components...",
 			drag_here: "Drop here",
+			move_before: "Move check before",
+			move_after: "Move check after",
+			duplicate: "Duplicate check",
+			cut_check: "Cut check",
+			paste_check: "Paste check from clipboard",
+			show_code_editor: "Show code editor",
+			show_visual_editor: "Show visual editor",
+			yaml_hint_json: "JSON syntax — applied after a short pause.",
+			no_checks_yet: "No checks yet — add one to get started",
 			sort_mode: "Sort by",
-			sort_manual: "Manual (drag & drop)",
+			sort_manual: "Manual",
 			sort_status: "Problem status (Problems first)",
 			sort_alphabetical: "Alphabetical",
 			sort_domain: "Domain",
@@ -1244,8 +1253,17 @@ var ft, pt = t((() => {
 			add_check: "+ הוספת בדיקה חדשה",
 			loading: "טעינת רכיבי עריכה של Home Assistant...",
 			drag_here: "שחרר כאן",
+			move_before: "העברה לפני",
+			move_after: "העברה אחרי",
+			duplicate: "שכפול בדיקה",
+			cut_check: "גזירת בדיקה",
+			paste_check: "הדבקת בדיקה מהזיכרון",
+			show_code_editor: "הצגת עורך קוד",
+			show_visual_editor: "הצגת עורך חזותי",
+			yaml_hint_json: "תחביר JSON — מוחל לאחר השהייה קצרה.",
+			no_checks_yet: "אין עדיין בדיקות — הוסיפו אחת כדי להתחיל",
 			sort_mode: "מיון לפי",
-			sort_manual: "ידני (גרירה)",
+			sort_manual: "ידני",
 			sort_status: "מצב (תקלות למעלה)",
 			sort_alphabetical: "אלפביתי",
 			sort_domain: "סוג ישות",
@@ -1294,7 +1312,7 @@ var ft, pt = t((() => {
 }));
 //#endregion
 //#region src/utils.ts
-function mt(e) {
+function dt(e) {
 	return {
 		...e,
 		id: e.id || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -1305,7 +1323,7 @@ function mt(e) {
 		conditions: e.conditions || []
 	};
 }
-function ht() {
+function ft() {
 	return {
 		state: "off",
 		attribute: "",
@@ -1313,11 +1331,11 @@ function ht() {
 		fix_service: ""
 	};
 }
-function gt(e) {
+function pt(e) {
 	let t = { ...e };
 	return t.show_ok_section ||= "inline", t.sort ||= "manual", t.sort_direction ||= "asc", t;
 }
-function _t(e, t, n) {
+function mt(e, t, n) {
 	let r = "", i = {};
 	if (n?.attribute?.trim()) {
 		let a = t, o = parseFloat(a);
@@ -1456,27 +1474,27 @@ function _t(e, t, n) {
 		serviceData: i
 	};
 }
-var vt = t((() => {}));
-pt(), vt();
-var yt = /states\(['"]([^'"]+)['"]\)/, bt = /states\(['"]([^'"]+)['"]\)/g;
-function J(e, t) {
+var ht = t((() => {}));
+ut(), ht();
+var gt = /states\(['"]([^'"]+)['"]\)/, _t = /states\(['"]([^'"]+)['"]\)/g;
+function q(e, t) {
 	if (!t || !t.includes("states(")) return t;
 	try {
-		let n = yt.exec(t);
+		let n = gt.exec(t);
 		if (n?.[1] && e.states[n[1]]) return e.states[n[1]].state;
 	} catch (e) {
 		console.warn("Error parsing expected pattern", e);
 	}
 	return t;
 }
-function xt(e, t, n) {
+function vt(e, t, n) {
 	if (n.prerequisite_entity?.trim()) {
 		let t = e.states[n.prerequisite_entity];
 		if (t) {
 			let r;
 			if (n.prerequisite_attribute?.trim()) {
 				let i = t.attributes?.[n.prerequisite_attribute], a = n.prerequisite_attribute_value?.trim() ? n.prerequisite_attribute_value : n.prerequisite_state || "on";
-				if (a = J(e, a), a.startsWith("!=")) {
+				if (a = q(e, a), a.startsWith("!=")) {
 					let e = a.slice(2).split(",").map((e) => e.trim());
 					r = i !== void 0 && !e.includes(String(i));
 				} else {
@@ -1485,7 +1503,7 @@ function xt(e, t, n) {
 				}
 			} else {
 				let i = n.prerequisite_state || "on";
-				i = J(e, i), r = i.startsWith("!=") ? !i.slice(2).split(",").map((e) => e.trim()).includes(t.state) : i.split(",").map((e) => e.trim()).includes(t.state);
+				i = q(e, i), r = i.startsWith("!=") ? !i.slice(2).split(",").map((e) => e.trim()).includes(t.state) : i.split(",").map((e) => e.trim()).includes(t.state);
 			}
 			if (!r) return !0;
 		}
@@ -1493,22 +1511,22 @@ function xt(e, t, n) {
 	let r = t.state;
 	if (r === "unavailable" || r === "unknown") return !1;
 	if (n.attribute?.trim()) {
-		let r = t.attributes?.[n.attribute], i = J(e, n.attribute_value?.trim() ? n.attribute_value : n.state);
+		let r = t.attributes?.[n.attribute], i = q(e, n.attribute_value?.trim() ? n.attribute_value : n.state);
 		return r !== void 0 && String(r) === String(i);
 	}
-	return r === J(e, n.state);
+	return r === q(e, n.state);
 }
-function St(e, t) {
+function yt(e, t) {
 	if (!t.entity) return !1;
 	let n = e.states[t.entity];
 	if (!n) return !0;
-	let r = t.conditions.map((t) => xt(e, n, t));
+	let r = t.conditions.map((t) => vt(e, n, t));
 	return t.conditions_mode === "all" ? !r.every(Boolean) : !r.some(Boolean);
 }
 //#endregion
 //#region src/marquee-controller.ts
-V();
-var Ct = 20, wt = 4, Tt = 30, Et = 1, Dt = class {
+B();
+var bt = 20, xt = 4, St = 30, Ct = 1, wt = class {
 	constructor(e, t) {
 		this.overflowState = /* @__PURE__ */ new Map(), this.resizeObserver = null, this.intersectionObserver = null, this.rafId = null, this.isVisible = !0, this.host = e, this.targets = t, e.addController(this);
 	}
@@ -1548,9 +1566,9 @@ var Ct = 20, wt = 4, Tt = 30, Et = 1, Dt = class {
 			}
 			let i = n.clientWidth;
 			if (i <= 0) continue;
-			let a = Ot(r), o = a > i + Et;
+			let a = Tt(r), o = a > i + Ct;
 			if (o) {
-				let e = kt(a / Ct, wt, Tt);
+				let e = Et(a / bt, xt, St);
 				n.style.setProperty("--marquee-duration", `${e.toFixed(2)}s`);
 			} else n.style.removeProperty("--marquee-duration");
 			this.publish(t, o);
@@ -1560,7 +1578,7 @@ var Ct = 20, wt = 4, Tt = 30, Et = 1, Dt = class {
 		this.overflowState.get(e.parent) !== t && (this.overflowState.set(e.parent, t), e.setOverflow(t));
 	}
 };
-function Ot(e) {
+function Tt(e) {
 	if (typeof document.createRange != "function") return e.getBoundingClientRect().width;
 	let t = document.createRange();
 	try {
@@ -1569,28 +1587,28 @@ function Ot(e) {
 		t.detach?.();
 	}
 }
-function kt(e, t, n) {
+function Et(e, t, n) {
 	return Math.min(n, Math.max(t, e));
 }
-function At(e, t) {
-	return t ? j`
+function Dt(e, t) {
+	return t ? A`
     <span class="marquee-track">
       <span class="marquee-inner">${e}</span>
       <span class="marquee-inner" aria-hidden="true">${e}</span>
     </span>
-  ` : j`<span class="marquee-inner">${e}</span>`;
+  ` : A`<span class="marquee-inner">${e}</span>`;
 }
 //#endregion
 //#region src/preload-editor.ts
-function jt() {
-	if (Y) return;
+function Ot() {
+	if (J) return;
 	let e = window.requestIdleCallback, t = () => {
-		Mt();
+		kt();
 	};
 	e ? e(t, { timeout: 2e3 }) : setTimeout(t, 500);
 }
-function Mt() {
-	return Y || (customElements.get("ha-form") && customElements.get("ha-entity-picker") ? (Y = Promise.resolve(), Y) : (Y = (async () => {
+function kt() {
+	return J || (customElements.get("ha-form") && customElements.get("ha-entity-picker") ? (J = Promise.resolve(), J) : (J = (async () => {
 		try {
 			let e = window.loadCardHelpers;
 			if (e) {
@@ -1609,25 +1627,25 @@ function Mt() {
 		} catch (e) {
 			console.warn("[checklist-card] failed to preload editor components", e);
 		}
-	})(), Y));
+	})(), J));
 }
-var Y, Nt = t((() => {
-	Y = null;
+var J, At = t((() => {
+	J = null;
 }));
-Nt(), Xe();
 //#endregion
 //#region src/action-handler.ts
-var Pt = /* @__PURE__ */ new WeakMap(), Ft = class extends HTMLElement {
+At();
+var jt = /* @__PURE__ */ new WeakMap(), Mt = class extends HTMLElement {
 	constructor(...e) {
 		super(...e), this.holdTime = 500;
 	}
 	bind(e, t) {
-		if (Pt.has(e)) {
-			Pt.set(e, t);
+		if (jt.has(e)) {
+			jt.set(e, t);
 			return;
 		}
-		Pt.set(e, t);
-		let n, r = !1, i, a = () => Pt.get(e), o = () => {
+		jt.set(e, t);
+		let n, r = !1, i, a = () => jt.get(e), o = () => {
 			n &&= (clearTimeout(n), void 0);
 		}, s = (t) => {
 			let n = new CustomEvent("action", {
@@ -1648,29 +1666,29 @@ var Pt = /* @__PURE__ */ new WeakMap(), Ft = class extends HTMLElement {
 		}), e.addEventListener("pointercancel", o), e.addEventListener("pointerleave", o);
 	}
 };
-customElements.define("checklist-action-handler", Ft);
-var It = document.createElement("checklist-action-handler"), Lt = Je(class extends Ye {
+customElements.define("checklist-action-handler", Mt);
+var Nt = document.createElement("checklist-action-handler"), Pt = Ye(class extends Xe {
 	constructor(e) {
 		super(e);
 	}
 	render(e) {}
 	update(e, [t]) {
-		return It.bind(e.element, t), this.render(t);
+		return Nt.bind(e.element, t), this.render(t);
 	}
 });
 //#endregion
 //#region \0@oxc-project+runtime@0.126.0/helpers/decorate.js
-function X(e, t, n, r) {
+function Y(e, t, n, r) {
 	var i = arguments.length, a = i < 3 ? t : r === null ? r = Object.getOwnPropertyDescriptor(t, n) : r, o;
 	if (typeof Reflect == "object" && typeof Reflect.decorate == "function") a = Reflect.decorate(e, t, n, r);
 	else for (var s = e.length - 1; s >= 0; s--) (o = e[s]) && (a = (i < 3 ? o(a) : i > 3 ? o(t, n, a) : o(t, n)) || a);
 	return i > 3 && a && Object.defineProperty(t, n, a), a;
 }
-var Rt = t((() => {}));
-V(), Rt();
-var Z = class extends B {
+var Ft = t((() => {}));
+B(), Ft();
+var X = class extends z {
 	constructor(...e) {
-		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info", this.isSnoozed = !1, this.snoozeUntil = null, this.marqueeEnabled = !1, this._isTitleOverflowing = !1, this._isStateOverflowing = !1, this._marquee = new Dt(this, [{
+		super(...e), this.isProblem = !1, this.isFixing = !1, this.severity = "info", this.isSnoozed = !1, this.snoozeUntil = null, this.marqueeEnabled = !1, this._isTitleOverflowing = !1, this._isStateOverflowing = !1, this._marquee = new wt(this, [{
 			parent: ".entity-name",
 			setOverflow: (e) => {
 				this._isTitleOverflowing = e;
@@ -1920,9 +1938,9 @@ var Z = class extends B {
 			e.prerequisite_attribute_value
 		]) {
 			if (!n || !n.includes("states(")) continue;
-			bt.lastIndex = 0;
+			_t.lastIndex = 0;
 			let e;
-			for (; (e = bt.exec(n)) !== null;) {
+			for (; (e = _t.exec(n)) !== null;) {
 				let n = e[1];
 				if (n && t.states?.[n] !== this.hass.states?.[n]) return !0;
 			}
@@ -1986,7 +2004,7 @@ var Z = class extends B {
 	_handleFixClick(e) {
 		if (e.stopPropagation(), this.isFixing) return;
 		if (this.rule.confirmation) {
-			let e = q(this.hass, "confirm_fix", { name: this.rule.name || this.rule.entity });
+			let e = K(this.hass, "confirm_fix", { name: this.rule.name || this.rule.entity });
 			if (typeof this.rule.confirmation == "object") {
 				if (!this.rule.confirmation.exemptions?.some((e) => e.user === this.hass.user?.id) && (e = this.rule.confirmation.text || e, !window.confirm(e))) return;
 			} else if (this.rule.confirmation === !0 && !window.confirm(e)) return;
@@ -2014,38 +2032,38 @@ var Z = class extends B {
 		}));
 	}
 	_renderTitleSpan(e) {
-		let t = this._isTitleOverflowing && this.marqueeEnabled, n = j`${e}${this.rule.show_last_changed && this.stateObj ? j`
+		let t = this._isTitleOverflowing && this.marqueeEnabled, n = A`${e}${this.rule.show_last_changed && this.stateObj ? A`
       <span style="font-size: 0.8em; opacity: 0.7; margin-inline-start: 4px;">
         <ha-relative-time .hass=${this.hass} .datetime=${this.stateObj.last_changed}></ha-relative-time>
       </span>
     ` : ""}`, r = this.rule.color ? `color: ${this.rule.color}` : "";
-		return j`
+		return A`
       <span class="entity-name ${t ? "overflowing" : ""}" style=${r}>
-        ${At(n, t)}
+        ${Dt(n, t)}
       </span>
     `;
 	}
 	_renderStateSpan(e) {
 		let t = this._isStateOverflowing && this.marqueeEnabled;
-		return j`
+		return A`
       <span class="entity-state ${t ? "overflowing" : ""}">
-        ${At(e, t)}
+        ${Dt(e, t)}
       </span>
     `;
 	}
 	_renderSingleConditionStatus(e, t) {
-		let n = J(this.hass, e.state), r = !!e.attribute?.trim(), i = r ? J(this.hass, e.attribute_value || e.state) : null, a = j`${q(this.hass, "current_state")}: ${t} (${q(this.hass, "required")}: ${n})${r ? j` · ${q(this.hass, "attribute")} ${e.attribute}: ${this.stateObj?.attributes?.[e.attribute] ?? q(this.hass, "not_exists")} (${q(this.hass, "required")}: ${i})` : ""}`;
+		let n = q(this.hass, e.state), r = !!e.attribute?.trim(), i = r ? q(this.hass, e.attribute_value || e.state) : null, a = A`${K(this.hass, "current_state")}: ${t} (${K(this.hass, "required")}: ${n})${r ? A` · ${K(this.hass, "attribute")} ${e.attribute}: ${this.stateObj?.attributes?.[e.attribute] ?? K(this.hass, "not_exists")} (${K(this.hass, "required")}: ${i})` : ""}`;
 		return this._renderStateSpan(a);
 	}
 	_renderMultiConditionStatus(e) {
 		if (this.rule.conditions_mode === "any") {
-			let t = this.rule.conditions.map((e) => J(this.hass, e.state)).join(", "), n = this.rule.default_condition_index ?? 0, r = J(this.hass, this.rule.conditions[n]?.state ?? this.rule.conditions[0]?.state), i = j`${q(this.hass, "current_state")}: ${e} · ${q(this.hass, "accepted_one_of")}: ${t} · ${q(this.hass, "fix_target")}: ${r}`;
+			let t = this.rule.conditions.map((e) => q(this.hass, e.state)).join(", "), n = this.rule.default_condition_index ?? 0, r = q(this.hass, this.rule.conditions[n]?.state ?? this.rule.conditions[0]?.state), i = A`${K(this.hass, "current_state")}: ${e} · ${K(this.hass, "accepted_one_of")}: ${t} · ${K(this.hass, "fix_target")}: ${r}`;
 			return this._renderStateSpan(i);
 		}
-		let t = (this.stateObj ? this.rule.conditions.filter((e) => !xt(this.hass, this.stateObj, e)) : this.rule.conditions).map((e) => {
-			let t = J(this.hass, e.state), n = e.attribute?.trim() ? ` | ${e.attribute}=${J(this.hass, e.attribute_value || e.state)}` : "";
-			return `${q(this.hass, "status")}=${t}${n}`;
-		}).join(" · "), n = j`${q(this.hass, "current_state")}: ${e} · ${q(this.hass, "required")}: ${t}`;
+		let t = (this.stateObj ? this.rule.conditions.filter((e) => !vt(this.hass, this.stateObj, e)) : this.rule.conditions).map((e) => {
+			let t = q(this.hass, e.state), n = e.attribute?.trim() ? ` | ${e.attribute}=${q(this.hass, e.attribute_value || e.state)}` : "";
+			return `${K(this.hass, "status")}=${t}${n}`;
+		}).join(" · "), n = A`${K(this.hass, "current_state")}: ${e} · ${K(this.hass, "required")}: ${t}`;
 		return this._renderStateSpan(n);
 	}
 	updated(e) {
@@ -2054,14 +2072,14 @@ var Z = class extends B {
 		this.setAttribute("dir", t), this.classList.toggle("marquee-enabled", this.marqueeEnabled);
 	}
 	render() {
-		let e = this.stateObj?.state ?? q(this.hass, "unavailable"), t = this.rule.conditions.length > 1, n = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity, r = `${n}, ${q(this.hass, this.isProblem ? "status_problem" : "status_ok")}`, i = this.rule.icon;
-		return j`
+		let e = this.stateObj?.state ?? K(this.hass, "unavailable"), t = this.rule.conditions.length > 1, n = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity, r = `${n}, ${K(this.hass, this.isProblem ? "status_problem" : "status_ok")}`, i = this.rule.icon;
+		return A`
       <div
         class="check-item${this.isSnoozed ? " is-snoozed" : ""}"
         role=${"listitem"}
         aria-label=${r}
         @action=${this._handleAction}
-        .actionHandler=${Lt({
+        .actionHandler=${Pt({
 			hasHold: !0,
 			hasDoubleClick: !0
 		})}
@@ -2070,38 +2088,38 @@ var Z = class extends B {
         <ha-ripple></ha-ripple>
         <div class="entity-info-container">
           <div class="icon-wrapper ${this.isSnoozed ? "snoozed" : this.isProblem ? "problem" : "ok"}">
-            ${i ? j`<ha-icon .icon=${i}></ha-icon>` : j`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`}
+            ${i ? A`<ha-icon .icon=${i}></ha-icon>` : A`<ha-state-icon class="entity-icon" .hass=${this.hass} .stateObj=${this.stateObj}></ha-state-icon>`}
           </div>
           <div class="check-text">
             ${this._renderTitleSpan(n)}
-            ${this.isProblem || this.isSnoozed ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : this._renderStateSpan(j`${q(this.hass, "status")}: ${e}`)}
+            ${this.isProblem || this.isSnoozed ? t ? this._renderMultiConditionStatus(e) : this._renderSingleConditionStatus(this.rule.conditions[0], e) : this._renderStateSpan(A`${K(this.hass, "status")}: ${e}`)}
           </div>
         </div>
-        ${this.isSnoozed ? j`
+        ${this.isSnoozed ? A`
           <div class="snooze-actions">
             <span class="snooze-badge">
               <ha-icon icon="mdi:alarm-snooze"></ha-icon>
-              ${this.snoozeUntil ? q(this.hass, "snoozed_until", { time: this._formatSnoozeTime() }) : q(this.hass, "snooze")}
+              ${this.snoozeUntil ? K(this.hass, "snoozed_until", { time: this._formatSnoozeTime() }) : K(this.hass, "snooze")}
             </span>
             <button class="unsnooze-btn" @click=${this._handleUnsnoozeClick}>
-              ${q(this.hass, "unsnooze")}
+              ${K(this.hass, "unsnooze")}
             </button>
           </div>
-        ` : this.isProblem ? j`
+        ` : this.isProblem ? A`
           <button
             class="fix-btn"
             @click=${this._handleFixClick}
             ?disabled=${this.isFixing}
-            aria-label=${q(this.hass, "fix")}
+            aria-label=${K(this.hass, "fix")}
             aria-busy=${this.isFixing}
           >
-            ${this.isFixing ? j`<div class="spinner"></div>` : j`${q(this.hass, "fix")}`}
+            ${this.isFixing ? A`<div class="spinner"></div>` : A`${K(this.hass, "fix")}`}
           </button>
-        ` : j`
+        ` : A`
           <div style="min-width: 60px; display: flex; justify-content: flex-end; align-items: center;">
             <span class="ok-badge">
               <ha-icon icon="mdi:check" style="--mdc-icon-size: 18px;"></ha-icon>
-              ${q(this.hass, "ok")}
+              ${K(this.hass, "ok")}
             </span>
           </div>
         `}
@@ -2109,19 +2127,19 @@ var Z = class extends B {
     `;
 	}
 };
-X([U({ attribute: !1 })], Z.prototype, "stateObj", void 0), X([U({ attribute: !1 })], Z.prototype, "rule", void 0), X([U({ attribute: !1 })], Z.prototype, "hass", void 0), X([U({ type: Boolean })], Z.prototype, "isProblem", void 0), X([U({ type: Boolean })], Z.prototype, "isFixing", void 0), X([U({ type: String })], Z.prototype, "severity", void 0), X([U({ type: Boolean })], Z.prototype, "isSnoozed", void 0), X([U({ type: Number })], Z.prototype, "snoozeUntil", void 0), X([U({ type: Boolean })], Z.prototype, "marqueeEnabled", void 0), X([W()], Z.prototype, "_isTitleOverflowing", void 0), X([W()], Z.prototype, "_isStateOverflowing", void 0), Z = X([H("checklist-card-item")], Z);
+Y([H({ attribute: !1 })], X.prototype, "stateObj", void 0), Y([H({ attribute: !1 })], X.prototype, "rule", void 0), Y([H({ attribute: !1 })], X.prototype, "hass", void 0), Y([H({ type: Boolean })], X.prototype, "isProblem", void 0), Y([H({ type: Boolean })], X.prototype, "isFixing", void 0), Y([H({ type: String })], X.prototype, "severity", void 0), Y([H({ type: Boolean })], X.prototype, "isSnoozed", void 0), Y([H({ type: Number })], X.prototype, "snoozeUntil", void 0), Y([H({ type: Boolean })], X.prototype, "marqueeEnabled", void 0), Y([U()], X.prototype, "_isTitleOverflowing", void 0), Y([U()], X.prototype, "_isStateOverflowing", void 0), X = Y([V("checklist-card-item")], X);
 //#endregion
 //#region node_modules/memoize-one/dist/memoize-one.esm.js
-function zt(e, t) {
-	return !!(e === t || Ht(e) && Ht(t));
+function It(e, t) {
+	return !!(e === t || zt(e) && zt(t));
 }
-function Bt(e, t) {
+function Lt(e, t) {
 	if (e.length !== t.length) return !1;
-	for (var n = 0; n < e.length; n++) if (!zt(e[n], t[n])) return !1;
+	for (var n = 0; n < e.length; n++) if (!It(e[n], t[n])) return !1;
 	return !0;
 }
-function Vt(e, t) {
-	t === void 0 && (t = Bt);
+function Rt(e, t) {
+	t === void 0 && (t = Lt);
 	var n = null;
 	function r() {
 		var r = [...arguments];
@@ -2137,14 +2155,14 @@ function Vt(e, t) {
 		n = null;
 	}, r;
 }
-var Ht, Ut = t((() => {
-	Ht = Number.isNaN || function(e) {
+var zt, Bt = t((() => {
+	zt = Number.isNaN || function(e) {
 		return typeof e == "number" && e !== e;
 	};
-})), Wt, Gt, Kt, qt, Jt, Yt, Xt, Zt = t((() => {
-	Wt = "M11,4H13V16L18.5,10.5L19.92,11.92L12,19.84L4.08,11.92L5.5,10.5L11,16V4Z", Gt = "M13,20H11V8L5.5,13.5L4.08,12.08L12,4.16L19.92,12.08L18.5,13.5L13,8V20Z", Kt = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", qt = "M7,19V17H9V19H7M11,19V17H13V19H11M15,19V17H17V19H15M7,15V13H9V15H7M11,15V13H13V15H11M15,15V13H17V15H15M7,11V9H9V11H7M11,11V9H13V11H11M15,11V9H17V11H15M7,7V5H9V7H7M11,7V5H13V7H11M15,7V5H17V7H15Z", Jt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", Yt = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", Xt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
-})), Qt, $t = t((() => {
-	V(), Qt = l`
+})), Vt, Ht, Ut, Wt, Gt, Kt, qt, Jt, Yt, Xt = t((() => {
+	Vt = "M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z", Ht = "M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z", Ut = "M19,3L13,9L15,11L22,4V3M12,12.5A0.5,0.5 0 0,1 11.5,12A0.5,0.5 0 0,1 12,11.5A0.5,0.5 0 0,1 12.5,12A0.5,0.5 0 0,1 12,12.5M6,20A2,2 0 0,1 4,18C4,16.89 4.9,16 6,16A2,2 0 0,1 8,18C8,19.11 7.1,20 6,20M6,8A2,2 0 0,1 4,6C4,4.89 4.9,4 6,4A2,2 0 0,1 8,6C8,7.11 7.1,8 6,8M9.64,7.64C9.87,7.14 10,6.59 10,6A4,4 0 0,0 6,2A4,4 0 0,0 2,6A4,4 0 0,0 6,10C6.59,10 7.14,9.87 7.64,9.64L10,12L7.64,14.36C7.14,14.13 6.59,14 6,14A4,4 0 0,0 2,18A4,4 0 0,0 6,22A4,4 0 0,0 10,18C10,17.41 9.87,16.86 9.64,16.36L12,14L19,21H22V20L9.64,7.64Z", Wt = "M19,4H15.5L14.5,3H9.5L8.5,4H5V6H19M6,19A2,2 0 0,0 8,21H16A2,2 0 0,0 18,19V7H6V19Z", Gt = "M12,9A3,3 0 0,1 15,12A3,3 0 0,1 12,15A3,3 0 0,1 9,12A3,3 0 0,1 12,9M12,4.5C17,4.5 21.27,7.61 23,12C21.27,16.39 17,19.5 12,19.5C7,19.5 2.73,16.39 1,12C2.73,7.61 7,4.5 12,4.5M3.18,12C4.83,15.36 8.24,17.5 12,17.5C15.76,17.5 19.17,15.36 20.82,12C19.17,8.64 15.76,6.5 12,6.5C8.24,6.5 4.83,8.64 3.18,12Z", Kt = "M11 15H17V17H11V15M9 7H7V9H9V7M11 13H17V11H11V13M11 9H17V7H11V9M9 11H7V13H9V11M21 5V19C21 20.1 20.1 21 19 21H5C3.9 21 3 20.1 3 19V5C3 3.9 3.9 3 5 3H19C20.1 3 21 3.9 21 5M19 5H5V19H19V5M9 15H7V17H9V15Z", qt = "M17.5,12A1.5,1.5 0 0,1 16,10.5A1.5,1.5 0 0,1 17.5,9A1.5,1.5 0 0,1 19,10.5A1.5,1.5 0 0,1 17.5,12M14.5,8A1.5,1.5 0 0,1 13,6.5A1.5,1.5 0 0,1 14.5,5A1.5,1.5 0 0,1 16,6.5A1.5,1.5 0 0,1 14.5,8M9.5,8A1.5,1.5 0 0,1 8,6.5A1.5,1.5 0 0,1 9.5,5A1.5,1.5 0 0,1 11,6.5A1.5,1.5 0 0,1 9.5,8M6.5,12A1.5,1.5 0 0,1 5,10.5A1.5,1.5 0 0,1 6.5,9A1.5,1.5 0 0,1 8,10.5A1.5,1.5 0 0,1 6.5,12M12,3A9,9 0 0,0 3,12A9,9 0 0,0 12,21A1.5,1.5 0 0,0 13.5,19.5C13.5,19.11 13.35,18.76 13.11,18.5C12.88,18.23 12.73,17.88 12.73,17.5A1.5,1.5 0 0,1 14.23,16H16A5,5 0 0,0 21,11C21,6.58 16.97,3 12,3Z", Jt = "M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z", Yt = "M18 21L14 17H17V7H14L18 3L22 7H19V17H22M2 19V17H12V19M2 13V11H9V13M2 7V5H6V7H2Z";
+})), Zt, Qt = t((() => {
+	B(), Zt = l`
   .config-container {
     display: flex;
     flex-direction: column;
@@ -2207,109 +2225,148 @@ var Ht, Ut = t((() => {
     gap: 8px;
   }
 
-  .check-item {
-    display: block;
-    border-radius: var(--ha-card-border-radius, 12px);
-    transition: box-shadow 0.2s ease-in-out;
-  }
+  /* --- Tabbed check editor (HA hui-stack-card-editor pattern) ---
+     Layout mirrors the official editor:
+       <div class="check-toolbar">     <- maps to .toolbar
+         <ha-tab-group/>               <- flex-grow tabs
+         <ha-icon-button [+]/>         <- add button
+       </div>
+       <div class="check-editor">      <- maps to #editor (bordered)
+         <div class="check-options">   <- maps to #card-options
+           <prev/> <next/> <copy/> <delete/>
+         </div>
+         <check fields/>
+       </div>
+  */
 
-  .check-item ha-expansion-panel {
-    margin-bottom: 0;
-  }
-
-  .check-item.dragging ha-expansion-panel {
-    opacity: 0.5;
-    border-color: var(--primary-color);
-  }
-
-  .check-item.drop-target {
-    position: relative;
-  }
-
-  .check-item.drop-target ha-expansion-panel {
-    border: 2px dashed var(--primary-color) !important;
-    background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05) !important;
-  }
-
-  .check-item.drop-target::before {
-    content: attr(data-drop-text);
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--primary-color);
-    color: var(--text-primary-color, white);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 6px 16px;
-    border-radius: 12px;
-    white-space: nowrap;
-    z-index: 10;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-
-  .check-panel-header {
+  .check-toolbar {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .check-panel-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--primary-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .check-panel-subtitle {
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .check-panel-actions {
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0;
   }
 
-  .check-panel-actions ha-icon-button {
-    --mdc-icon-button-size: 36px;
-    --mdc-icon-size: 20px;
-    color: var(--secondary-text-color);
+  .check-toolbar ha-tab-group,
+  .check-toolbar mwc-tab-bar {
+    flex-grow: 1;
+    min-width: 0;
+    --ha-tab-track-color: var(--card-background-color);
   }
 
-  .check-panel-actions ha-icon-button.remove-btn {
+  .check-toolbar ha-tab-group-tab.invalid,
+  .check-toolbar mwc-tab.invalid {
+    color: var(--error-color);
+    --mdc-tab-text-label-color-default: var(--error-color);
+    --mdc-theme-primary: var(--error-color);
+  }
+
+  .check-editor {
+    border: 1px solid var(--divider-color);
+    padding: 12px;
+  }
+
+  @media (max-width: 450px) {
+    .check-editor {
+      margin: 0 -12px;
+    }
+  }
+
+  .check-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+
+  .check-options .gui-mode-button {
+    margin-right: auto;
+    margin-inline-end: auto;
+    margin-inline-start: initial;
+  }
+
+  .check-options .delete-btn {
     color: var(--error-color);
   }
 
-  .drag-handle {
-    cursor: grab;
+  .yaml-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .yaml-editor textarea {
+    width: 100%;
+    min-height: 280px;
+    box-sizing: border-box;
+    padding: 12px;
+    background: var(--code-editor-background-color, var(--card-background-color));
+    color: var(--primary-text-color);
+    border: 1px solid var(--divider-color);
+    border-radius: var(--ha-card-border-radius, 6px);
+    font-family: var(--ha-font-family-code, monospace);
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .yaml-editor textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+  }
+
+  .yaml-editor ha-yaml-editor {
+    display: block;
+    width: 100%;
+  }
+
+  .yaml-hint {
+    font-size: 12px;
     color: var(--secondary-text-color);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    margin-inline-end: 4px;
   }
 
-  .drag-handle:active {
-    cursor: grabbing;
+  .yaml-error {
+    color: var(--error-color);
+    font-size: 12px;
   }
 
-  .drag-handle ha-svg-icon {
-    --mdc-icon-size: 22px;
+  .check-editor-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--secondary-text-color);
+  }
+
+  .advanced-block {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    border: 1px solid var(--divider-color);
+  }
+
+  .advanced-summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .advanced-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .add-btn {
     margin-top: 16px;
   }
+
+  /* --- Conditions section (per check) --- */
 
   .conditions-section {
     display: flex;
@@ -2398,10 +2455,72 @@ var Ht, Ut = t((() => {
     margin-top: 4px;
   }
 `;
-})), en = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Q, tn = t((() => {
-	V(), Ke(), Ut(), Zt(), $t(), pt(), Rt(), Q = class extends B {
+})), $t = /* @__PURE__ */ n({ ChecklistCardEditor: () => Q }), Z, Q, en = t((() => {
+	B(), qe(), Bt(), Xt(), Qt(), ut(), Ft(), Q = class extends z {
+		static {
+			Z = this;
+		}
 		constructor(...e) {
-			super(...e), this._draggedIndex = null, this._dropTargetIndex = null, this._collapsed = {}, this._pickersReady = !1, this._pickerLoadStarted = !1, this._appearanceSchema = Vt((e) => [{
+			super(...e), this._selectedCheck = 0, this._useHaTabs = !1, this._useHaYamlEditor = !1, this._pickersReady = !1, this._yamlMode = !1, this._hasClipboard = !1, this._yamlError = null, this._pickerLoadStarted = !1, this._yamlDebounceTimer = null, this._onStorageEvent = (e) => {
+				e.key === Z.CLIPBOARD_KEY && (this._hasClipboard = !!this._readClipboard());
+			}, this._handleSelectedCheck = (e) => {
+				let t = e.detail, n = t?.name === void 0 ? t?.index : t.name, r = typeof n == "string" ? parseInt(n, 10) : n;
+				typeof r == "number" && Number.isFinite(r) && (this._selectedCheck = r);
+			}, this._handleAddCheck = () => {
+				let e = this._readClipboard();
+				if (e) {
+					let t = {
+						...JSON.parse(JSON.stringify(e)),
+						id: `${Date.now()}-${Math.random().toString(36).slice(2)}`
+					}, n = [...this._config.checks || [], t];
+					this._writeClipboard(null), this._selectedCheck = n.length - 1, this._updateConfig({ checks: n });
+					return;
+				}
+				this._addCheck(), this._selectedCheck = (this._config.checks?.length || 1) - 1;
+			}, this._handleDeleteSelectedCheck = () => {
+				let e = this._config.checks?.length || 0;
+				e !== 0 && (this._removeCheck(this._selectedCheck), this._selectedCheck = Math.max(0, Math.min(this._selectedCheck, e - 2)));
+			}, this._handleCutCheck = () => {
+				let e = this._config.checks?.[this._selectedCheck];
+				e && (this._writeClipboard(e), this._handleDeleteSelectedCheck());
+			}, this._toggleYamlMode = () => {
+				this._yamlMode = !this._yamlMode, this._yamlError = null;
+			}, this._handleYamlInput = (e, t) => {
+				let n = e.target.value;
+				this._yamlDebounceTimer !== null && window.clearTimeout(this._yamlDebounceTimer), this._yamlDebounceTimer = window.setTimeout(() => {
+					this._yamlDebounceTimer = null;
+					try {
+						let e = JSON.parse(n), r = this._applyParsedCheck(e, t);
+						this._yamlError = r;
+					} catch (e) {
+						this._yamlError = e.message;
+					}
+				}, 250);
+			}, this._handleHaYamlChange = (e) => {
+				e.stopPropagation();
+				let t = e.detail;
+				if (!t.isValid) {
+					this._yamlError = "Invalid YAML";
+					return;
+				}
+				let n = this._applyParsedCheck(t.value, this._selectedCheck);
+				this._yamlError = n;
+			}, this._handleMoveCheck = (e) => {
+				let t = e.currentTarget.move;
+				if (t !== -1 && t !== 1) return;
+				let n = this._selectedCheck, r = n + t, i = [...this._config.checks || []];
+				if (r < 0 || r >= i.length) return;
+				let [a] = i.splice(n, 1);
+				i.splice(r, 0, a), this._selectedCheck = r, this._updateConfig({ checks: i });
+			}, this._handleDuplicateCheck = () => {
+				let e = this._config.checks?.[this._selectedCheck];
+				if (!e) return;
+				let t = {
+					...JSON.parse(JSON.stringify(e)),
+					id: `${Date.now()}-${Math.random().toString(36).slice(2)}`
+				}, n = this._selectedCheck + 1, r = [...this._config.checks];
+				r.splice(n, 0, t), this._selectedCheck = n, this._updateConfig({ checks: r });
+			}, this._appearanceSchema = Rt((e) => [{
 				name: "",
 				type: "grid",
 				schema: [{
@@ -2410,10 +2529,10 @@ var Ht, Ut = t((() => {
 						mode: "list",
 						options: [{
 							value: "columns",
-							label: q(this.hass, "layout_col")
+							label: K(this.hass, "layout_col")
 						}, {
 							value: "rows",
-							label: q(this.hass, "layout_row")
+							label: K(this.hass, "layout_row")
 						}]
 					} }
 				}, {
@@ -2431,13 +2550,13 @@ var Ht, Ut = t((() => {
 					mode: "box",
 					options: [{
 						value: "clip",
-						label: q(this.hass, "text_mode_clip")
+						label: K(this.hass, "text_mode_clip")
 					}, {
 						value: "scroll",
-						label: q(this.hass, "text_mode_scroll")
+						label: K(this.hass, "text_mode_scroll")
 					}]
 				} }
-			}]), this._sortingSchema = Vt((e, t) => {
+			}]), this._sortingSchema = Rt((e, t) => {
 				let n = {
 					name: "sort",
 					selector: { select: {
@@ -2445,27 +2564,27 @@ var Ht, Ut = t((() => {
 						options: [
 							{
 								value: "manual",
-								label: q(this.hass, "sort_manual")
+								label: K(this.hass, "sort_manual")
 							},
 							{
 								value: "status",
-								label: q(this.hass, "sort_status")
+								label: K(this.hass, "sort_status")
 							},
 							{
 								value: "alphabetical",
-								label: q(this.hass, "sort_alphabetical")
+								label: K(this.hass, "sort_alphabetical")
 							},
 							{
 								value: "domain",
-								label: q(this.hass, "sort_domain")
+								label: K(this.hass, "sort_domain")
 							},
 							{
 								value: "severity",
-								label: q(this.hass, "sort_severity")
+								label: K(this.hass, "sort_severity")
 							},
 							{
 								value: "last_changed",
-								label: q(this.hass, "sort_last_changed")
+								label: K(this.hass, "sort_last_changed")
 							}
 						]
 					} }
@@ -2476,29 +2595,29 @@ var Ht, Ut = t((() => {
 						mode: "list",
 						options: [{
 							value: "asc",
-							label: q(this.hass, "sort_asc")
+							label: K(this.hass, "sort_asc")
 						}, {
 							value: "desc",
-							label: q(this.hass, "sort_desc")
+							label: K(this.hass, "sort_desc")
 						}]
 					} }
 				}];
-			}), this._displaySchema = Vt((e) => [{
+			}), this._displaySchema = Rt((e) => [{
 				name: "show_ok_section",
 				selector: { select: {
 					mode: "list",
 					options: [
 						{
 							value: "inline",
-							label: q(this.hass, "show_ok_inline")
+							label: K(this.hass, "show_ok_inline")
 						},
 						{
 							value: "collapsed",
-							label: q(this.hass, "show_ok_collapsed")
+							label: K(this.hass, "show_ok_collapsed")
 						},
 						{
 							value: "hidden",
-							label: q(this.hass, "show_ok_hidden")
+							label: K(this.hass, "show_ok_hidden")
 						}
 					]
 				} }
@@ -2514,7 +2633,7 @@ var Ht, Ut = t((() => {
 					sort_direction: "sort_direction",
 					show_ok_section: "show_ok_section"
 				}[e.name];
-				return t ? q(this.hass, t) : e.name;
+				return t ? K(this.hass, t) : e.name;
 			}, this._computeHelper = (e) => {
 				let t = {
 					layout_mode: "layout_dir_helper",
@@ -2525,7 +2644,7 @@ var Ht, Ut = t((() => {
 					text_mode: "text_mode_helper",
 					show_ok_section: "show_ok_helper"
 				}[e.name];
-				return t ? q(this.hass, t) : void 0;
+				return t ? K(this.hass, t) : void 0;
 			}, this._appearanceChanged = (e) => {
 				e.stopPropagation();
 				let t = e.detail.value || {}, n = this._config.layout || {
@@ -2547,13 +2666,41 @@ var Ht, Ut = t((() => {
 			};
 		}
 		static {
-			this.styles = Qt;
+			this.CLIPBOARD_KEY = "checklistCardCheckClipboard";
+		}
+		firstUpdated() {
+			this._useHaTabs = !!customElements.get("ha-tab-group") && !!customElements.get("ha-tab-group-tab"), this._useHaYamlEditor = !!customElements.get("ha-yaml-editor"), this._hasClipboard = !!this._readClipboard();
+		}
+		connectedCallback() {
+			super.connectedCallback(), window.addEventListener("storage", this._onStorageEvent);
+		}
+		disconnectedCallback() {
+			window.removeEventListener("storage", this._onStorageEvent), this._yamlDebounceTimer !== null && (window.clearTimeout(this._yamlDebounceTimer), this._yamlDebounceTimer = null), super.disconnectedCallback();
+		}
+		_readClipboard() {
+			try {
+				let e = sessionStorage.getItem(Z.CLIPBOARD_KEY);
+				return e ? JSON.parse(e) : null;
+			} catch {
+				return null;
+			}
+		}
+		_writeClipboard(e) {
+			try {
+				e === null ? sessionStorage.removeItem(Z.CLIPBOARD_KEY) : sessionStorage.setItem(Z.CLIPBOARD_KEY, JSON.stringify(e));
+			} catch {}
+			this._hasClipboard = !!e;
+		}
+		static {
+			this.styles = Zt;
 		}
 		setConfig(e) {
 			this._config = {
 				...e,
-				checks: e.checks ? e.checks.map(mt) : []
+				checks: e.checks ? e.checks.map(dt) : []
 			};
+			let t = this._config.checks.length;
+			t === 0 ? this._selectedCheck = 0 : this._selectedCheck >= t && (this._selectedCheck = t - 1);
 		}
 		_updateConfig(e) {
 			this._config = {
@@ -2590,7 +2737,7 @@ var Ht, Ut = t((() => {
 			let t = this._config.checks.map((t, n) => {
 				if (n !== e) return t;
 				let r = t.conditions[0]?.state || "off", i = {
-					...ht(),
+					...ft(),
 					state: r
 				};
 				return {
@@ -2649,7 +2796,7 @@ var Ht, Ut = t((() => {
 				id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
 				entity: "",
 				name: "",
-				conditions: [ht()],
+				conditions: [ft()],
 				conditions_mode: "any",
 				default_condition_index: 0,
 				severity: "info"
@@ -2660,37 +2807,20 @@ var Ht, Ut = t((() => {
 			let t = this._config.checks.filter((t, n) => n !== e);
 			this._updateConfig({ checks: t });
 		}
-		_expansionChanged(e, t) {
-			t.stopPropagation();
-			let n = t.detail?.expanded;
-			if (typeof n != "boolean") return;
-			let r = !n;
-			(this._collapsed[e] ?? !1) !== r && (this._collapsed = {
-				...this._collapsed,
-				[e]: r
-			});
+		_applyParsedCheck(e, t) {
+			if (!e || typeof e != "object" || Array.isArray(e)) return "Object expected";
+			let n = this._config.checks[t];
+			if (!n) return "Check no longer exists";
+			let r = e;
+			if (!Array.isArray(r.conditions) || r.conditions.length === 0) return "`conditions` must be a non-empty array";
+			let i = {
+				...r,
+				id: r.id || n.id
+			}, a = [...this._config.checks];
+			return a[t] = i, this._updateConfig({ checks: a }), null;
 		}
-		_moveCheck(e, t) {
-			if (t === "up" && e === 0 || t === "down" && e === (this._config.checks?.length || 0) - 1) return;
-			let n = [...this._config.checks || []], r = t === "up" ? e - 1 : e + 1, i = n[e];
-			n[e] = n[r], n[r] = i, this._updateConfig({ checks: n });
-		}
-		_dragStart(e, t) {
-			this._draggedIndex = t, this._dropTargetIndex = null, e.dataTransfer && (e.dataTransfer.effectAllowed = "move", e.dataTransfer.setData("text/plain", t.toString()));
-		}
-		_handleDragOver(e, t) {
-			e.preventDefault(), e.dataTransfer && (e.dataTransfer.dropEffect = "move"), this._dropTargetIndex = t;
-		}
-		_drop(e, t) {
-			if (e.preventDefault(), this._draggedIndex === null || this._draggedIndex === t) {
-				this._draggedIndex = null, this._dropTargetIndex = null;
-				return;
-			}
-			let n = [...this._config.checks || []], r = n.splice(this._draggedIndex, 1)[0];
-			n.splice(t, 0, r), this._draggedIndex = null, this._dropTargetIndex = null, this._updateConfig({ checks: n });
-		}
-		_dragEnd() {
-			this._draggedIndex = null, this._dropTargetIndex = null;
+		_isCheckValid(e) {
+			return !(!e || !e.entity || !e.entity.trim() || !Array.isArray(e.conditions) || e.conditions.length === 0);
 		}
 		_updateLayout(e) {
 			let t = this._config.layout || {
@@ -2882,29 +3012,29 @@ var Ht, Ut = t((() => {
 			return !e || !this.hass?.states[e]?.attributes ? [] : Object.keys(this.hass.states[e].attributes).sort();
 		}
 		render() {
-			if (!this.hass || !this._config) return j``;
+			if (!this.hass || !this._config) return A``;
 			if (!this._pickersReady) if (customElements.get("ha-form") && customElements.get("ha-entity-picker")) this._pickersReady = !0;
-			else return this._pickerLoadStarted || (this._pickerLoadStarted = !0, Mt().finally(() => {
+			else return this._pickerLoadStarted || (this._pickerLoadStarted = !0, kt().finally(() => {
 				this._pickersReady = !0;
-			})), j`
+			})), A`
           <div style="padding: 32px; text-align: center; color: var(--secondary-text-color);">
             <ha-circular-progress indeterminate></ha-circular-progress>
-            <div style="margin-top: 16px;">${q(this.hass, "loading")}</div>
+            <div style="margin-top: 16px;">${K(this.hass, "loading")}</div>
           </div>
         `;
 			let e = this._config.checks || [];
-			return j`
+			return A`
       <div class="config-container" dir=${this.hass?.translationMetadata?.dir || (this.hass?.language === "he" ? "rtl" : "ltr")}>
         <ha-textfield
-          label=${q(this.hass, "editor_title")}
+          label=${K(this.hass, "editor_title")}
           .value=${this._config.title || ""}
           @input=${(e) => this._updateConfig({ title: e.target.value })}
         ></ha-textfield>
 
         <div class="panels">
           <ha-expansion-panel outlined expanded>
-            <ha-svg-icon slot="leading-icon" .path=${Yt}></ha-svg-icon>
-            <h3 slot="header">${q(this.hass, "appearance_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${qt}></ha-svg-icon>
+            <h3 slot="header">${K(this.hass, "appearance_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2918,8 +3048,8 @@ var Ht, Ut = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${Xt}></ha-svg-icon>
-            <h3 slot="header">${q(this.hass, "sorting_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${Yt}></ha-svg-icon>
+            <h3 slot="header">${K(this.hass, "sorting_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2933,8 +3063,8 @@ var Ht, Ut = t((() => {
           </ha-expansion-panel>
 
           <ha-expansion-panel outlined>
-            <ha-svg-icon slot="leading-icon" .path=${Jt}></ha-svg-icon>
-            <h3 slot="header">${q(this.hass, "display_section")}</h3>
+            <ha-svg-icon slot="leading-icon" .path=${Gt}></ha-svg-icon>
+            <h3 slot="header">${K(this.hass, "display_section")}</h3>
             <div class="panel-content">
               <ha-form
                 .hass=${this.hass}
@@ -2949,272 +3079,312 @@ var Ht, Ut = t((() => {
         </div>
 
         <div class="divider"></div>
-        <h3 class="section-title">${q(this.hass, "entities_section")}</h3>
+        <h3 class="section-title">${K(this.hass, "entities_section")}</h3>
 
-        ${ot(e, (e) => e.id, (t, n) => {
-				let r = this._collapsed[t.id] ?? !1, i = t.conditions || [], a = i.length > 1, o = t.name ? t.name : t.entity ? this.hass.states[t.entity]?.attributes?.friendly_name || t.entity : `${q(this.hass, "check_num")}${n + 1}`, s = t.entity ? `${q(this.hass, "check_num")}${n + 1} · ${t.entity}` : `${q(this.hass, "check_num")}${n + 1} · ${q(this.hass, "not_selected")}`;
-				return j`
-            <div class="check-item ${this._draggedIndex === n ? "dragging" : ""} ${this._dropTargetIndex === n ? "drop-target" : ""}"
-                 data-drop-text=${q(this.hass, "drag_here")}
-                 @dragover=${(e) => this._handleDragOver(e, n)}
-                 @drop=${(e) => this._drop(e, n)}
-                 @dragend=${this._dragEnd}>
-
-              <ha-expansion-panel
-                outlined
-                .expanded=${!r}
-                @expanded-changed=${(e) => this._expansionChanged(t.id, e)}
-              >
-                <span
-                  slot="leading-icon"
-                  class="drag-handle"
-                  draggable="true"
-                  title=${q(this.hass, "drag_here")}
-                  @dragstart=${(e) => this._dragStart(e, n)}
-                  @click=${(e) => e.stopPropagation()}
-                >
-                  <ha-svg-icon .path=${qt}></ha-svg-icon>
-                </span>
-                <div slot="header" class="check-panel-header">
-                  <span class="check-panel-title">${o}</span>
-                  <span class="check-panel-subtitle">${s}</span>
-                </div>
-                <div slot="icons" class="check-panel-actions" @click=${(e) => e.stopPropagation()}>
-                  <ha-icon-button
-                    .label=${q(this.hass, "check_num") + (n + 1) + " ↑"}
-                    .path=${Gt}
-                    .disabled=${n === 0}
-                    @click=${(e) => {
-					e.stopPropagation(), this._moveCheck(n, "up");
-				}}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    .label=${q(this.hass, "check_num") + (n + 1) + " ↓"}
-                    .path=${Wt}
-                    .disabled=${n === e.length - 1}
-                    @click=${(e) => {
-					e.stopPropagation(), this._moveCheck(n, "down");
-				}}
-                  ></ha-icon-button>
-                  <ha-icon-button
-                    class="remove-btn"
-                    .label=${q(this.hass, "remove")}
-                    .path=${Kt}
-                    @click=${(e) => {
-					e.stopPropagation(), this._removeCheck(n);
-				}}
-                  ></ha-icon-button>
-                </div>
-
-                <div class="panel-content">
-                  <div style="display: flex; flex-direction: column; gap: 16px;">
-                  <ha-entity-picker
-                    label=${q(this.hass, "select_entity")}
-                    .hass=${this.hass}
-                    .value=${t.entity}
-                    allow-custom-entity
-                    @value-changed=${(e) => this._entityChanged(n, e.detail.value)}
-                  ></ha-entity-picker>
-
-                  <ha-textfield
-                    label=${q(this.hass, "display_name")}
-                    .value=${t.name || ""}
-                    @input=${(e) => this._updateCheck(n, "name", e.target.value)}
-                  ></ha-textfield>
-                  
-
-                  <details style="padding: 12px; background: rgba(0,0,0,0.02); border-radius: 8px; border: 1px solid var(--divider-color);">
-                    <summary style="cursor: pointer; font-weight: 500;">${q(this.hass, "advanced_settings")}</summary>
-                    <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 12px;">
-                      <div class="select-wrapper">
-                        <label>${q(this.hass, "severity")}</label>
-                        <select
-                          .value=${t.severity || "info"}
-                          @change=${(e) => this._updateCheck(n, "severity", e.target.value)}
-                        >
-                          <option value="info" ?selected=${t.severity === "info" || !t.severity}>${q(this.hass, "severity_info")}</option>
-                          <option value="warning" ?selected=${t.severity === "warning"}>${q(this.hass, "severity_warning")}</option>
-                          <option value="critical" ?selected=${t.severity === "critical"}>${q(this.hass, "severity_critical")}</option>
-                        </select>
-                      </div>
-                      <ha-icon-picker
-                        .hass=${this.hass}
-                        .label=${q(this.hass, "icon_override")}
-                        .value=${t.icon || ""}
-                        @value-changed=${(e) => this._updateCheck(n, "icon", e.detail.value)}
-                      ></ha-icon-picker>
-                      <ha-textfield
-                        label=${q(this.hass, "color_override")}
-                        .value=${t.color || ""}
-                        @input=${(e) => this._updateCheck(n, "color", e.target.value)}
-                      ></ha-textfield>
-                    </div>
-                  </details>
-
-                  ${a ? j`
-                    <div class="select-wrapper">
-                      <label>${q(this.hass, "check_condition")}</label>
-                      <select
-                        .value=${t.conditions_mode === "all" ? "all" : "any"}
-                        @change=${(e) => this._setConditionsMode(n, e.target.value)}
-                      >
-                        <option value="any" ?selected=${t.conditions_mode !== "all"}>${q(this.hass, "cond_any")}</option>
-                        <option value="all" ?selected=${t.conditions_mode === "all"}>${q(this.hass, "cond_all")}</option>
-                      </select>
-                    </div>
-                  ` : ""}
-
-                  <div class="conditions-section">
-                    ${i.map((e, r) => j`
-                      <div class="condition-item">
-                        <div class="condition-header">
-                          <span class="condition-title">
-                            ${a ? `${q(this.hass, "ok_state")} ${r + 1}` : q(this.hass, "ok_state")}
-                          </span>
-                          <div class="condition-actions">
-                            ${a && t.conditions_mode !== "all" ? j`
-                              <ha-formfield label=${t.default_condition_index === r ? q(this.hass, "default_fix_star") : q(this.hass, "default_fix")}>
-                                <ha-radio
-                                  name="default_${t.id}"
-                                  .checked=${t.default_condition_index === r}
-                                  @change=${() => this._setDefaultCondition(n, r)}
-                                ></ha-radio>
-                              </ha-formfield>
-                            ` : ""}
-                            ${a ? j`
-                              <ha-button @click=${() => this._removeCondition(n, r)} style="--mdc-theme-primary: var(--error-color);">
-                                ${q(this.hass, "remove_state")}
-                              </ha-button>
-                            ` : ""}
-                          </div>
-                        </div>
-
-                        <div class="select-wrapper">
-                          <label>${q(this.hass, "attr_check")}</label>
-                          <select
-                            .value=${e.attribute || ""}
-                            @change=${(e) => this._updateCondition(n, r, "attribute", e.target.value, e.target)}
-                          >
-                            <option value="" ?selected=${!e.attribute}>${q(this.hass, "no_attr")}</option>
-                            ${this._getPossibleAttributes(t.entity).map((t) => j`
-                              <option value=${t} ?selected=${e.attribute === t}>${t}</option>
-                            `)}
-                          </select>
-                        </div>
-
-                        ${e.attribute && e.attribute.trim() !== "" ? j`
-                          <div class="select-wrapper">
-                            <label>${q(this.hass, "attr_val")}</label>
-                            <select
-                              .value=${e.attribute_value || ""}
-                              @change=${(e) => this._updateCondition(n, r, "attribute_value", e.target.value, e.target)}
-                            >
-                              ${[...new Set([...e.attribute_value ? [e.attribute_value] : [], ...this._getPossibleAttributeValues(t.entity, e.attribute)])].map((t) => j`
-                                <option value=${t} ?selected=${e.attribute_value === t}>${t}</option>
-                              `)}
-                            </select>
-                          </div>
-                        ` : j`
-                          <div class="select-wrapper">
-                            <label>${q(this.hass, "ok_state")}</label>
-                            <select
-                              .value=${e.state || "on"}
-                              @change=${(e) => this._updateCondition(n, r, "state", e.target.value, e.target)}
-                            >
-                              ${[...new Set([...e.state ? [e.state] : [], ...this._getPossibleStates(t.entity)])].map((t) => j`
-                                <option value=${t} ?selected=${e.state === t}>${t}</option>
-                              `)}
-                            </select>
-                          </div>
-                        `}
-
-                        <ha-textfield
-                          label=${q(this.hass, "custom_fix")}
-                          .value=${e.fix_service || ""}
-                          @input=${(e) => this._updateCondition(n, r, "fix_service", e.target.value)}
-                        ></ha-textfield>
-                        <div class="json-hint">${q(this.hass, "custom_fix_hint")}</div>
-
-                        <div class="divider"></div>
-                        <div class="prereq-title">${q(this.hass, "prereq_entity")}</div>
-
-                        <ha-entity-picker
-                          .hass=${this.hass}
-                          .value=${e.prerequisite_entity || ""}
-                          allow-custom-entity
-                          @value-changed=${(e) => this._updateCondition(n, r, "prerequisite_entity", e.detail.value)}
-                        ></ha-entity-picker>
-
-                        ${e.prerequisite_entity && e.prerequisite_entity.trim() !== "" ? j`
-                          <div class="select-wrapper">
-                            <label>${q(this.hass, "attr_check")}</label>
-                            <select
-                              .value=${e.prerequisite_attribute || ""}
-                              @change=${(e) => this._updateCondition(n, r, "prerequisite_attribute", e.target.value, e.target)}
-                            >
-                              <option value="" ?selected=${!e.prerequisite_attribute}>${q(this.hass, "no_attr")}</option>
-                              ${this._getPossibleAttributes(e.prerequisite_entity).map((t) => j`
-                                <option value=${t} ?selected=${e.prerequisite_attribute === t}>${t}</option>
-                              `)}
-                            </select>
-                          </div>
-
-                          ${e.prerequisite_attribute && e.prerequisite_attribute.trim() !== "" ? j`
-                            <div class="select-wrapper">
-                              <label>${q(this.hass, "attr_val")}</label>
-                              <select
-                                .value=${e.prerequisite_attribute_value || ""}
-                                @change=${(e) => this._updateCondition(n, r, "prerequisite_attribute_value", e.target.value, e.target)}
-                              >
-                                ${[...new Set([...e.prerequisite_attribute_value ? [e.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(e.prerequisite_entity, e.prerequisite_attribute)])].map((t) => j`
-                                  <option value=${t} ?selected=${e.prerequisite_attribute_value === t}>${t}</option>
-                                `)}
-                              </select>
-                            </div>
-                            <div class="json-hint">${q(this.hass, "prereq_hint")}</div>
-                          ` : j`
-                            <div class="select-wrapper">
-                              <label>${q(this.hass, "prereq_state")}</label>
-                              <select
-                                .value=${e.prerequisite_state || "on"}
-                                @change=${(e) => this._updateCondition(n, r, "prerequisite_state", e.target.value, e.target)}
-                              >
-                                ${[...new Set([...e.prerequisite_state ? [e.prerequisite_state] : [], ...this._getPossibleStates(e.prerequisite_entity)])].map((t) => j`
-                                  <option value=${t} ?selected=${(e.prerequisite_state || "on") === t}>${t}</option>
-                                `)}
-                              </select>
-                            </div>
-                            <div class="json-hint">${q(this.hass, "prereq_hint")}</div>
-                          `}
-                        ` : ""}
-                      </div>
-                    `)}
-
-                    <ha-button outlined @click=${() => this._addCondition(n)}>
-                      <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
-                      ${q(this.hass, "add_state")}
-                    </ha-button>
-                  </div>
-                  </div>
-                </div>
-              </ha-expansion-panel>
-            </div>
-          `;
-			})}
-
-        <ha-button class="add-btn" outlined @click=${this._addCheck}>
-          <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
-          ${q(this.hass, "add_check")}
-        </ha-button>
+        ${this._renderChecksSection(e)}
       </div>
     `;
 		}
-	}, X([U({ attribute: !1 })], Q.prototype, "hass", void 0), X([W()], Q.prototype, "_config", void 0), X([W()], Q.prototype, "_draggedIndex", void 0), X([W()], Q.prototype, "_dropTargetIndex", void 0), X([W()], Q.prototype, "_collapsed", void 0), X([W()], Q.prototype, "_pickersReady", void 0), Q = X([H("checklist-card-editor")], Q);
+		_renderChecksSection(e) {
+			if (e.length === 0) return A`
+        <div class="empty-state">${K(this.hass, "no_checks_yet")}</div>
+        <ha-button class="add-btn" outlined @click=${this._handleAddCheck}>
+          <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
+          ${K(this.hass, "add_check")}
+        </ha-button>
+      `;
+			let t = Math.min(this._selectedCheck, e.length - 1), n = e[t];
+			return A`
+      <div class="check-toolbar">
+        ${this._useHaTabs ? A`
+              <ha-tab-group @wa-tab-show=${this._handleSelectedCheck}>
+                ${e.map((e, n) => A`
+                    <ha-tab-group-tab
+                      slot="nav"
+                      .panel=${n}
+                      .active=${n === t}
+                      class=${this._isCheckValid(e) ? "" : "invalid"}
+                    >${n + 1}</ha-tab-group-tab>
+                  `)}
+              </ha-tab-group>
+            ` : A`
+              <mwc-tab-bar
+                .activeIndex=${t}
+                @MDCTabBar:activated=${this._handleSelectedCheck}
+              >
+                ${e.map((e, t) => A`
+                    <mwc-tab
+                      .label=${String(t + 1)}
+                      class=${this._isCheckValid(e) ? "" : "invalid"}
+                    ></mwc-tab>
+                  `)}
+              </mwc-tab-bar>
+            `}
+        <ha-icon-button
+          .label=${this._hasClipboard ? K(this.hass, "paste_check") : K(this.hass, "add_check")}
+          .path=${Jt}
+          @click=${this._handleAddCheck}
+        ></ha-icon-button>
+      </div>
+
+      <div class="check-editor">
+        <div class="check-options">
+          <ha-icon-button
+            class="gui-mode-button"
+            .label=${K(this.hass, this._yamlMode ? "show_visual_editor" : "show_code_editor")}
+            .path=${this._yamlMode ? Kt : Vt}
+            @click=${this._toggleYamlMode}
+          ></ha-icon-button>
+          <ha-icon-button-arrow-prev
+            .disabled=${t === 0}
+            .label=${K(this.hass, "move_before")}
+            .move=${-1}
+            @click=${this._handleMoveCheck}
+          ></ha-icon-button-arrow-prev>
+          <ha-icon-button-arrow-next
+            .disabled=${t === e.length - 1}
+            .label=${K(this.hass, "move_after")}
+            .move=${1}
+            @click=${this._handleMoveCheck}
+          ></ha-icon-button-arrow-next>
+          <ha-icon-button
+            .label=${K(this.hass, "duplicate")}
+            .path=${Ht}
+            @click=${this._handleDuplicateCheck}
+          ></ha-icon-button>
+          <ha-icon-button
+            .label=${K(this.hass, "cut_check")}
+            .path=${Ut}
+            @click=${this._handleCutCheck}
+          ></ha-icon-button>
+          <ha-icon-button
+            class="delete-btn"
+            .label=${K(this.hass, "remove")}
+            .path=${Wt}
+            @click=${this._handleDeleteSelectedCheck}
+          ></ha-icon-button>
+        </div>
+        ${this._yamlMode ? A`
+              <div class="yaml-editor">
+                ${this._useHaYamlEditor ? A`
+                      <ha-yaml-editor
+                        .hass=${this.hass}
+                        .defaultValue=${n}
+                        @value-changed=${this._handleHaYamlChange}
+                      ></ha-yaml-editor>
+                    ` : A`
+                      <textarea
+                        spellcheck="false"
+                        .value=${JSON.stringify(n, null, 2)}
+                        @input=${(e) => this._handleYamlInput(e, t)}
+                      ></textarea>
+                      <div class="yaml-hint">${K(this.hass, "yaml_hint_json")}</div>
+                    `}
+                ${this._yamlError ? A`<div class="yaml-error">${this._yamlError}</div>` : ""}
+              </div>
+            ` : this._renderCheckEditor(n, t)}
+      </div>
+    `;
+		}
+		_renderCheckEditor(e, t) {
+			let n = e.conditions || [], r = n.length > 1;
+			return A`
+      <div class="check-editor-content">
+        <ha-entity-picker
+          label=${K(this.hass, "select_entity")}
+          .hass=${this.hass}
+          .value=${e.entity}
+          allow-custom-entity
+          @value-changed=${(e) => this._entityChanged(t, e.detail.value)}
+        ></ha-entity-picker>
+
+        <ha-textfield
+          label=${K(this.hass, "display_name")}
+          .value=${e.name || ""}
+          @input=${(e) => this._updateCheck(t, "name", e.target.value)}
+        ></ha-textfield>
+
+        <details class="advanced-block">
+          <summary class="advanced-summary">${K(this.hass, "advanced_settings")}</summary>
+          <div class="advanced-content">
+            <div class="select-wrapper">
+              <label>${K(this.hass, "severity")}</label>
+              <select
+                .value=${e.severity || "info"}
+                @change=${(e) => this._updateCheck(t, "severity", e.target.value)}
+              >
+                <option value="info" ?selected=${e.severity === "info" || !e.severity}>${K(this.hass, "severity_info")}</option>
+                <option value="warning" ?selected=${e.severity === "warning"}>${K(this.hass, "severity_warning")}</option>
+                <option value="critical" ?selected=${e.severity === "critical"}>${K(this.hass, "severity_critical")}</option>
+              </select>
+            </div>
+            <ha-icon-picker
+              .hass=${this.hass}
+              .label=${K(this.hass, "icon_override")}
+              .value=${e.icon || ""}
+              @value-changed=${(e) => this._updateCheck(t, "icon", e.detail.value)}
+            ></ha-icon-picker>
+            <ha-textfield
+              label=${K(this.hass, "color_override")}
+              .value=${e.color || ""}
+              @input=${(e) => this._updateCheck(t, "color", e.target.value)}
+            ></ha-textfield>
+          </div>
+        </details>
+
+        ${r ? A`
+          <div class="select-wrapper">
+            <label>${K(this.hass, "check_condition")}</label>
+            <select
+              .value=${e.conditions_mode === "all" ? "all" : "any"}
+              @change=${(e) => this._setConditionsMode(t, e.target.value)}
+            >
+              <option value="any" ?selected=${e.conditions_mode !== "all"}>${K(this.hass, "cond_any")}</option>
+              <option value="all" ?selected=${e.conditions_mode === "all"}>${K(this.hass, "cond_all")}</option>
+            </select>
+          </div>
+        ` : ""}
+
+        <div class="conditions-section">
+          ${n.map((n, i) => A`
+            <div class="condition-item">
+              <div class="condition-header">
+                <span class="condition-title">
+                  ${r ? `${K(this.hass, "ok_state")} ${i + 1}` : K(this.hass, "ok_state")}
+                </span>
+                <div class="condition-actions">
+                  ${r && e.conditions_mode !== "all" ? A`
+                    <ha-formfield label=${e.default_condition_index === i ? K(this.hass, "default_fix_star") : K(this.hass, "default_fix")}>
+                      <ha-radio
+                        name="default_${e.id}"
+                        .checked=${e.default_condition_index === i}
+                        @change=${() => this._setDefaultCondition(t, i)}
+                      ></ha-radio>
+                    </ha-formfield>
+                  ` : ""}
+                  ${r ? A`
+                    <ha-button @click=${() => this._removeCondition(t, i)} style="--mdc-theme-primary: var(--error-color);">
+                      ${K(this.hass, "remove_state")}
+                    </ha-button>
+                  ` : ""}
+                </div>
+              </div>
+
+              <div class="select-wrapper">
+                <label>${K(this.hass, "attr_check")}</label>
+                <select
+                  .value=${n.attribute || ""}
+                  @change=${(e) => this._updateCondition(t, i, "attribute", e.target.value, e.target)}
+                >
+                  <option value="" ?selected=${!n.attribute}>${K(this.hass, "no_attr")}</option>
+                  ${this._getPossibleAttributes(e.entity).map((e) => A`
+                    <option value=${e} ?selected=${n.attribute === e}>${e}</option>
+                  `)}
+                </select>
+              </div>
+
+              ${n.attribute && n.attribute.trim() !== "" ? A`
+                <div class="select-wrapper">
+                  <label>${K(this.hass, "attr_val")}</label>
+                  <select
+                    .value=${n.attribute_value || ""}
+                    @change=${(e) => this._updateCondition(t, i, "attribute_value", e.target.value, e.target)}
+                  >
+                    ${[...new Set([...n.attribute_value ? [n.attribute_value] : [], ...this._getPossibleAttributeValues(e.entity, n.attribute)])].map((e) => A`
+                      <option value=${e} ?selected=${n.attribute_value === e}>${e}</option>
+                    `)}
+                  </select>
+                </div>
+              ` : A`
+                <div class="select-wrapper">
+                  <label>${K(this.hass, "ok_state")}</label>
+                  <select
+                    .value=${n.state || "on"}
+                    @change=${(e) => this._updateCondition(t, i, "state", e.target.value, e.target)}
+                  >
+                    ${[...new Set([...n.state ? [n.state] : [], ...this._getPossibleStates(e.entity)])].map((e) => A`
+                      <option value=${e} ?selected=${n.state === e}>${e}</option>
+                    `)}
+                  </select>
+                </div>
+              `}
+
+              <ha-textfield
+                label=${K(this.hass, "custom_fix")}
+                .value=${n.fix_service || ""}
+                @input=${(e) => this._updateCondition(t, i, "fix_service", e.target.value)}
+              ></ha-textfield>
+              <div class="json-hint">${K(this.hass, "custom_fix_hint")}</div>
+
+              <div class="divider"></div>
+              <div class="prereq-title">${K(this.hass, "prereq_entity")}</div>
+
+              <ha-entity-picker
+                .hass=${this.hass}
+                .value=${n.prerequisite_entity || ""}
+                allow-custom-entity
+                @value-changed=${(e) => this._updateCondition(t, i, "prerequisite_entity", e.detail.value)}
+              ></ha-entity-picker>
+
+              ${n.prerequisite_entity && n.prerequisite_entity.trim() !== "" ? A`
+                <div class="select-wrapper">
+                  <label>${K(this.hass, "attr_check")}</label>
+                  <select
+                    .value=${n.prerequisite_attribute || ""}
+                    @change=${(e) => this._updateCondition(t, i, "prerequisite_attribute", e.target.value, e.target)}
+                  >
+                    <option value="" ?selected=${!n.prerequisite_attribute}>${K(this.hass, "no_attr")}</option>
+                    ${this._getPossibleAttributes(n.prerequisite_entity).map((e) => A`
+                      <option value=${e} ?selected=${n.prerequisite_attribute === e}>${e}</option>
+                    `)}
+                  </select>
+                </div>
+
+                ${n.prerequisite_attribute && n.prerequisite_attribute.trim() !== "" ? A`
+                  <div class="select-wrapper">
+                    <label>${K(this.hass, "attr_val")}</label>
+                    <select
+                      .value=${n.prerequisite_attribute_value || ""}
+                      @change=${(e) => this._updateCondition(t, i, "prerequisite_attribute_value", e.target.value, e.target)}
+                    >
+                      ${[...new Set([...n.prerequisite_attribute_value ? [n.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(n.prerequisite_entity, n.prerequisite_attribute)])].map((e) => A`
+                        <option value=${e} ?selected=${n.prerequisite_attribute_value === e}>${e}</option>
+                      `)}
+                    </select>
+                  </div>
+                  <div class="json-hint">${K(this.hass, "prereq_hint")}</div>
+                ` : A`
+                  <div class="select-wrapper">
+                    <label>${K(this.hass, "prereq_state")}</label>
+                    <select
+                      .value=${n.prerequisite_state || "on"}
+                      @change=${(e) => this._updateCondition(t, i, "prerequisite_state", e.target.value, e.target)}
+                    >
+                      ${[...new Set([...n.prerequisite_state ? [n.prerequisite_state] : [], ...this._getPossibleStates(n.prerequisite_entity)])].map((e) => A`
+                        <option value=${e} ?selected=${(n.prerequisite_state || "on") === e}>${e}</option>
+                      `)}
+                    </select>
+                  </div>
+                  <div class="json-hint">${K(this.hass, "prereq_hint")}</div>
+                `}
+              ` : ""}
+            </div>
+          `)}
+
+          <ha-button outlined @click=${() => this._addCondition(t)}>
+            <ha-icon icon="mdi:plus" slot="icon"></ha-icon>
+            ${K(this.hass, "add_state")}
+          </ha-button>
+        </div>
+      </div>
+    `;
+		}
+	}, Y([H({ attribute: !1 })], Q.prototype, "hass", void 0), Y([U()], Q.prototype, "_config", void 0), Y([U()], Q.prototype, "_selectedCheck", void 0), Y([U()], Q.prototype, "_useHaTabs", void 0), Y([U()], Q.prototype, "_useHaYamlEditor", void 0), Y([U()], Q.prototype, "_pickersReady", void 0), Y([U()], Q.prototype, "_yamlMode", void 0), Y([U()], Q.prototype, "_hasClipboard", void 0), Y([U()], Q.prototype, "_yamlError", void 0), Q = Z = Y([V("checklist-card-editor")], Q);
 }));
-V(), Ke(), ct(), pt(), vt(), Nt(), Rt();
-var $ = class extends B {
+B(), qe(), ut(), ht(), At(), Ft();
+var $ = class extends z {
 	constructor(...e) {
-		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._showSnoozedExpanded = !1, this._snoozeData = {}, this._snoozeDialogRule = null, this._customSnoozeHours = "", this._isTitleOverflowing = !1, this._isSubtitleOverflowing = !1, this._problemIds = /* @__PURE__ */ new Set(), this._snoozedIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [], this._snoozeTimer = null, this._snoozeDataLoaded = !1, this._marquee = new Dt(this, [{
+		super(...e), this._isFixingAll = !1, this._fixingItems = /* @__PURE__ */ new Set(), this._errorBanner = null, this._showOkExpanded = !1, this._showSnoozedExpanded = !1, this._snoozeData = {}, this._snoozeDialogRule = null, this._customSnoozeHours = "", this._isTitleOverflowing = !1, this._isSubtitleOverflowing = !1, this._problemIds = /* @__PURE__ */ new Set(), this._snoozedIds = /* @__PURE__ */ new Set(), this._checksToDisplay = [], this._listStyle = "display: flex; flex-direction: column; gap: 12px;", this._watchedEntityIds = [], this._snoozeTimer = null, this._snoozeDataLoaded = !1, this._marquee = new wt(this, [{
 			parent: ".title",
 			setOverflow: (e) => {
 				this._isTitleOverflowing = e;
@@ -3227,10 +3397,10 @@ var $ = class extends B {
 		}]);
 	}
 	static {
-		this.styles = lt;
+		this.styles = ot;
 	}
 	static async getConfigElement() {
-		return await Promise.all([Promise.resolve().then(() => (tn(), en)), Mt()]), document.createElement("checklist-card-editor");
+		return await Promise.all([Promise.resolve().then(() => (en(), $t)), kt()]), document.createElement("checklist-card-editor");
 	}
 	getCardSize() {
 		let e = this._config?.checks?.length ?? 1, t = this._layoutCols(), n = Math.ceil(e / t);
@@ -3265,7 +3435,7 @@ var $ = class extends B {
 	static getStubConfig() {
 		return {
 			type: "custom:checklist-card",
-			title: ut("title"),
+			title: st("title"),
 			checks: [{
 				id: Date.now().toString(),
 				entity: "",
@@ -3287,15 +3457,15 @@ var $ = class extends B {
 		};
 	}
 	setConfig(e) {
-		if (!e || !e.checks) throw Error(q(this.hass, "config_error"));
-		let t = gt(e);
+		if (!e || !e.checks) throw Error(K(this.hass, "config_error"));
+		let t = pt(e);
 		this._config = {
 			...t,
-			checks: t.checks.map(mt)
+			checks: t.checks.map(dt)
 		};
 	}
 	connectedCallback() {
-		super.connectedCallback(), this._scheduleNextSnoozeExpiry(), jt();
+		super.connectedCallback(), this._scheduleNextSnoozeExpiry(), Ot();
 	}
 	disconnectedCallback() {
 		super.disconnectedCallback(), this._clearSnoozeTimer();
@@ -3332,7 +3502,7 @@ var $ = class extends B {
 		let e = /* @__PURE__ */ new Set(), t = (t) => {
 			if (!t || !t.includes("states(")) return;
 			let n;
-			for (bt.lastIndex = 0; (n = bt.exec(t)) !== null;) n[1] && e.add(n[1]);
+			for (_t.lastIndex = 0; (n = _t.exec(t)) !== null;) n[1] && e.add(n[1]);
 		};
 		for (let n of this._config.checks) {
 			n.entity && e.add(n.entity);
@@ -3382,7 +3552,7 @@ var $ = class extends B {
 		return new Set(this._config.checks.filter((t) => t.entity && this._snoozeData[t.id] && this._snoozeData[t.id] > e).map((e) => e.id));
 	}
 	_calculateProblemIds() {
-		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => St(this.hass, e) && !this._snoozedIds.has(e.id)).map((e) => e.id));
+		return !this.hass || !this._config?.checks ? /* @__PURE__ */ new Set() : new Set(this._config.checks.filter((e) => yt(this.hass, e) && !this._snoozedIds.has(e.id)).map((e) => e.id));
 	}
 	async _loadSnoozeData() {
 		if (this.hass?.callWS) try {
@@ -3457,18 +3627,18 @@ var $ = class extends B {
 					await this.hass.callService(t, n, r);
 				} else throw Error(`fix_service must be "domain.service" or a JSON object, got: ${e}`);
 			} catch (e) {
-				console.error(q(this.hass, "fix_process_error") + " (Parse/Execute):", e), this._errorBanner = q(this.hass, "fix_process_error") + " - " + String(e);
+				console.error(K(this.hass, "fix_process_error") + " (Parse/Execute):", e), this._errorBanner = K(this.hass, "fix_process_error") + " - " + String(e);
 			}
 			return;
 		}
-		let i = _t(n, J(this.hass, t.state), t);
+		let i = mt(n, q(this.hass, t.state), t);
 		try {
 			await this.hass.callService(i.domain || n, i.service, {
 				...r,
 				...i.serviceData
 			});
 		} catch (e) {
-			console.error("Service call failed", e), this._errorBanner = q(this.hass, "fix_process_error") + " - " + String(e);
+			console.error("Service call failed", e), this._errorBanner = K(this.hass, "fix_process_error") + " - " + String(e);
 		}
 	}
 	async _fixIssue(e) {
@@ -3479,10 +3649,10 @@ var $ = class extends B {
 				n && await this._fixCondition(e.entity, n);
 			} else for (let t = 0; t < e.conditions.length; t++) {
 				let n = e.conditions[t], r = this.hass.states[e.entity];
-				(!r || !xt(this.hass, r, n)) && (await this._fixCondition(e.entity, n), t < e.conditions.length - 1 && await new Promise((e) => setTimeout(e, 300)));
+				(!r || !vt(this.hass, r, n)) && (await this._fixCondition(e.entity, n), t < e.conditions.length - 1 && await new Promise((e) => setTimeout(e, 300)));
 			}
 		} catch (e) {
-			console.error(q(this.hass, "fix_process_error"), e), this._errorBanner = q(this.hass, "fix_process_error");
+			console.error(K(this.hass, "fix_process_error"), e), this._errorBanner = K(this.hass, "fix_process_error");
 		} finally {
 			let t = new Set(this._fixingItems);
 			t.delete(e.id), this._fixingItems = t;
@@ -3514,14 +3684,14 @@ var $ = class extends B {
 		this._snoozeDialogRule && e > 0 && e <= 8760 && this._snoozeItem(this._snoozeDialogRule, e);
 	}
 	render() {
-		if (!this._config) return j``;
+		if (!this._config) return A``;
 		let e = this._problemIds.size, t = e > 0, n = this.hass?.translationMetadata?.dir ?? (this.hass?.language === "he" ? "rtl" : "ltr"), r = this._snoozedIds.size, i = this._checksToDisplay.filter((e) => this._problemIds.has(e.id)), a = this._checksToDisplay.filter((e) => !this._problemIds.has(e.id) && !this._snoozedIds.has(e.id)), o = this._config.checks.filter((e) => e.entity && this._snoozedIds.has(e.id)), s = this._config.show_ok_section || "inline", c = (this._config.sort || "manual") === "manual" && s === "inline", l = s === "inline" ? c ? this._checksToDisplay.filter((e) => !this._snoozedIds.has(e.id)) : [...i, ...a] : i;
-		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", j``;
+		if (e === 0 && r === 0 && s === "hidden") return this.style.display = "none", A``;
 		this.style.display = "";
 		let u = this._snoozeDialogRule, d = u ? u.name || this.hass?.states[u.entity]?.attributes?.friendly_name || u.entity : "";
-		return j`
-      <ha-card dir=${n} role="region" aria-label=${this._config.title || q(this.hass, "title")}>
-        ${this._errorBanner ? j`
+		return A`
+      <ha-card dir=${n} role="region" aria-label=${this._config.title || K(this.hass, "title")}>
+        ${this._errorBanner ? A`
           <ha-alert alert-type="error" dismissable @alert-dismissed-clicked=${() => this._errorBanner = null}>
             ${this._errorBanner}
           </ha-alert>
@@ -3539,23 +3709,23 @@ var $ = class extends B {
           </div>
 
           <div class="header-actions">
-            ${s === "collapsed" && a.length > 0 ? j`
+            ${s === "collapsed" && a.length > 0 ? A`
               <button class="ok-toggle-btn" @click=${() => this._showOkExpanded = !this._showOkExpanded}>
                 <ha-icon icon="mdi:check-circle"></ha-icon>
-                ${this._showOkExpanded ? q(this.hass, "hide_ok_items_btn", { count: a.length }) : q(this.hass, "show_ok_items_btn", { count: a.length })}
+                ${this._showOkExpanded ? K(this.hass, "hide_ok_items_btn", { count: a.length }) : K(this.hass, "show_ok_items_btn", { count: a.length })}
               </button>
             ` : ""}
 
-            ${o.length > 0 ? j`
+            ${o.length > 0 ? A`
               <button class="ok-toggle-btn" @click=${() => this._showSnoozedExpanded = !this._showSnoozedExpanded}>
                 <ha-icon icon="mdi:alarm-snooze" style="color: #e59b2dff;"></ha-icon>
-                ${this._showSnoozedExpanded ? q(this.hass, "snoozed_section_hide", { count: o.length }) : q(this.hass, "snoozed_section_show", { count: o.length })}
+                ${this._showSnoozedExpanded ? K(this.hass, "snoozed_section_hide", { count: o.length }) : K(this.hass, "snoozed_section_show", { count: o.length })}
               </button>
             ` : ""}
 
-            ${i.length > 0 ? j`
-              <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${q(this.hass, "fix_all")}>
-                ${this._isFixingAll ? j`<div class="spinner"></div>` : q(this.hass, "fix_all")}
+            ${i.length > 0 ? A`
+              <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${K(this.hass, "fix_all")}>
+                ${this._isFixingAll ? A`<div class="spinner"></div>` : K(this.hass, "fix_all")}
               </button>
             ` : ""}
           </div>
@@ -3575,17 +3745,17 @@ var $ = class extends B {
         </div>
       </ha-card>
 
-      ${u ? j`
+      ${u ? A`
         <ha-dialog
           .open=${!0}
           @closed=${() => {
 			this._snoozeDialogRule = null, this._customSnoozeHours = "";
 		}}
-          .heading=${q(this.hass, "snooze_dialog_title")}
+          .heading=${K(this.hass, "snooze_dialog_title")}
         >
           <div class="snooze-dialog-content">
             <div class="snooze-dialog-entity">${d}</div>
-            <p class="snooze-dialog-desc">${q(this.hass, "snooze_dialog_desc")}</p>
+            <p class="snooze-dialog-desc">${K(this.hass, "snooze_dialog_desc")}</p>
             <div class="snooze-presets">
               ${[
 			1,
@@ -3594,9 +3764,9 @@ var $ = class extends B {
 			8,
 			24,
 			72
-		].map((e, t) => j`
+		].map((e, t) => A`
                 <button class="snooze-preset-btn" @click=${() => this._snoozeItem(u, e)}>
-                  ${q(this.hass, [
+                  ${K(this.hass, [
 			"snooze_1h",
 			"snooze_2h",
 			"snooze_4h",
@@ -3615,50 +3785,50 @@ var $ = class extends B {
                 max="8760"
                 .value=${this._customSnoozeHours}
                 @input=${(e) => this._customSnoozeHours = e.target.value}
-                placeholder=${q(this.hass, "snooze_custom_placeholder")}
+                placeholder=${K(this.hass, "snooze_custom_placeholder")}
               />
               <button
                 class="snooze-preset-btn snooze-custom-confirm"
                 ?disabled=${!this._customSnoozeHours || parseFloat(this._customSnoozeHours) <= 0}
                 @click=${this._handleCustomSnooze}
               >
-                ${q(this.hass, "snooze_confirm_btn")}
+                ${K(this.hass, "snooze_confirm_btn")}
               </button>
             </div>
           </div>
           <mwc-button slot="secondaryAction" @click=${() => {
 			this._snoozeDialogRule = null, this._customSnoozeHours = "";
 		}}>
-            ${q(this.hass, "cancel")}
+            ${K(this.hass, "cancel")}
           </mwc-button>
         </ha-dialog>
       ` : ""}
     `;
 	}
 	_renderHeaderTitle() {
-		let e = this._config?.text_mode === "scroll", t = this._isTitleOverflowing && e, n = this._config.title || q(this.hass, "title");
-		return j`
+		let e = this._config?.text_mode === "scroll", t = this._isTitleOverflowing && e, n = this._config.title || K(this.hass, "title");
+		return A`
       <div class="title ${t ? "overflowing" : ""}">
-        ${At(n, t)}
+        ${Dt(n, t)}
       </div>
     `;
 	}
 	_renderHeaderSubtitle(e, t, n) {
-		let r = this._config?.text_mode === "scroll", i = this._isSubtitleOverflowing && r, a = j`${e ? q(this.hass, "problems_found", { count: t }) : q(this.hass, "all_good")}${n > 0 ? j`
+		let r = this._config?.text_mode === "scroll", i = this._isSubtitleOverflowing && r, a = A`${e ? K(this.hass, "problems_found", { count: t }) : K(this.hass, "all_good")}${n > 0 ? A`
         <span class="snooze-count-badge">
           <ha-icon icon="mdi:alarm-snooze" style="--mdc-icon-size: 13px; vertical-align: middle;"></ha-icon>
           ${n}
         </span>
       ` : ""}`;
-		return j`
+		return A`
       <div class="subtitle ${i ? "overflowing" : ""}" aria-live="polite">
-        ${At(a, i)}
+        ${Dt(a, i)}
       </div>
     `;
 	}
 	_renderItems(e) {
 		let t = this._config?.text_mode === "scroll";
-		return ot(e, (e) => e.id, (e) => j`
+		return at(e, (e) => e.id, (e) => A`
         <checklist-card-item
           .rule=${e}
           .hass=${this.hass}
@@ -3672,7 +3842,7 @@ var $ = class extends B {
 	}
 	_renderSnoozedItems(e) {
 		let t = this._config?.text_mode === "scroll";
-		return ot(e, (e) => e.id, (e) => j`
+		return at(e, (e) => e.id, (e) => A`
         <checklist-card-item
           .rule=${e}
           .hass=${this.hass}
@@ -3687,10 +3857,10 @@ var $ = class extends B {
       `);
 	}
 };
-X([U({ attribute: !1 })], $.prototype, "hass", void 0), X([W()], $.prototype, "_config", void 0), X([W()], $.prototype, "_isFixingAll", void 0), X([W()], $.prototype, "_fixingItems", void 0), X([W()], $.prototype, "_errorBanner", void 0), X([W()], $.prototype, "_showOkExpanded", void 0), X([W()], $.prototype, "_showSnoozedExpanded", void 0), X([W()], $.prototype, "_snoozeData", void 0), X([W()], $.prototype, "_snoozeDialogRule", void 0), X([W()], $.prototype, "_customSnoozeHours", void 0), X([W()], $.prototype, "_isTitleOverflowing", void 0), X([W()], $.prototype, "_isSubtitleOverflowing", void 0), $ = X([H("checklist-card")], $), tn(), pt(), window.customCards = window.customCards || [], window.customCards.push({
+Y([H({ attribute: !1 })], $.prototype, "hass", void 0), Y([U()], $.prototype, "_config", void 0), Y([U()], $.prototype, "_isFixingAll", void 0), Y([U()], $.prototype, "_fixingItems", void 0), Y([U()], $.prototype, "_errorBanner", void 0), Y([U()], $.prototype, "_showOkExpanded", void 0), Y([U()], $.prototype, "_showSnoozedExpanded", void 0), Y([U()], $.prototype, "_snoozeData", void 0), Y([U()], $.prototype, "_snoozeDialogRule", void 0), Y([U()], $.prototype, "_customSnoozeHours", void 0), Y([U()], $.prototype, "_isTitleOverflowing", void 0), Y([U()], $.prototype, "_isSubtitleOverflowing", void 0), $ = Y([V("checklist-card")], $), en(), ut(), window.customCards = window.customCards || [], window.customCards.push({
 	type: "checklist-card",
-	name: ut("card_name"),
-	description: ut("card_description"),
+	name: st("card_name"),
+	description: st("card_description"),
 	preview: !0,
 	documentationURL: "https://github.com/yosef-chai/ha-checklist-card"
 });

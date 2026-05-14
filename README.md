@@ -26,12 +26,12 @@ A Lovelace custom card that monitors a list of entity states against expected va
 - **Multi-condition checks** - combine conditions with AND / OR logic per entity
 - **Prerequisite guards** - skip a check automatically when a prerequisite entity is not in the expected state
 - **Snooze problems** - long-press (or double-tap a problem) to silence an item for 1h / 2h / 4h / 8h / 24h / 3d / a custom duration; snoozes persist across reloads via HA's user data, and the badge shows the snoozed count and remaining time
-- **Sort & order** - manual ordering (drag-and-drop in the editor), or sort by status, name, domain, severity, or last-changed; ascending or descending
+- **Sort & order** - manual ordering (reorder via prev/next buttons in the editor), or sort by status, name, domain, severity, or last-changed; ascending or descending
 - **Flexible layout** - vertical columns or horizontal rows, configurable count (1–12); supports the Lovelace Sections (grid) view
 - **Long text handling** - clip overflowing names with an ellipsis or scroll them as a marquee (`text_mode`)
 - **Per-row tap / hold / double-tap actions** - reuse Home Assistant's standard action config to navigate, call services, run scripts, or open more-info
 - **Hide OK items** - keep the card compact by showing only entities with problems, or fold them behind a toggle
-- **Visual UI editor** - configure everything from the dashboard without writing YAML, with native HA expansion panels and drag-to-reorder for entities
+- **Visual UI editor** - configure everything from the dashboard without writing YAML, with a tabbed editor (one tab per check) that matches the native Home Assistant Horizontal Stack card editor — including prev/next reorder, duplicate, cut/paste (cross-card via session clipboard), delete, and a `{}` toggle for per-check YAML/JSON editing
 - **RTL & translations** - full right-to-left support; ships with English and Hebrew, easy to add more
 
 ---
@@ -66,7 +66,7 @@ Or click the button above to open the repository directly in HACS.
    ```yaml
    lovelace:
      resources:
-       - url: /local/checklist-card.js?v=2.0.0
+       - url: /local/checklist-card.js?v=2.2.0
          type: module
    ```
 

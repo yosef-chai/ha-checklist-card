@@ -67,109 +67,148 @@ export const editorStyles = css`
     gap: 8px;
   }
 
-  .check-item {
-    display: block;
-    border-radius: var(--ha-card-border-radius, 12px);
-    transition: box-shadow 0.2s ease-in-out;
-  }
+  /* --- Tabbed check editor (HA hui-stack-card-editor pattern) ---
+     Layout mirrors the official editor:
+       <div class="check-toolbar">     <- maps to .toolbar
+         <ha-tab-group/>               <- flex-grow tabs
+         <ha-icon-button [+]/>         <- add button
+       </div>
+       <div class="check-editor">      <- maps to #editor (bordered)
+         <div class="check-options">   <- maps to #card-options
+           <prev/> <next/> <copy/> <delete/>
+         </div>
+         <check fields/>
+       </div>
+  */
 
-  .check-item ha-expansion-panel {
-    margin-bottom: 0;
-  }
-
-  .check-item.dragging ha-expansion-panel {
-    opacity: 0.5;
-    border-color: var(--primary-color);
-  }
-
-  .check-item.drop-target {
-    position: relative;
-  }
-
-  .check-item.drop-target ha-expansion-panel {
-    border: 2px dashed var(--primary-color) !important;
-    background: rgba(var(--rgb-primary-color, 0, 0, 255), 0.05) !important;
-  }
-
-  .check-item.drop-target::before {
-    content: attr(data-drop-text);
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--primary-color);
-    color: var(--text-primary-color, white);
-    font-size: 12px;
-    font-weight: 500;
-    padding: 6px 16px;
-    border-radius: 12px;
-    white-space: nowrap;
-    z-index: 10;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
-
-  .check-panel-header {
+  .check-toolbar {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    flex: 1;
-    min-width: 0;
-  }
-
-  .check-panel-title {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--primary-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .check-panel-subtitle {
-    font-size: 12px;
-    color: var(--secondary-text-color);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  .check-panel-actions {
-    display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0;
   }
 
-  .check-panel-actions ha-icon-button {
-    --mdc-icon-button-size: 36px;
-    --mdc-icon-size: 20px;
-    color: var(--secondary-text-color);
+  .check-toolbar ha-tab-group,
+  .check-toolbar mwc-tab-bar {
+    flex-grow: 1;
+    min-width: 0;
+    --ha-tab-track-color: var(--card-background-color);
   }
 
-  .check-panel-actions ha-icon-button.remove-btn {
+  .check-toolbar ha-tab-group-tab.invalid,
+  .check-toolbar mwc-tab.invalid {
+    color: var(--error-color);
+    --mdc-tab-text-label-color-default: var(--error-color);
+    --mdc-theme-primary: var(--error-color);
+  }
+
+  .check-editor {
+    border: 1px solid var(--divider-color);
+    padding: 12px;
+  }
+
+  @media (max-width: 450px) {
+    .check-editor {
+      margin: 0 -12px;
+    }
+  }
+
+  .check-options {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    width: 100%;
+  }
+
+  .check-options .gui-mode-button {
+    margin-right: auto;
+    margin-inline-end: auto;
+    margin-inline-start: initial;
+  }
+
+  .check-options .delete-btn {
     color: var(--error-color);
   }
 
-  .drag-handle {
-    cursor: grab;
+  .yaml-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 8px;
+  }
+
+  .yaml-editor textarea {
+    width: 100%;
+    min-height: 280px;
+    box-sizing: border-box;
+    padding: 12px;
+    background: var(--code-editor-background-color, var(--card-background-color));
+    color: var(--primary-text-color);
+    border: 1px solid var(--divider-color);
+    border-radius: var(--ha-card-border-radius, 6px);
+    font-family: var(--ha-font-family-code, monospace);
+    font-size: 13px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+
+  .yaml-editor textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
+  }
+
+  .yaml-editor ha-yaml-editor {
+    display: block;
+    width: 100%;
+  }
+
+  .yaml-hint {
+    font-size: 12px;
     color: var(--secondary-text-color);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 4px;
-    margin-inline-end: 4px;
   }
 
-  .drag-handle:active {
-    cursor: grabbing;
+  .yaml-error {
+    color: var(--error-color);
+    font-size: 12px;
   }
 
-  .drag-handle ha-svg-icon {
-    --mdc-icon-size: 22px;
+  .check-editor-content {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding-top: 8px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 32px 16px;
+    color: var(--secondary-text-color);
+  }
+
+  .advanced-block {
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.02);
+    border-radius: 8px;
+    border: 1px solid var(--divider-color);
+  }
+
+  .advanced-summary {
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .advanced-content {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
   }
 
   .add-btn {
     margin-top: 16px;
   }
+
+  /* --- Conditions section (per check) --- */
 
   .conditions-section {
     display: flex;
