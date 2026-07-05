@@ -1,5 +1,12 @@
 //#region \0rolldown/runtime.js
-var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n = (t, n) => {
+var e = Object.defineProperty, t = (e, t, n) => () => {
+	if (n) throw n[0];
+	try {
+		return e && (t = e(e = 0)), t;
+	} catch (e) {
+		throw n = [e], e;
+	}
+}, n = (t, n) => {
 	let r = {};
 	for (var i in t) e(r, i, {
 		get: t[i],
@@ -23,11 +30,14 @@ var e = Object.defineProperty, t = (e, t) => () => (e && (t = e(e = 0)), t), n =
 		toString() {
 			return this.cssText;
 		}
-	}, c = (e) => new s(typeof e == "string" ? e : e + "", void 0, a), l = (e, ...t) => new s(e.length === 1 ? e[0] : t.reduce((t, n, r) => t + ((e) => {
-		if (!0 === e._$cssResult$) return e.cssText;
-		if (typeof e == "number") return e;
-		throw Error("Value passed to 'css' function must be a 'css' function result: " + e + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
-	})(n) + e[r + 1], e[0]), e, a), u = (e, t) => {
+	}, c = (e) => new s(typeof e == "string" ? e : e + "", void 0, a), l = (e, ...t) => {
+		let n = e.length === 1 ? e[0] : t.reduce((t, n, r) => t + ((e) => {
+			if (!0 === e._$cssResult$) return e.cssText;
+			if (typeof e == "number") return e;
+			throw Error("Value passed to 'css' function must be a 'css' function result: " + e + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
+		})(n) + e[r + 1], e[0]);
+		return new s(n, e, a);
+	}, u = (e, t) => {
 		if (i) e.adoptedStyleSheets = t.map((e) => e instanceof CSSStyleSheet ? e : e.styleSheet);
 		else for (let n of t) {
 			let t = document.createElement("style"), i = r.litNonce;
@@ -494,7 +504,7 @@ var ue, de, x, fe, S, C, pe, me, w, T, E, D, he, ge, O, _e, ve, k, ye, be, xe, S
 		U: Oe,
 		B: Ee,
 		F: ke
-	}, je = ue.litHtmlPolyfillSupport, je?.(P, F), (ue.litHtmlVersions ??= []).push("3.3.2"), Me = (e, t, n) => {
+	}, je = ue.litHtmlPolyfillSupport, je?.(P, F), (ue.litHtmlVersions ??= []).push("3.3.3"), Me = (e, t, n) => {
 		let r = n?.renderBefore ?? t, i = r._$litPart$;
 		if (i === void 0) {
 			let e = n?.renderBefore ?? null;
@@ -1048,9 +1058,9 @@ function st(e) {
 	return ct((typeof navigator < "u" ? navigator.language : "en").split("-")[0].toLowerCase(), e);
 }
 function ct(e, t, n) {
-	let r = lt[e in lt ? e : "en"][t] ?? lt.en[t] ?? t;
-	if (n) for (let [e, t] of Object.entries(n)) r = r.replace(`{${e}}`, String(t));
-	return r;
+	let r = e in lt ? e : "en", i = lt[r][t] ?? lt.en[t] ?? t;
+	if (n) for (let [e, t] of Object.entries(n)) i = i.replace(`{${e}}`, String(t));
+	return i;
 }
 var lt, ut = t((() => {
 	lt = {
@@ -1677,7 +1687,7 @@ var Nt = document.createElement("checklist-action-handler"), Pt = Ye(class exten
 	}
 });
 //#endregion
-//#region \0@oxc-project+runtime@0.126.0/helpers/decorate.js
+//#region \0@oxc-project+runtime@0.138.0/helpers/esm/decorate.js
 function Y(e, t, n, r) {
 	var i = arguments.length, a = i < 3 ? t : r === null ? r = Object.getOwnPropertyDescriptor(t, n) : r, o;
 	if (typeof Reflect == "object" && typeof Reflect.decorate == "function") a = Reflect.decorate(e, t, n, r);
@@ -3290,7 +3300,7 @@ var zt, Bt = t((() => {
                     .value=${n.attribute_value || ""}
                     @change=${(e) => this._updateCondition(t, i, "attribute_value", e.target.value, e.target)}
                   >
-                    ${[...new Set([...n.attribute_value ? [n.attribute_value] : [], ...this._getPossibleAttributeValues(e.entity, n.attribute)])].map((e) => A`
+                    ${[.../* @__PURE__ */ new Set([...n.attribute_value ? [n.attribute_value] : [], ...this._getPossibleAttributeValues(e.entity, n.attribute)])].map((e) => A`
                       <option value=${e} ?selected=${n.attribute_value === e}>${e}</option>
                     `)}
                   </select>
@@ -3302,7 +3312,7 @@ var zt, Bt = t((() => {
                     .value=${n.state || "on"}
                     @change=${(e) => this._updateCondition(t, i, "state", e.target.value, e.target)}
                   >
-                    ${[...new Set([...n.state ? [n.state] : [], ...this._getPossibleStates(e.entity)])].map((e) => A`
+                    ${[.../* @__PURE__ */ new Set([...n.state ? [n.state] : [], ...this._getPossibleStates(e.entity)])].map((e) => A`
                       <option value=${e} ?selected=${n.state === e}>${e}</option>
                     `)}
                   </select>
@@ -3347,7 +3357,7 @@ var zt, Bt = t((() => {
                       .value=${n.prerequisite_attribute_value || ""}
                       @change=${(e) => this._updateCondition(t, i, "prerequisite_attribute_value", e.target.value, e.target)}
                     >
-                      ${[...new Set([...n.prerequisite_attribute_value ? [n.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(n.prerequisite_entity, n.prerequisite_attribute)])].map((e) => A`
+                      ${[.../* @__PURE__ */ new Set([...n.prerequisite_attribute_value ? [n.prerequisite_attribute_value] : [], ...this._getPossibleAttributeValues(n.prerequisite_entity, n.prerequisite_attribute)])].map((e) => A`
                         <option value=${e} ?selected=${n.prerequisite_attribute_value === e}>${e}</option>
                       `)}
                     </select>
@@ -3360,7 +3370,7 @@ var zt, Bt = t((() => {
                       .value=${n.prerequisite_state || "on"}
                       @change=${(e) => this._updateCondition(t, i, "prerequisite_state", e.target.value, e.target)}
                     >
-                      ${[...new Set([...n.prerequisite_state ? [n.prerequisite_state] : [], ...this._getPossibleStates(n.prerequisite_entity)])].map((e) => A`
+                      ${[.../* @__PURE__ */ new Set([...n.prerequisite_state ? [n.prerequisite_state] : [], ...this._getPossibleStates(n.prerequisite_entity)])].map((e) => A`
                         <option value=${e} ?selected=${(n.prerequisite_state || "on") === e}>${e}</option>
                       `)}
                     </select>
@@ -3642,7 +3652,7 @@ var $ = class extends z {
 		}
 	}
 	async _fixIssue(e) {
-		this._fixingItems = new Set([...this._fixingItems, e.id]), this._errorBanner = null;
+		this._fixingItems = /* @__PURE__ */ new Set([...this._fixingItems, e.id]), this._errorBanner = null;
 		try {
 			if (e.conditions_mode === "any") {
 				let t = e.default_condition_index ?? 0, n = e.conditions[t] ?? e.conditions[0];
