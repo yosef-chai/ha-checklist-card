@@ -1,4 +1,4 @@
-import { directive, Directive, PartInfo, EventPart, PartType } from 'lit/directive.js';
+import { directive, Directive, PartInfo } from 'lit/directive.js';
 import type { ActionConfig, HomeAssistant } from './types';
 
 export interface ActionHandlerOptions {
@@ -41,7 +41,7 @@ class ActionHandler extends HTMLElement {
       element.dispatchEvent(event);
     };
 
-    const start = (ev: Event) => {
+    const start = () => {
       held = false;
       clear();
       if (getOptions()?.hasHold) {
@@ -52,7 +52,7 @@ class ActionHandler extends HTMLElement {
       }
     };
 
-    const end = (ev: Event) => {
+    const end = () => {
       clear();
       if (held) return;
       if (getOptions()?.hasDoubleClick) {
@@ -87,7 +87,7 @@ class ActionHandlerDirective extends Directive {
     super(partInfo);
   }
 
-  render(options?: ActionHandlerOptions) {}
+  render(_options?: ActionHandlerOptions) {}
 
   update(part: any, [options]: [ActionHandlerOptions?]) {
     actionHandlerElement.bind(part.element as HTMLElement, options);
@@ -117,7 +117,7 @@ export function handleAction(
     return;
   }
 
-  let actionType = actionConfig.action;
+  const actionType = actionConfig.action;
   if (actionType === 'none') return;
   if (actionType === 'fix') return; // Handled specially by the card
 

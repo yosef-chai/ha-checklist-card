@@ -253,7 +253,7 @@ export class ChecklistCard extends LitElement {
   }
 
   private _computeChecksToDisplay(): CheckRule[] {
-    let sorted = [...this._config.checks].filter(c => !!c.entity);
+    const sorted = [...this._config.checks].filter(c => !!c.entity);
 
     if (this._config.sort !== 'manual') {
       sorted.sort((a, b) => {
@@ -273,11 +273,12 @@ export class ChecklistCard extends LitElement {
             valA = a.entity.split('.')[0];
             valB = b.entity.split('.')[0];
             break;
-          case 'severity':
+          case 'severity': {
             const sevWeight = { 'critical': 0, 'warning': 1, 'info': 2 };
             valA = sevWeight[a.severity || 'info'];
             valB = sevWeight[b.severity || 'info'];
             break;
+          }
           case 'last_changed':
             valA = new Date(this.hass.states[a.entity]?.last_changed || 0).getTime();
             valB = new Date(this.hass.states[b.entity]?.last_changed || 0).getTime();

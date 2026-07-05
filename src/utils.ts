@@ -41,7 +41,7 @@ export function getStandardServiceCall(
   condition?: StateCondition
 ): ServiceCallResult {
   let service = '';
-  let serviceData: Record<string, unknown> = {};
+  const serviceData: Record<string, unknown> = {};
 
   if (condition?.attribute?.trim()) {
     const attrVal = expected;

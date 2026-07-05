@@ -1665,11 +1665,11 @@ var jt = /* @__PURE__ */ new WeakMap(), Mt = class extends HTMLElement {
 			});
 			e.dispatchEvent(n);
 		};
-		e.addEventListener("pointerdown", (e) => {
+		e.addEventListener("pointerdown", () => {
 			r = !1, o(), a()?.hasHold && (n = window.setTimeout(() => {
 				r = !0, s("hold");
 			}, this.holdTime));
-		}, { passive: !0 }), e.addEventListener("pointerup", (e) => {
+		}, { passive: !0 }), e.addEventListener("pointerup", () => {
 			o(), !r && (a()?.hasDoubleClick ? i ? (clearTimeout(i), i = void 0, s("double_tap")) : i = window.setTimeout(() => {
 				i = void 0, s("tap");
 			}, 250) : s("tap"));
@@ -3541,7 +3541,7 @@ var $ = class extends z {
 				case "domain":
 					n = e.entity.split(".")[0], r = t.entity.split(".")[0];
 					break;
-				case "severity":
+				case "severity": {
 					let i = {
 						critical: 0,
 						warning: 1,
@@ -3549,6 +3549,7 @@ var $ = class extends z {
 					};
 					n = i[e.severity || "info"], r = i[t.severity || "info"];
 					break;
+				}
 				case "last_changed":
 					n = new Date(this.hass.states[e.entity]?.last_changed || 0).getTime(), r = new Date(this.hass.states[t.entity]?.last_changed || 0).getTime();
 					break;
@@ -3873,5 +3874,5 @@ Y([H({ attribute: !1 })], $.prototype, "hass", void 0), Y([U()], $.prototype, "_
 	description: st("card_description"),
 	preview: !0,
 	documentationURL: "https://github.com/yosef-chai/ha-checklist-card"
-});
+}), console.info("%c CHECKLIST-CARD %c v2.2.2 ", "color: #fff; background: #2980b9; font-weight: 700; border-radius: 3px 0 0 3px;", "color: #2980b9; background: #fff; font-weight: 700; border-radius: 0 3px 3px 0;");
 //#endregion

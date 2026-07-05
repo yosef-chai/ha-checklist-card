@@ -474,7 +474,7 @@ export class ChecklistCardItem extends LitElement {
     const role = 'listitem';
     const ariaLabel = `${displayName}, ${localize(this.hass, this.isProblem ? 'status_problem' : 'status_ok')}`;
 
-    let icon = this.rule.icon;
+    const icon = this.rule.icon;
 
     return html`
       <div
