@@ -17,9 +17,5 @@ jobs:
       with:
         node-version: '22.x'
         cache: 'npm'
-    # npm install (not `npm ci`): the committed lockfile omits per-platform
-    # optional native bindings for Vite 8 / Rolldown, so `npm ci` fails to
-    # install @rolldown/binding-linux-x64-gnu on the Linux runner. `npm install`
-    # re-resolves optional deps against the runner's platform.
-    - run: npm install --no-audit --no-fund
+    - run: npm ci
     - run: npm run build
