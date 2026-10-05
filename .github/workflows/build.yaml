@@ -6,16 +6,24 @@ on:
   pull_request:
     branches: [ master, main ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v7
     - name: Use Node.js
-      uses: actions/setup-node@v5
+      uses: actions/setup-node@v7
       with:
-        node-version: '22.x'
+        node-version: '24.x'
         cache: 'npm'
     - run: npm ci
+    - run: npm run lint
     - run: npm run build
+    # HACS serves dist/checklist-card.js straight from the repository, so the
+    # committed bundle must match the sources.
+    - name: Check that dist/ is up to date
+      run: git diff --exit-code -- dist/

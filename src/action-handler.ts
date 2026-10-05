@@ -1,5 +1,4 @@
 import { directive, Directive, PartInfo } from 'lit/directive.js';
-import type { ActionConfig, HomeAssistant } from './types';
 
 export interface ActionHandlerOptions {
   hasHold?: boolean;
@@ -10,77 +9,109 @@ export interface ActionHandlerOptions {
 // when the host element is removed, so we don't pollute elements with `__action*` fields.
 const elementOptions = new WeakMap<HTMLElement, ActionHandlerOptions | undefined>();
 
-class ActionHandler extends HTMLElement {
-  public holdTime = 500;
-  public bind(element: HTMLElement, options?: ActionHandlerOptions) {
-    if (elementOptions.has(element)) {
-      elementOptions.set(element, options);
-      return;
+const HOLD_TIME = 500;
+const DOUBLE_TAP_WINDOW = 250;
+
+// Pointer/keyboard events that start on a nested control (Fix / Unsnooze
+// buttons) belong to that control, not to the row.
+function fromNestedControl(ev: Event, element: HTMLElement): boolean {
+  for (const node of ev.composedPath()) {
+    if (node === element) return false;
+    if (node instanceof HTMLElement && node.matches('button, a, input, select, textarea, [data-no-row-action]')) {
+      return true;
     }
-    elementOptions.set(element, options);
-
-    let timer: number | undefined;
-    let held = false;
-    let dblClickTimeout: number | undefined;
-
-    const getOptions = () => elementOptions.get(element);
-
-    const clear = () => {
-      if (timer) {
-        clearTimeout(timer);
-        timer = undefined;
-      }
-    };
-
-    const fireAction = (action: string) => {
-      const event = new CustomEvent('action', {
-        detail: { action },
-        bubbles: true,
-        composed: true,
-      });
-      element.dispatchEvent(event);
-    };
-
-    const start = () => {
-      held = false;
-      clear();
-      if (getOptions()?.hasHold) {
-        timer = window.setTimeout(() => {
-          held = true;
-          fireAction('hold');
-        }, this.holdTime);
-      }
-    };
-
-    const end = () => {
-      clear();
-      if (held) return;
-      if (getOptions()?.hasDoubleClick) {
-        if (dblClickTimeout) {
-          clearTimeout(dblClickTimeout);
-          dblClickTimeout = undefined;
-          fireAction('double_tap');
-        } else {
-          dblClickTimeout = window.setTimeout(() => {
-            dblClickTimeout = undefined;
-            fireAction('tap');
-          }, 250);
-        }
-      } else {
-        fireAction('tap');
-      }
-    };
-
-    element.addEventListener('pointerdown', start, { passive: true });
-    element.addEventListener('pointerup', end);
-    element.addEventListener('pointercancel', clear);
-    element.addEventListener('pointerleave', clear);
   }
+  return false;
 }
 
-customElements.define('checklist-action-handler', ActionHandler);
+function bind(element: HTMLElement, options?: ActionHandlerOptions) {
+  if (elementOptions.has(element)) {
+    elementOptions.set(element, options);
+    return;
+  }
+  elementOptions.set(element, options);
 
-const actionHandlerElement = document.createElement('checklist-action-handler') as ActionHandler;
+  let holdTimer: number | undefined;
+  let dblClickTimer: number | undefined;
+  let held = false;
+  let active = false;
+
+  const getOptions = () => elementOptions.get(element);
+
+  const clearHold = () => {
+    if (holdTimer) {
+      clearTimeout(holdTimer);
+      holdTimer = undefined;
+    }
+  };
+
+  const fireAction = (action: string) => {
+    element.dispatchEvent(new CustomEvent('action', {
+      detail: { action },
+      bubbles: true,
+      composed: true,
+    }));
+  };
+
+  const tap = () => {
+    if (getOptions()?.hasDoubleClick) {
+      if (dblClickTimer) {
+        clearTimeout(dblClickTimer);
+        dblClickTimer = undefined;
+        fireAction('double_tap');
+      } else {
+        dblClickTimer = window.setTimeout(() => {
+          dblClickTimer = undefined;
+          fireAction('tap');
+        }, DOUBLE_TAP_WINDOW);
+      }
+    } else {
+      fireAction('tap');
+    }
+  };
+
+  const start = (ev: PointerEvent) => {
+    // Only the primary button (left click / touch / pen contact).
+    if (ev.button !== 0 || fromNestedControl(ev, element)) return;
+    active = true;
+    held = false;
+    clearHold();
+    if (getOptions()?.hasHold) {
+      holdTimer = window.setTimeout(() => {
+        held = true;
+        fireAction('hold');
+      }, HOLD_TIME);
+    }
+  };
+
+  const end = (ev: PointerEvent) => {
+    if (!active) return;
+    active = false;
+    clearHold();
+    if (held || fromNestedControl(ev, element)) return;
+    tap();
+  };
+
+  const cancel = () => {
+    active = false;
+    clearHold();
+  };
+
+  element.addEventListener('pointerdown', start, { passive: true });
+  element.addEventListener('pointerup', end);
+  element.addEventListener('pointercancel', cancel);
+  element.addEventListener('pointerleave', cancel);
+  // Long-press on touch opens the browser context menu; suppress it once a hold fired.
+  element.addEventListener('contextmenu', (ev) => {
+    if (held || holdTimer) ev.preventDefault();
+  });
+  // Keyboard: Enter / Space activate the row like a tap (HA action-handler behaviour).
+  element.addEventListener('keydown', (ev: KeyboardEvent) => {
+    if ((ev.key !== 'Enter' && ev.key !== ' ') || ev.repeat || fromNestedControl(ev, element)) return;
+    ev.preventDefault();
+    fireAction('tap');
+  });
+}
 
 class ActionHandlerDirective extends Directive {
   constructor(partInfo: PartInfo) {
@@ -90,41 +121,9 @@ class ActionHandlerDirective extends Directive {
   render(_options?: ActionHandlerOptions) {}
 
   update(part: any, [options]: [ActionHandlerOptions?]) {
-    actionHandlerElement.bind(part.element as HTMLElement, options);
+    bind(part.element as HTMLElement, options);
     return this.render(options);
   }
 }
 
 export const actionHandler = directive(ActionHandlerDirective);
-
-export function handleAction(
-  element: HTMLElement,
-  hass: HomeAssistant,
-  config: { entity?: string; camera_image?: string; tap_action?: ActionConfig; hold_action?: ActionConfig; double_tap_action?: ActionConfig },
-  action: string
-) {
-  const actionConfig = config[`${action}_action` as keyof typeof config] as ActionConfig | undefined;
-  
-  if (!actionConfig) {
-    if (action === 'tap') {
-      const event = new CustomEvent('hass-more-info', {
-        detail: { entityId: config.entity },
-        bubbles: true,
-        composed: true,
-      });
-      element.dispatchEvent(event);
-    }
-    return;
-  }
-
-  const actionType = actionConfig.action;
-  if (actionType === 'none') return;
-  if (actionType === 'fix') return; // Handled specially by the card
-
-  const event = new CustomEvent('hass-action', {
-    detail: { config, action },
-    bubbles: true,
-    composed: true,
-  });
-  element.dispatchEvent(event);
-}

@@ -4,12 +4,12 @@
 
 # Checklist Card for Home Assistant
 
-[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://github.com/custom-components/hacs)
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://hacs.xyz)
 [![GitHub Release](https://img.shields.io/github/release/yosef-chai/ha-checklist-card.svg?style=for-the-badge)](https://github.com/yosef-chai/ha-checklist-card/releases)
 [![GitHub Downloads](https://img.shields.io/github/downloads/yosef-chai/ha-checklist-card/total?style=for-the-badge)](https://github.com/yosef-chai/ha-checklist-card/releases)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
-[![Open your Home Assistant instance and add a custom repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=yosef-chai&repository=ha-checklist-card&category=lovelace)
+[![Open your Home Assistant instance and add a custom repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=yosef-chai&repository=ha-checklist-card&category=plugin)
 
 A Lovelace custom card that monitors a list of entity states against expected values and surfaces any problems - with a single **Fix** or **Fix All** button to call the correct Home Assistant service automatically.
 
@@ -20,7 +20,7 @@ A Lovelace custom card that monitors a list of entity states against expected va
 ## Features
 
 - **Convenient display** - a neat and clear list of each entity and its status
-- **One-click fix** - fix a single item or click **Fix All** to remediate every problem at once, with a loading spinner while the service call is in progress
+- **One-click fix** - fix a single item or click **Fix all** to remediate every problem at once, with a loading spinner while the action runs. Read-only entities (binary sensors, sensors, trackers…) show the problem without a Fix button unless you give them a custom fix action
 - **Smart auto-fix** - the card infers the correct HA service for lights, switches, locks, covers, climate, selects, numbers, vacuums, and more
 - **Custom fix services** - override auto-fix with any service call and arbitrary service data
 - **Multi-condition checks** - combine conditions with AND / OR logic per entity
@@ -30,25 +30,31 @@ A Lovelace custom card that monitors a list of entity states against expected va
 - **Flexible layout** - vertical columns or horizontal rows, configurable count (1–12); supports the Lovelace Sections (grid) view
 - **Long text handling** - clip overflowing names with an ellipsis or scroll them as a marquee (`text_mode`)
 - **Per-row tap / hold / double-tap actions** - reuse Home Assistant's standard action config to navigate, call services, run scripts, or open more-info
-- **Hide OK items** - keep the card compact by showing only entities with problems, or fold them behind a toggle
-- **Visual UI editor** - configure everything from the dashboard without writing YAML, with a tabbed editor (one tab per check) that matches the native Home Assistant Horizontal Stack card editor — including prev/next reorder, duplicate, cut/paste (cross-card via session clipboard), delete, and a `{}` toggle for per-check YAML/JSON editing
+- **Hide OK items** - keep the card compact by showing only entities with problems, or fold them behind a toggle. With `show_ok_section: hidden` the whole card disappears while everything is OK, and the Sections view closes the gap
+- **Confirmation** - optionally ask before fixing, in a Home Assistant-styled dialog (with per-user exemptions)
+- **Visual UI editor** - configure everything from the dashboard without writing YAML. Every field uses Home Assistant's own form selectors (entity, attribute, state, icon and action pickers), laid out like the native stack card editor: one tab per check, prev/next reorder, duplicate, cut/paste (across cards via a session clipboard), delete, and a `{}` toggle for per-check YAML
+- **Card picker suggestions** - on Home Assistant 2026.6+, locks, valves and door/garage/gate/window covers suggest a ready-made checklist in the card picker
 - **RTL & translations** - full right-to-left support; ships with English and Hebrew, easy to add more
 
 ---
+
+## Requirements
+
+- Home Assistant **2025.10** or newer (the visual editor uses the current frontend components)
 
 ## Installation
 
 ### HACS (recommended)
 
 1. Open HACS in your Home Assistant instance.
-2. Go to **Frontend** → click the menu (⋯) → **Custom repositories**.
-3. Add `https://github.com/yosef-chai/ha-checklist-card` with category **Lovelace**.
+2. Click the menu (⋮) in the top right → **Custom repositories**.
+3. Add `https://github.com/yosef-chai/ha-checklist-card` with type **Dashboard**.
 4. Search for **Checklist Card** and click **Download**.
 5. Reload your browser.
 
 Or click the button above to open the repository directly in HACS.
 
-> **HACS 2026 storage mode:** if your dashboards run in storage mode (the default), HACS registers the resource automatically — no manual step needed. For YAML-only dashboards see the manual instructions below.
+> For dashboards in storage mode (the default), HACS adds the dashboard resource for you. For YAML dashboards, add the resource yourself as shown below.
 
 ### Manual
 
@@ -66,7 +72,7 @@ Or click the button above to open the repository directly in HACS.
    ```yaml
    lovelace:
      resources:
-       - url: /local/checklist-card.js?v=2.2.0
+       - url: /local/checklist-card.js?v=2.3.0
          type: module
    ```
 
@@ -128,7 +134,7 @@ checks:                                             # [Required] Array of entiti
 | `type` | string | **required** | `custom:checklist-card` |
 | `title` | string | `"Checklist"` | Heading shown at the top of the card |
 | `checks` | list | **required** | Ordered list of [check rules](#check-rule-options) |
-| `show_ok_section` | `inline` \| `collapsed` \| `hidden` | `inline` | How to show OK entities: mixed with problems, behind a toggle, or hide them entirely |
+| `show_ok_section` | `inline` \| `collapsed` \| `hidden` | `inline` | How to show OK entities: mixed with problems, behind a toggle, or hidden. With `hidden`, the whole card hides itself while there is nothing to report (it stays visible in edit mode) |
 | `sort` | `manual` \| `status` \| `alphabetical` \| `domain` \| `severity` \| `last_changed` | `manual` | Order of the items inside the card. `manual` follows the order set in the visual editor (or in YAML); the other modes always float problems to the top |
 | `sort_direction` | `asc` \| `desc` | `asc` | Sort direction for every mode (including `manual`, which just reverses the list) |
 | `text_mode` | `clip` \| `scroll` | `clip` | How to handle long titles / entity names: `clip` truncates with an ellipsis; `scroll` runs a marquee animation when the text overflows |
@@ -139,7 +145,8 @@ checks:                                             # [Required] Array of entiti
 | Option | Type | Default | Description |
 |---|---|---|---|
 | `entity` | string | **required** | `entity_id` of the entity to monitor |
-| `name` | string | friendly name | Display name shown on the card row |
+| `id` | string | generated | Stable identifier, used to remember snoozes. The visual editor adds it; YAML checks without one get an id based on entity and position |
+| `name` | string | entity name | Display name shown on the card row. When empty, the card uses the same entity naming as the built-in cards |
 | `conditions` | list | **required** | One or more [state conditions](#condition-options) that define "OK" |
 | `conditions_mode` | `any` \| `all` | `any` | `any` - at least one condition passes (OR); `all` - every condition must pass (AND) |
 | `default_condition_index` | number | `0` | In `any` mode: index of the condition whose fix action is used when **Fix** is pressed |
@@ -148,10 +155,10 @@ checks:                                             # [Required] Array of entiti
 | `color` | string | - | CSS color for the entity name |
 | `show_last_changed` | boolean | `false` | Show an `ha-relative-time` next to the entity name |
 | `tap_action` | [action][ha-action] | `more-info` | Action on tap (on the row body, not the Fix button) |
-| `hold_action` | [action][ha-action] | `more-info` | Action on long-press |
-| `double_tap_action` | [action][ha-action] | `none` | Action on double-tap |
-| `fix_action` | [action][ha-action] | `{ action: fix }` | What the **Fix** button does. Default `fix` runs the auto-fix pipeline; any other action type replaces it |
-| `confirmation` | boolean \| `{ text?, exemptions?: [{ user }] }` | `false` | Ask before firing **Fix**; users in `exemptions` skip the prompt |
+| `hold_action` | [action][ha-action] | snooze dialog | Action on long-press |
+| `double_tap_action` | [action][ha-action] | snooze (problems only) | Action on double-tap |
+| `fix_action` | [action][ha-action] | `{ action: fix }` | What the **Fix** button does. Default `fix` runs the auto-fix pipeline; any other action type replaces it (and uses Home Assistant's own confirmation dialog when `confirmation` is set) |
+| `confirmation` | boolean \| `{ text?, exemptions?: [{ user }] }` | `false` | Ask before **Fix** (and before **Fix all** includes this check); users in `exemptions` (HA user ids) skip the prompt |
 
 [ha-action]: https://www.home-assistant.io/dashboards/actions/
 
@@ -206,6 +213,8 @@ When no `fix_service` is specified the card picks the correct service automatica
 | `vacuum` | `start` / `return_to_base` |
 | everything else | `turn_on` / `turn_off` |
 
+Read-only domains (`binary_sensor`, `sensor`, `device_tracker`, `person`, `sun`, `weather`, `zone`, `calendar`, `event`, `image`, `air_quality`, `geo_location`) have nothing to fix automatically, so their rows show the problem without a Fix button and **Fix all** skips them. Give such a check a `fix_service` or `fix_action` to make it fixable.
+
 > **Note:** For `light` entities with a `brightness` attribute condition the card automatically passes `brightness` in the service data when calling `light.turn_on`.
 
 ---
@@ -246,13 +255,18 @@ const TRANSLATIONS = {
 
 ```bash
 # Install dependencies
-npm install
+npm ci
+
+# Lint
+npm run lint
 
 # Build (type-check + bundle)
 npm run build
 
 # Output: dist/checklist-card.js
 ```
+
+`dist/checklist-card.js` is committed because HACS serves it straight from the repository; CI fails if it is out of date.
 
 The project uses **Lit 3** web components and **Vite** in library mode. TypeScript strict mode is enabled.
 
@@ -264,8 +278,13 @@ src/
   types.ts                        TypeScript interfaces and constants
   localize.ts                     i18n module
   utils.ts                        Pure utility functions
+  conditions.ts                   Condition evaluation
+  action-handler.ts               Tap / hold / double-tap / keyboard handling
+  marquee-controller.ts           Scrolling text for long names
+  preload-editor.ts               Preloads HA's editor components
   checklist-card.ts               Main card component
   checklist-card.styles.ts        Card CSS
+  checklist-card-item.ts          One row of the card
   checklist-card-editor.ts        Visual editor component
   checklist-card-editor.styles.ts Visual editor CSS
 ```

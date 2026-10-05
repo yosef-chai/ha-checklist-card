@@ -1,10 +1,10 @@
-import { LitElement, html, PropertyValues } from 'lit';
-import { customElement, property, state } from 'lit/decorators.js';
+import { LitElement, html, nothing, PropertyValues } from 'lit';
+import { customElement, property, query, state } from 'lit/decorators.js';
 import { repeat } from 'lit/directives/repeat.js';
 
 import { cardStyles } from './checklist-card.styles';
 import { localize, localizeStatic } from './localize';
-import { ensureCheckId, getStandardServiceCall, ensureDefaults } from './utils';
+import { canFixRule, ensureCheckId, getStandardServiceCall, ensureDefaults, entityDisplayName, newCheckId } from './utils';
 import { isRuleProblem, checkCondition, evaluateExpectedState, STATES_REF_PATTERN_GLOBAL } from './conditions';
 import type { HomeAssistant, CardConfig, CheckRule, StateCondition, SnoozeData } from './types';
 import { DELAY_BETWEEN_SERVICES } from './types';
@@ -21,6 +21,8 @@ import './checklist-card-item';
 @customElement('checklist-card')
 export class ChecklistCard extends LitElement {
   @property({ attribute: false }) public hass!: HomeAssistant;
+  // Set by HA's hui-card while the card is shown in the editor preview / edit mode.
+  @property({ type: Boolean }) public preview = false;
 
   @state() private _config!: CardConfig;
   @state() private _isFixingAll = false;
@@ -31,6 +33,8 @@ export class ChecklistCard extends LitElement {
   @state() private _snoozeData: SnoozeData = {};
   @state() private _snoozeDialogRule: CheckRule | null = null;
   @state() private _customSnoozeHours = '';
+  @state() private _confirmRules: CheckRule[] | null = null;
+  @query('dialog') private _dialogEl?: HTMLDialogElement;
   @state() private _isTitleOverflowing = false;
   @state() private _isSubtitleOverflowing = false;
   private _problemIds: Set<string> = new Set();
@@ -40,6 +44,7 @@ export class ChecklistCard extends LitElement {
   private _watchedEntityIds: string[] = [];
   private _snoozeTimer: number | null = null;
   private _snoozeDataLoaded = false;
+  private _isHidden = false;
   private _marquee = new MarqueeController(this, [
     { parent: '.title', setOverflow: (v) => { this._isTitleOverflowing = v; } },
     { parent: '.subtitle', setOverflow: (v) => { this._isSubtitleOverflowing = v; } },
@@ -67,59 +72,53 @@ export class ChecklistCard extends LitElement {
   }
 
   getGridOptions() {
-    // HA Sections view caps section width at 12 columns; clamp every value we return.
-    const clampCols = (n: number) => Math.max(1, Math.min(12, n));
-    const checks = this._config?.checks?.length ?? 1;
-    const layout = this._config?.layout ?? { mode: 'columns', count: 1 };
-
-    if (layout.mode === 'rows') {
-      const rowCount = Math.max(1, layout.count || 1);
-      return {
-        columns: clampCols(Math.max(6, Math.ceil(checks / rowCount) * 2)),
-        rows: Math.max(3, Math.ceil(rowCount * 1.3) + 2),
-        min_columns: clampCols(4),
-        min_rows: 2,
-      };
-    }
-
-    const cols = this._layoutCols();
-    const itemsPerCol = Math.ceil(checks / cols);
+    // A list card reads best at full section width (like HA's entities card).
+    // Height follows the content, which changes with the number of problems.
+    // Multi-column layouts need the whole width; a single list can shrink to half.
+    const multiColumn = this._config?.layout?.mode === 'columns' && this._layoutCols() > 1;
     return {
-      columns: clampCols(cols * 3),
-      rows: Math.max(3, Math.ceil(itemsPerCol * 1.3) + 2),
-      min_columns: clampCols(Math.max(2, cols * 2)),
+      columns: 12,
+      rows: 'auto' as const,
+      min_columns: multiColumn ? 12 : 6,
       min_rows: 2,
     };
   }
+
 
   private _layoutCols(): number {
     const layout = this._config?.layout;
     return layout?.mode === 'columns' ? Math.max(1, layout.count || 1) : 1;
   }
 
-  static getStubConfig(): CardConfig {
+  // HA passes the entities shown on the dashboard (and a fallback list), so the
+  // card picker preview can show a real check instead of an empty card.
+  static getStubConfig(_hass?: HomeAssistant, entities: string[] = [], entitiesFallback: string[] = []): CardConfig {
+    const candidates = [...entities, ...entitiesFallback];
+    const entity = candidates.find(e => /^(light|switch|input_boolean|fan|lock)\./.test(e)) ?? '';
+    const okState = entity.startsWith('lock.') ? 'locked' : 'off';
     return {
       type: 'custom:checklist-card',
       title: localizeStatic('title'),
       checks: [{
-        id: Date.now().toString(),
-        entity: '',
-        name: '',
-        conditions: [{ state: 'off', attribute: '', attribute_value: '', fix_service: '' }],
+        id: newCheckId(),
+        entity,
+        conditions: [{ state: okState }],
         conditions_mode: 'any',
         default_condition_index: 0,
       }],
       layout: { mode: 'columns', count: 1 },
-      sort: 'status'
+      sort: 'status',
     };
   }
 
   setConfig(config: CardConfig) {
-    if (!config || !config.checks) throw new Error(localize(this.hass, 'config_error'));
+    if (!config || !Array.isArray(config.checks) || config.checks.some(c => !c || typeof c !== 'object')) {
+      throw new Error(localize(this.hass, 'config_error'));
+    }
     const safeConfig = ensureDefaults(config);
     this._config = {
       ...safeConfig,
-      checks: safeConfig.checks.map(ensureCheckId),
+      checks: safeConfig.checks.map((c, i) => ensureCheckId(c, i)),
     };
   }
 
@@ -176,6 +175,30 @@ export class ChecklistCard extends LitElement {
     const marqueeEnabled = this._config?.text_mode === 'scroll';
     this.classList.toggle('marquee-enabled', marqueeEnabled);
     // MarqueeController re-measures via hostUpdated() automatically.
+
+    // show_ok_section: hidden + nothing to report → hide the whole card.
+    // hui-card reads `hidden` on card-visibility-changed, so the sections grid
+    // drops the empty slot instead of leaving a gap. Never hide in the editor preview.
+    const hide = !this.preview && this._shouldHideCard();
+    if (hide !== this._isHidden) {
+      this._isHidden = hide;
+      this.hidden = hide;
+      this.dispatchEvent(new CustomEvent('card-visibility-changed', {
+        detail: { value: !hide },
+        bubbles: true,
+        composed: true,
+      }));
+    }
+
+    const dialog = this._dialogEl;
+    if (dialog && !dialog.open) dialog.showModal();
+  }
+
+  private _shouldHideCard(): boolean {
+    return !!this._config
+      && this._config.show_ok_section === 'hidden'
+      && this._problemIds.size === 0
+      && this._snoozedIds.size === 0;
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -186,6 +209,7 @@ export class ChecklistCard extends LitElement {
     const oldHass = changedProps.get('hass') as HomeAssistant | undefined;
     if (!oldHass) return true;
     if (this._watchedEntityIds.length === 0) return true;
+    if (oldHass.language !== this.hass.language) return true;
 
     return this._watchedEntityIds.some(
       id => oldHass.states?.[id] !== this.hass.states?.[id]
@@ -280,8 +304,8 @@ export class ChecklistCard extends LitElement {
             break;
           }
           case 'last_changed':
-            valA = new Date(this.hass.states[a.entity]?.last_changed || 0).getTime();
-            valB = new Date(this.hass.states[b.entity]?.last_changed || 0).getTime();
+            valA = new Date(this.hass?.states[a.entity]?.last_changed || 0).getTime();
+            valB = new Date(this.hass?.states[b.entity]?.last_changed || 0).getTime();
             break;
         }
 
@@ -352,8 +376,7 @@ export class ChecklistCard extends LitElement {
   private async _snoozeItem(rule: CheckRule, hours: number) {
     const expiry = Date.now() + hours * 3_600_000;
     this._snoozeData = { ...this._snoozeData, [rule.id]: expiry };
-    this._snoozeDialogRule = null;
-    this._customSnoozeHours = '';
+    this._closeDialog();
     await this._saveSnoozeData();
   }
 
@@ -461,25 +484,79 @@ export class ChecklistCard extends LitElement {
     }
   }
 
-  private async _fixAll() {
+  private _needsConfirmation(rule: CheckRule): boolean {
+    const confirmation = rule.confirmation;
+    if (!confirmation) return false;
+    if (typeof confirmation === 'object'
+      && confirmation.exemptions?.some(ex => ex.user === this.hass?.user?.id)) {
+      return false;
+    }
+    return true;
+  }
+
+  private _problemRulesBySeverity(): CheckRule[] {
+    const sevWeight = { 'critical': 0, 'warning': 1, 'info': 2 };
+    return this._config.checks
+      .filter(rule => rule.entity && this._problemIds.has(rule.id) && canFixRule(rule))
+      .sort((a, b) => sevWeight[a.severity || 'info'] - sevWeight[b.severity || 'info']);
+  }
+
+  private _handleFixAllClick() {
+    const problems = this._problemRulesBySeverity();
+    if (problems.length === 0) return;
+    if (problems.some(rule => this._needsConfirmation(rule))) {
+      this._confirmRules = problems;
+      return;
+    }
+    this._fixAll(problems);
+  }
+
+  private async _fixAll(problems: CheckRule[]) {
     this._isFixingAll = true;
     this._errorBanner = null;
-
-    const sevWeight = { 'critical': 0, 'warning': 1, 'info': 2 };
-    const problems = this._config.checks
-      .filter(rule => rule.entity && this._problemIds.has(rule.id))
-      .sort((a, b) => sevWeight[a.severity || 'info'] - sevWeight[b.severity || 'info']);
-
-    for (const rule of problems) {
-      await this._fixIssue(rule);
-      await new Promise(r => setTimeout(r, DELAY_BETWEEN_SERVICES));
+    try {
+      for (const rule of problems) {
+        await this._fixIssue(rule);
+        await new Promise(r => setTimeout(r, DELAY_BETWEEN_SERVICES));
+      }
+    } finally {
+      this._isFixingAll = false;
     }
-    this._isFixingAll = false;
   }
 
   private _handleFixRequested(e: CustomEvent) {
     const rule = this._config.checks.find(r => r.id === e.detail.ruleId);
-    if (rule) this._fixIssue(rule);
+    if (!rule) return;
+    if (this._needsConfirmation(rule)) {
+      this._confirmRules = [rule];
+      return;
+    }
+    this._fixIssue(rule);
+  }
+
+  private _handleConfirm() {
+    const rules = this._confirmRules;
+    this._closeDialog();
+    if (!rules) return;
+    if (rules.length === 1) this._fixIssue(rules[0]);
+    else this._fixAll(rules);
+  }
+
+  private _closeDialog() {
+    this._snoozeDialogRule = null;
+    this._confirmRules = null;
+    this._customSnoozeHours = '';
+  }
+
+  private _handleDialogClick(ev: MouseEvent) {
+    // A click on the <dialog> element itself (not its content) is a backdrop click.
+    if (ev.target === ev.currentTarget) this._closeDialog();
+  }
+
+  private _handleDialogCancel(ev: Event) {
+    // Escape key: let Lit drive the close so state and DOM stay in sync.
+    ev.preventDefault();
+    this._closeDialog();
   }
 
   private _handleSnoozeRequested(e: CustomEvent) {
@@ -499,11 +576,11 @@ export class ChecklistCard extends LitElement {
   }
 
   render() {
-    if (!this._config) return html``;
+    if (!this._config || !this.hass) return nothing;
 
     const problemCount = this._problemIds.size;
     const hasProblems = problemCount > 0;
-    const dir = this.hass?.translationMetadata?.dir ?? (this.hass?.language === 'he' ? 'rtl' : 'ltr');
+    const dir = this.hass.translationMetadata?.dir ?? (this.hass.language === 'he' ? 'rtl' : 'ltr');
     const snoozedCount = this._snoozedIds.size;
 
     const problems = this._checksToDisplay.filter(c => this._problemIds.has(c.id));
@@ -523,24 +600,18 @@ export class ChecklistCard extends LitElement {
           : [...problems, ...oks])
       : problems;
 
-    if (problemCount === 0 && snoozedCount === 0 && showOkMode === 'hidden') {
-      this.style.display = 'none';
-      return html``;
-    } else {
-      this.style.display = '';
-    }
-
-    const dialogRule = this._snoozeDialogRule;
-    const dialogName = dialogRule
-      ? (dialogRule.name || this.hass?.states[dialogRule.entity]?.attributes?.friendly_name || dialogRule.entity)
-      : '';
+    if (!this.preview && this._shouldHideCard()) return nothing;
 
     return html`
       <ha-card dir=${dir} role="region" aria-label=${this._config.title || localize(this.hass, 'title')}>
         ${this._errorBanner ? html`
-          <ha-alert alert-type="error" dismissable @alert-dismissed-clicked=${() => this._errorBanner = null}>
-            ${this._errorBanner}
-          </ha-alert>
+          <div class="error-banner" role="alert">
+            <ha-icon icon="mdi:alert-circle-outline"></ha-icon>
+            <span class="error-text">${this._errorBanner}</span>
+            <button class="icon-btn" aria-label=${localize(this.hass, 'dismiss')} @click=${() => { this._errorBanner = null; }}>
+              <ha-icon icon="mdi:close"></ha-icon>
+            </button>
+          </div>
         ` : ''}
 
         <div class="header">
@@ -564,15 +635,15 @@ export class ChecklistCard extends LitElement {
 
             ${snoozed.length > 0 ? html`
               <button class="ok-toggle-btn" @click=${() => this._showSnoozedExpanded = !this._showSnoozedExpanded}>
-                <ha-icon icon="mdi:alarm-snooze" style="color: #e59b2dff;"></ha-icon>
+                <ha-icon icon="mdi:alarm-snooze" style="color: var(--warning-color, #e59b2d);"></ha-icon>
                 ${this._showSnoozedExpanded
           ? localize(this.hass, 'snoozed_section_hide', { count: snoozed.length })
           : localize(this.hass, 'snoozed_section_show', { count: snoozed.length })}
               </button>
             ` : ''}
 
-            ${problems.length > 0 ? html`
-              <button class="fix-all-btn" @click=${this._fixAll} ?disabled=${this._isFixingAll} aria-label=${localize(this.hass, 'fix_all')}>
+            ${problems.some(canFixRule) ? html`
+              <button class="fix-all-btn" @click=${this._handleFixAllClick} ?disabled=${this._isFixingAll} aria-label=${localize(this.hass, 'fix_all')}>
                 ${this._isFixingAll ? html`<div class="spinner"></div>` : localize(this.hass, 'fix_all')}
               </button>
             ` : ''}
@@ -593,46 +664,95 @@ export class ChecklistCard extends LitElement {
         </div>
       </ha-card>
 
-      ${dialogRule ? html`
-        <ha-dialog
-          .open=${true}
-          @closed=${() => { this._snoozeDialogRule = null; this._customSnoozeHours = ''; }}
-          .heading=${localize(this.hass, 'snooze_dialog_title')}
-        >
-          <div class="snooze-dialog-content">
-            <div class="snooze-dialog-entity">${dialogName}</div>
-            <p class="snooze-dialog-desc">${localize(this.hass, 'snooze_dialog_desc')}</p>
-            <div class="snooze-presets">
-              ${([1, 2, 4, 8, 24, 72] as const).map((h, i) => html`
-                <button class="snooze-preset-btn" @click=${() => this._snoozeItem(dialogRule, h)}>
-                  ${localize(this.hass, (['snooze_1h', 'snooze_2h', 'snooze_4h', 'snooze_8h', 'snooze_24h', 'snooze_3d'] as const)[i])}
-                </button>
-              `)}
-            </div>
-            <div class="snooze-custom-row">
-              <input
-                type="number"
-                class="snooze-custom-input"
-                min="1"
-                max="8760"
-                .value=${this._customSnoozeHours}
-                @input=${(e: Event) => this._customSnoozeHours = (e.target as HTMLInputElement).value}
-                placeholder=${localize(this.hass, 'snooze_custom_placeholder')}
-              />
-              <button
-                class="snooze-preset-btn snooze-custom-confirm"
-                ?disabled=${!this._customSnoozeHours || parseFloat(this._customSnoozeHours) <= 0}
-                @click=${this._handleCustomSnooze}
-              >
-                ${localize(this.hass, 'snooze_confirm_btn')}
-              </button>
-            </div>
-          </div>
-          <mwc-button slot="secondaryAction" @click=${() => { this._snoozeDialogRule = null; this._customSnoozeHours = ''; }}>
-            ${localize(this.hass, 'cancel')}
-          </mwc-button>
-        </ha-dialog>
-      ` : ''}
+      ${this._renderDialog()}
+    `;
+  }
+
+  private _renderDialog() {
+    const snoozeRule = this._snoozeDialogRule;
+    const confirmRules = this._confirmRules;
+    if (!snoozeRule && !confirmRules) return nothing;
+
+    const heading = snoozeRule
+      ? localize(this.hass, 'snooze_dialog_title')
+      : localize(this.hass, 'confirm_title');
+
+    return html`
+      <dialog
+        aria-labelledby="dialog-heading"
+        @click=${this._handleDialogClick}
+        @cancel=${this._handleDialogCancel}
+      >
+        <div class="dialog-surface">
+          <h2 class="dialog-heading" id="dialog-heading">${heading}</h2>
+          ${snoozeRule ? this._renderSnoozeBody(snoozeRule) : this._renderConfirmBody(confirmRules!)}
+        </div>
+      </dialog>
+    `;
+  }
+
+  private _renderSnoozeBody(rule: CheckRule) {
+    const hours = parseFloat(this._customSnoozeHours);
+    const customValid = hours > 0 && hours <= 8760;
+    return html`
+      <div class="dialog-body">
+        <div class="snooze-dialog-entity">${entityDisplayName(this.hass, rule)}</div>
+        <p class="snooze-dialog-desc">${localize(this.hass, 'snooze_dialog_desc')}</p>
+        <div class="snooze-presets">
+          ${([1, 2, 4, 8, 24, 72] as const).map((h, i) => html`
+            <button class="chip-btn" @click=${() => this._snoozeItem(rule, h)}>
+              ${localize(this.hass, (['snooze_1h', 'snooze_2h', 'snooze_4h', 'snooze_8h', 'snooze_24h', 'snooze_3d'] as const)[i])}
+            </button>
+          `)}
+        </div>
+        <label class="snooze-custom-label" for="snooze-hours">${localize(this.hass, 'snooze_custom_label')}</label>
+        <input
+          id="snooze-hours"
+          type="number"
+          inputmode="decimal"
+          class="snooze-custom-input"
+          min="0.5"
+          max="8760"
+          step="0.5"
+          .value=${this._customSnoozeHours}
+          @input=${(e: Event) => { this._customSnoozeHours = (e.target as HTMLInputElement).value; }}
+          @keydown=${(e: KeyboardEvent) => { if (e.key === 'Enter' && customValid) this._handleCustomSnooze(); }}
+          placeholder=${localize(this.hass, 'snooze_custom_placeholder')}
+        />
+      </div>
+      <div class="dialog-footer">
+        <button class="dialog-btn" @click=${this._closeDialog}>${localize(this.hass, 'cancel')}</button>
+        <button class="dialog-btn primary" ?disabled=${!customValid} @click=${this._handleCustomSnooze}>
+          ${localize(this.hass, 'snooze_confirm_btn')}
+        </button>
+      </div>
+    `;
+  }
+
+  private _renderConfirmBody(rules: CheckRule[]) {
+    let text: string;
+    if (rules.length === 1) {
+      const rule = rules[0];
+      const custom = typeof rule.confirmation === 'object' ? rule.confirmation.text : undefined;
+      text = custom || localize(this.hass, 'confirm_fix', { name: entityDisplayName(this.hass, rule) });
+    } else {
+      text = localize(this.hass, 'confirm_fix_all', { count: rules.length });
+    }
+    return html`
+      <div class="dialog-body">
+        <p class="confirm-text">${text}</p>
+        ${rules.length > 1 ? html`
+          <ul class="confirm-list">
+            ${rules.map(rule => html`<li>${entityDisplayName(this.hass, rule)}</li>`)}
+          </ul>
+        ` : nothing}
+      </div>
+      <div class="dialog-footer">
+        <button class="dialog-btn" @click=${this._closeDialog}>${localize(this.hass, 'cancel')}</button>
+        <button class="dialog-btn primary" autofocus @click=${this._handleConfirm}>
+          ${localize(this.hass, rules.length > 1 ? 'fix_all' : 'fix')}
+        </button>
+      </div>
     `;
   }
 

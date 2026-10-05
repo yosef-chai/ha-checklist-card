@@ -3,6 +3,7 @@ import { customElement, property, state } from 'lit/decorators.js';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { actionHandler } from './action-handler';
 import { localize } from './localize';
+import { canFixRule, entityDisplayName } from './utils';
 import { evaluateExpectedState, checkCondition, STATES_REF_PATTERN_GLOBAL } from './conditions';
 import { MarqueeController, renderMarqueeBody } from './marquee-controller';
 import type { CheckRule, HomeAssistant, StateCondition } from './types';
@@ -63,6 +64,7 @@ export class ChecklistCardItem extends LitElement {
     }
     .check-item:focus-visible {
       background-color: rgba(128, 128, 128, 0.1);
+      box-shadow: 0 0 0 2px var(--primary-color);
     }
 
     .entity-info-container {
@@ -90,12 +92,12 @@ export class ChecklistCardItem extends LitElement {
       color: var(--secondary-text-color, #9e9e9e);
     }
     .icon-wrapper.ok {
-      background-color: rgba(76, 175, 80, 0.2);
-      color: #4caf50;
+      background-color: rgba(var(--rgb-success-color, 76, 175, 80), 0.2);
+      color: var(--success-color, #4caf50);
     }
     .icon-wrapper.snoozed {
-      background-color: rgba(229, 155, 45, 0.18);
-      color: #e59b2dff;
+      background-color: rgba(var(--rgb-warning-color, 229, 155, 45), 0.18);
+      color: var(--warning-color, #e59b2d);
     }
 
     .check-text {
@@ -177,7 +179,7 @@ export class ChecklistCardItem extends LitElement {
     }
 
     .fix-btn {
-      background-color: #e59b2dff;
+      background-color: var(--warning-color, #e59b2d);
       color: #ffffff;
       border: none;
       border-radius: 20px;
@@ -210,6 +212,18 @@ export class ChecklistCardItem extends LitElement {
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
+    .problem-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-inline-start: 12px;
+      flex-shrink: 0;
+      color: var(--error-color, #db4437);
+      font-size: 13px;
+      font-weight: 500;
+      --mdc-icon-size: 18px;
+    }
+
     .ok-badge {
       display: flex;
       align-items: center;
@@ -232,14 +246,14 @@ export class ChecklistCardItem extends LitElement {
       display: flex;
       align-items: center;
       gap: 3px;
-      color: #e59b2dff;
+      color: var(--warning-color, #e59b2d);
       font-size: 12px;
       font-weight: 500;
       white-space: nowrap;
     }
     .snooze-badge ha-icon {
       --mdc-icon-size: 14px;
-      color: #e59b2dff;
+      color: var(--warning-color, #e59b2d);
     }
 
     .unsnooze-btn {
@@ -367,31 +381,26 @@ export class ChecklistCardItem extends LitElement {
     e.stopPropagation();
     if (this.isFixing) return;
 
-    if (this.rule.confirmation) {
-      let text = localize(this.hass, 'confirm_fix', { name: this.rule.name || this.rule.entity });
-      if (typeof this.rule.confirmation === 'object') {
-        if (this.rule.confirmation.exemptions?.some(ex => ex.user === this.hass.user?.id)) {
-          // user is in exemption list — skip the confirmation dialog
-        } else {
-          text = this.rule.confirmation.text || text;
-          if (!window.confirm(text)) return;
-        }
-      } else if (this.rule.confirmation === true) {
-        if (!window.confirm(text)) return;
-      }
-    }
-
+    // A custom fix action goes through HA's own action handler, which also
+    // shows HA's confirmation dialog when `confirmation` is set.
     const actionConfig = this.rule.fix_action;
     if (actionConfig && actionConfig.action !== 'fix') {
-      const event = new CustomEvent('hass-action', {
-        detail: { config: { entity: this.rule.entity, tap_action: actionConfig }, action: 'tap' },
+      const confirmation = actionConfig.confirmation ?? this.rule.confirmation;
+      this.dispatchEvent(new CustomEvent('hass-action', {
+        detail: {
+          config: {
+            entity: this.rule.entity,
+            tap_action: confirmation ? { ...actionConfig, confirmation } : actionConfig,
+          },
+          action: 'tap',
+        },
         bubbles: true,
         composed: true,
-      });
-      this.dispatchEvent(event);
+      }));
       return;
     }
 
+    // The built-in fix (and its optional confirmation) is handled by the card.
     this.dispatchEvent(new CustomEvent('fix-requested', {
       detail: { ruleId: this.rule.id },
       bubbles: true,
@@ -469,7 +478,7 @@ export class ChecklistCardItem extends LitElement {
   render() {
     const currentState = this.stateObj?.state ?? localize(this.hass, 'unavailable');
     const isMulti = this.rule.conditions.length > 1;
-    const displayName = this.rule.name || this.stateObj?.attributes?.friendly_name || this.rule.entity;
+    const displayName = entityDisplayName(this.hass, this.rule);
 
     const role = 'listitem';
     const ariaLabel = `${displayName}, ${localize(this.hass, this.isProblem ? 'status_problem' : 'status_ok')}`;
@@ -516,6 +525,11 @@ export class ChecklistCardItem extends LitElement {
               ${localize(this.hass, 'unsnooze')}
             </button>
           </div>
+        ` : this.isProblem && !canFixRule(this.rule) ? html`
+          <span class="problem-badge">
+            <ha-icon icon="mdi:alert-circle-outline"></ha-icon>
+            ${localize(this.hass, 'status_problem')}
+          </span>
         ` : this.isProblem ? html`
           <button
             class="fix-btn"

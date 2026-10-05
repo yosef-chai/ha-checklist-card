@@ -1,6 +1,6 @@
 {
   "name": "ha-checklist-card",
-  "version": "2.2.2",
+  "version": "2.3.0",
   "main": "index.js",
   "type": "module",
   "scripts": {

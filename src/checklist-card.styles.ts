@@ -12,6 +12,9 @@ export const cardStyles = css`
     font-family: var(--primary-font-family, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif);
     height: 100%;
   }
+  :host([hidden]) {
+    display: none;
+  }
 
   ha-card {
     padding: 16px;
@@ -281,18 +284,135 @@ export const cardStyles = css`
     align-items: center;
     gap: 2px;
     margin-inline-start: 6px;
-    color: #e59b2dff;
+    color: var(--warning-color, #e59b2d);
     font-size: 13px;
   }
 
-  .snooze-dialog-content {
+  /* Inline error banner (replaces ha-alert, which cards cannot rely on). */
+  .error-banner {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-block: 8px;
+    padding-inline: 12px 8px;
+    border-radius: var(--ha-border-radius-md, 8px);
+    background-color: rgba(var(--rgb-error-color, 219, 68, 55), 0.12);
+    color: var(--primary-text-color);
+    font-size: 14px;
+  }
+  .error-banner > ha-icon {
+    color: var(--error-color, #db4437);
+    flex-shrink: 0;
+  }
+  .error-text {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--secondary-text-color);
+    cursor: pointer;
+    flex-shrink: 0;
+    --mdc-icon-size: 18px;
+  }
+  .icon-btn:hover {
+    background-color: rgba(var(--rgb-primary-text-color, 0, 0, 0), 0.08);
+  }
+
+  /* Native modal <dialog>: renders in the top layer (escapes ha-card clipping)
+     and is styled with HA's dialog tokens so it matches built-in dialogs. */
+  dialog {
+    box-sizing: border-box;
+    width: min(400px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 0;
+    border: none;
+    border-radius: var(--ha-dialog-border-radius, var(--ha-border-radius-3xl, 24px));
+    background: var(--ha-dialog-surface-background, var(--card-background-color, var(--primary-background-color, #fff)));
+    color: var(--primary-text-color);
+    box-shadow: var(--dialog-box-shadow, var(--ha-box-shadow-l, 0 8px 32px rgba(0, 0, 0, 0.3)));
+    font-family: var(--ha-font-family-body, var(--primary-font-family, inherit));
+  }
+  dialog::backdrop {
+    background: var(--mdc-dialog-scrim-color, rgba(0, 0, 0, 0.32));
+  }
+  .dialog-surface {
+    display: flex;
+    flex-direction: column;
+  }
+  .dialog-heading {
+    margin: 0;
+    padding: 24px 24px 0;
+    font-size: var(--ha-font-size-2xl, 24px);
+    font-weight: var(--ha-font-weight-normal, 400);
+    line-height: 1.3;
+  }
+  .dialog-body {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding: 0 4px;
-    min-width: min(260px, 100%);
-    max-width: 100%;
-    box-sizing: border-box;
+    padding: 16px 24px;
+  }
+  .dialog-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 24px 24px;
+  }
+  .dialog-btn {
+    min-height: 40px;
+    padding: 0 16px;
+    border: none;
+    border-radius: var(--ha-border-radius-pill, 9999px);
+    background: transparent;
+    color: var(--primary-color);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .dialog-btn:hover:not([disabled]) {
+    background-color: rgba(var(--rgb-primary-color, 3, 169, 244), 0.08);
+  }
+  .dialog-btn.primary {
+    background-color: var(--primary-color);
+    color: var(--text-primary-color, #fff);
+  }
+  .dialog-btn.primary:hover:not([disabled]) {
+    background-color: var(--primary-color);
+    opacity: 0.9;
+  }
+  .dialog-btn[disabled] {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+  .dialog-btn:focus-visible,
+  .chip-btn:focus-visible,
+  .icon-btn:focus-visible {
+    outline: 2px solid var(--primary-color);
+    outline-offset: 2px;
+  }
+
+  .confirm-text {
+    margin: 0;
+    font-size: 14px;
+    color: var(--primary-text-color);
+  }
+  .confirm-list {
+    margin: 0;
+    padding-inline-start: 20px;
+    font-size: 14px;
+    color: var(--secondary-text-color);
   }
 
   .snooze-dialog-entity {
@@ -313,44 +433,43 @@ export const cardStyles = css`
     gap: 8px;
   }
 
-  .snooze-preset-btn {
-    background-color: var(--secondary-background-color, rgba(0,0,0,0.06));
+  .chip-btn {
+    min-height: 32px;
+    padding: 0 14px;
+    border: 1px solid var(--divider-color, rgba(0, 0, 0, 0.12));
+    border-radius: var(--ha-border-radius-md, 8px);
+    background-color: transparent;
     color: var(--primary-text-color);
-    border: 1px solid var(--divider-color, rgba(0,0,0,0.12));
-    border-radius: 16px;
-    padding: 6px 14px;
+    font: inherit;
     font-size: 13px;
     cursor: pointer;
     transition: background-color 0.15s;
   }
-  .snooze-preset-btn:hover:not([disabled]) {
-    background-color: var(--primary-color);
-    color: white;
+  .chip-btn:hover {
+    background-color: rgba(var(--rgb-primary-color, 3, 169, 244), 0.12);
     border-color: var(--primary-color);
   }
-  .snooze-preset-btn[disabled] {
-    opacity: 0.4;
-    cursor: not-allowed;
-  }
 
-  .snooze-custom-row {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-  }
-
-  .snooze-custom-input {
-    flex: 1;
-    border: 1px solid var(--divider-color, rgba(0,0,0,0.2));
-    border-radius: 8px;
-    padding: 6px 10px;
+  .snooze-custom-label {
+    margin-top: 4px;
     font-size: 13px;
-    background: var(--card-background-color);
+    color: var(--secondary-text-color);
+  }
+  .snooze-custom-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 1px solid var(--divider-color, rgba(0, 0, 0, 0.2));
+    border-radius: var(--ha-border-radius-md, 8px);
+    background: var(--ha-color-form-background, var(--card-background-color));
     color: var(--primary-text-color);
-    min-width: 0;
+    font: inherit;
+    font-size: 14px;
   }
   .snooze-custom-input:focus {
     outline: none;
     border-color: var(--primary-color);
+    box-shadow: 0 0 0 1px var(--primary-color);
   }
 `;

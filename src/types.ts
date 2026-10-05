@@ -53,6 +53,12 @@ export interface HomeAssistant {
     target?: { entity_id?: string | string[]; device_id?: string | string[]; area_id?: string | string[] }
   ): Promise<void>;
   callWS<T = unknown>(msg: Record<string, unknown>): Promise<T>;
+  // HA 2026.4+: the naming helper the built-in cards use.
+  formatEntityName?(
+    stateObj: HassEntity,
+    items: { type: 'device' | 'entity' | 'area' | 'floor' }[],
+    options?: { separator?: string }
+  ): string;
   connection: any;
   language: string;
   translationMetadata?: {
@@ -116,7 +122,7 @@ export interface StateCondition {
 export interface CheckRule {
   id: string;
   entity: string;
-  name: string;
+  name?: string;
   conditions: StateCondition[];
   conditions_mode: 'any' | 'all';
   default_condition_index: number;

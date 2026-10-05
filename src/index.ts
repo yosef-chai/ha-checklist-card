@@ -1,6 +1,12 @@
 import './checklist-card';
 import './checklist-card-editor';
 import { localizeStatic } from './localize';
+import type { HomeAssistant } from './types';
+
+interface CardSuggestion {
+  config: Record<string, unknown>;
+  label?: string;
+}
 
 declare global {
   interface Window {
@@ -10,8 +16,28 @@ declare global {
       description?: string;
       preview?: boolean;
       documentationURL?: string;
+      getEntitySuggestion?: (hass: HomeAssistant, entityId: string) => CardSuggestion | CardSuggestion[] | null;
     }>;
   }
+}
+
+const CLOSED_COVER_CLASSES = ['door', 'garage', 'gate', 'window'];
+
+// Card picker "Community" suggestions (HA 2026.6+; ignored by older versions).
+// Only offered where "OK" has an obvious meaning and Fix can restore it.
+function getEntitySuggestion(hass: HomeAssistant, entityId: string): CardSuggestion | null {
+  const domain = entityId.split('.')[0];
+  const deviceClass = hass.states[entityId]?.attributes?.device_class as string | undefined;
+  let okState: string | undefined;
+  if (domain === 'lock') okState = 'locked';
+  else if ((domain === 'cover' && CLOSED_COVER_CLASSES.includes(deviceClass ?? '')) || domain === 'valve') okState = 'closed';
+  if (!okState) return null;
+  return {
+    config: {
+      type: 'custom:checklist-card',
+      checks: [{ entity: entityId, conditions: [{ state: okState }] }],
+    },
+  };
 }
 
 window.customCards = window.customCards || [];
@@ -21,6 +47,7 @@ window.customCards.push({
   description: localizeStatic('card_description'),
   preview: true,
   documentationURL: 'https://github.com/yosef-chai/ha-checklist-card',
+  getEntitySuggestion,
 });
 
 // Version banner in the browser console — the convention across HACS cards,

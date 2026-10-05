@@ -1,19 +1,64 @@
-import type { CardConfig, CheckRule, StateCondition } from './types';
+import type { CardConfig, CheckRule, HomeAssistant, StateCondition } from './types';
 
-export function ensureCheckId(check: Partial<CheckRule>): CheckRule {
+/** Display name for a rule: explicit `name`, else HA's own entity naming, else friendly_name. */
+export function entityDisplayName(hass: HomeAssistant | undefined, rule: Pick<CheckRule, 'name' | 'entity'>): string {
+  if (rule.name) return rule.name;
+  const stateObj = hass?.states[rule.entity];
+  if (!stateObj) return rule.entity;
+  if (typeof hass?.formatEntityName === 'function') {
+    try {
+      const name = hass.formatEntityName(stateObj, [{ type: 'device' }, { type: 'entity' }], { separator: ' · ' });
+      if (name) return name;
+    } catch {
+      // Fall through to friendly_name on older or unexpected frontends.
+    }
+  }
+  return stateObj.attributes?.friendly_name || rule.entity;
+}
+
+/**
+ * Fill in defaults for a check. Checks written by hand in YAML usually have no
+ * `id`; when the position is known the fallback id is derived from it, so the
+ * id (and the snooze state stored under it) survives a page reload.
+ */
+export function ensureCheckId(check: Partial<CheckRule>, index?: number): CheckRule {
+  const fallbackId = index === undefined
+    ? newCheckId()
+    : `${check.entity || 'check'}-${index}`;
   return {
     ...check,
-    id: check.id || `${Date.now()}-${Math.random().toString(36).slice(2)}`,
+    id: check.id || fallbackId,
     entity: check.entity || '',
-    name: check.name || '',
     conditions_mode: check.conditions_mode || 'any',
     default_condition_index: check.default_condition_index ?? 0,
     conditions: check.conditions || [],
   };
 }
 
+// Domains whose state can only be read, never set by an action: an automatic
+// Fix would just fail, so the card only offers Fix there with a custom action.
+const READ_ONLY_DOMAINS = new Set([
+  'binary_sensor', 'sensor', 'device_tracker', 'person', 'sun', 'weather',
+  'zone', 'calendar', 'event', 'image', 'air_quality', 'geo_location',
+]);
+
+export function canFixRule(rule: CheckRule): boolean {
+  if (rule.fix_action && rule.fix_action.action !== 'fix') return rule.fix_action.action !== 'none';
+  if (!READ_ONLY_DOMAINS.has(rule.entity.split('.')[0])) return true;
+  // Read-only entity: fixable only if the conditions Fix will use have a custom action.
+  if (rule.conditions_mode === 'all') {
+    return rule.conditions.length > 0 && rule.conditions.every(c => c.fix_service?.trim());
+  }
+  const cond = rule.conditions[rule.default_condition_index ?? 0] ?? rule.conditions[0];
+  return !!cond?.fix_service?.trim();
+}
+
+export function newCheckId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 export function makeEmptyCondition(): StateCondition {
-  return { state: 'off', attribute: '', attribute_value: '', fix_service: '' };
+  return { state: 'off' };
 }
 
 export function ensureDefaults(config: Partial<CardConfig>): CardConfig {
